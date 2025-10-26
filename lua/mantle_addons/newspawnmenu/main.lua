@@ -10,7 +10,6 @@ function PANEL:Init()
         local tabsList = spawnmenu.GetCreationTabs()
 
         for name, tab in SortedPairsByMemberValue(tabsList, 'Order') do
-            print(name)
             local contentPanel = tab.Function()
             contentPanel:SetParent(self.tabs)
             self.tabs:AddTab(name, contentPanel, Material(tab.Icon))
