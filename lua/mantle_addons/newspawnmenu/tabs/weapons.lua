@@ -34,4 +34,4 @@ end
 
 vgui.Register('NewSpawnMenu.Tabs.Weapons', PANEL, 'NewSpawnMenu.Content')
 
-NewSpawnMenu.CreateTab('weapons', 'Оружие', 'icon16/gun.png', 'NewSpawnMenu.Tabs.Weapons')
+NewSpawnMenu.CreateTab('weapons', '#spawnmenu.category.weapons', 'icon16/gun.png', 'NewSpawnMenu.Tabs.Weapons')

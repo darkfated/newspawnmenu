@@ -30,4 +30,4 @@ end
 
 vgui.Register('NewSpawnMenu.Tabs.Entities', PANEL, 'NewSpawnMenu.Content')
 
-NewSpawnMenu.CreateTab('entities', 'Энтити', 'icon16/bricks.png', 'NewSpawnMenu.Tabs.Entities')
+NewSpawnMenu.CreateTab('entities', '#spawnmenu.category.entities', 'icon16/bricks.png', 'NewSpawnMenu.Tabs.Entities')

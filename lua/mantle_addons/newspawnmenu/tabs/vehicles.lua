@@ -30,4 +30,4 @@ end
 
 vgui.Register('NewSpawnMenu.Tabs.Vehicles', PANEL, 'NewSpawnMenu.Content')
 
-NewSpawnMenu.CreateTab('vehicles', 'Транспорт', 'icon16/car.png', 'NewSpawnMenu.Tabs.Vehicles')
+NewSpawnMenu.CreateTab('vehicles', '#spawnmenu.category.vehicles', 'icon16/car.png', 'NewSpawnMenu.Tabs.Vehicles')

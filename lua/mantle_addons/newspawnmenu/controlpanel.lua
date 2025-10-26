@@ -112,7 +112,7 @@ function PANEL:ColorPicker(label, r, g, b, a)
 
     local colorBtn = vgui.Create('MantleBtn')
     colorBtn:SetTall(30)
-    colorBtn:SetTxt('Выберете цвет')
+    colorBtn:SetTxt(Mantle.lang.get('newspawnmenu', 'select_color'))
     colorBtn.DoClick = function()
         Mantle.ui.color_picker(function(col)
             local lp = LocalPlayer()
