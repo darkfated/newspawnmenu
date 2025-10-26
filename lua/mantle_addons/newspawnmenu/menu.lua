@@ -1,11 +1,17 @@
 local function CreateMenu()
-    local menuW, menuH = Mantle.func.sw * 0.9, Mantle.func.sh * 0.85
+    local w, h = Mantle.func.sw, Mantle.func.sh
+    local menuW, menuH
+    if w < 1600 then
+        menuW, menuH = w, h
+    else
+        menuW, menuH = w * 0.9, h * 0.85
+    end
 
     NewSpawnMenu.menu = vgui.Create('EditablePanel')
     NewSpawnMenu.menu:SetSize(menuW, menuH)
     NewSpawnMenu.menu:Center()
     NewSpawnMenu.menu:MakePopup()
-    NewSpawnMenu.menu:SetKeyBoardInputEnabled(false)
+    NewSpawnMenu.menu:SetKeyBoardInputEnabled(true)
     NewSpawnMenu.menu.Paint = nil
 
     local main = vgui.Create('NewSpawnMenu.Main', NewSpawnMenu.menu)

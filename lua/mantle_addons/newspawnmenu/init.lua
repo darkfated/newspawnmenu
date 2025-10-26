@@ -1,7 +1,16 @@
-NewSpawnMenu = {}
+NewSpawnMenu = {
+    tabs = {}
+}
 
 Mantle.run_cl('utils.lua')
 Mantle.run_cl('menu.lua')
 Mantle.run_cl('main.lua')
+
 Mantle.run_cl('controlpanel.lua')
 Mantle.run_cl('tools.lua')
+
+Mantle.run_cl('content.lua')
+Mantle.run_cl('tabs/props.lua')
+Mantle.run_cl('tabs/weapons.lua')
+Mantle.run_cl('tabs/entities.lua')
+Mantle.run_cl('tabs/vehicles.lua')

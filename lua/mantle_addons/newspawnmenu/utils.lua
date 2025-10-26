@@ -1,4 +1,3 @@
--- clear
 function NewSpawnMenu.PanelPaint(w, h)
     RNDX().Rect(0, 0, w, h)
         :Rad(24)
@@ -23,16 +22,14 @@ hook.Add('HUDPaint', 'NewSpawnMenu', function()
     end
 end)
 
+local hideElements = {
+    CHudHealth = true,
+    CHudAmmo = true,
+    CHudBattery = true
+}
+
 hook.Add('HUDShouldDraw', 'NewSpawnMenu', function(elem)
-    if elem != 'CHudHealth' then
+    if !hideElements[elem] then
         return
-    end
-
-    if IsValid(NewSpawnMenu.menu) and NewSpawnMenu.menu:IsVisible() then
-        RNDX().Rect(0, 0, Mantle.func.sw, Mantle.func.sh)
-            :Color(Mantle.color.background_alpha)
-        :Draw()
-
-        return false
     end
 end)
