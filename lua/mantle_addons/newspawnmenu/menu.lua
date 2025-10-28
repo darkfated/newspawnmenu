@@ -1,3 +1,5 @@
+local convar_newspawnmenu_on = CreateClientConVar('newspawnmenu_on', 1, true, false)
+
 local function CreateMenu()
     local w, h = Mantle.func.sw, Mantle.func.sh
     local menuW, menuH
@@ -11,8 +13,20 @@ local function CreateMenu()
     NewSpawnMenu.menu:SetSize(menuW, menuH)
     NewSpawnMenu.menu:Center()
     NewSpawnMenu.menu:MakePopup()
-    NewSpawnMenu.menu:SetKeyBoardInputEnabled(true)
     NewSpawnMenu.menu.Paint = nil
+    NewSpawnMenu.menu.Focus = nil
+    NewSpawnMenu.menu.HangOpen = nil
+
+    function NewSpawnMenu.menu:StartFocus(pan)
+        self.Focus = pan
+        self.HangOpen = true
+        self:SetKeyboardInputEnabled(true)
+    end
+
+    function NewSpawnMenu.menu:EndFocus(pan)
+        if self.Focus != pan then return end
+        self:SetKeyboardInputEnabled(false)
+    end
 
     local main = vgui.Create('NewSpawnMenu.Main', NewSpawnMenu.menu)
     main:Dock(FILL)
@@ -24,6 +38,10 @@ local function CreateMenu()
 end
 
 hook.Add('OnSpawnMenuOpen', 'NewSpawnMenu', function()
+    if !convar_newspawnmenu_on:GetBool() then
+        return
+    end
+
     if IsValid(NewSpawnMenu.menu) then
         NewSpawnMenu.menu:SetVisible(true)
     else
@@ -35,9 +53,33 @@ end)
 
 hook.Add('OnSpawnMenuClose', 'NewSpawnMenu', function()
     if IsValid(NewSpawnMenu.menu) then
+        if NewSpawnMenu.menu.HangOpen then
+            NewSpawnMenu.menu.HangOpen = false
+            return
+        end
+
         NewSpawnMenu.menu:SetVisible(false)
         -- NewSpawnMenu.menu:Remove()
     end
+end)
 
-    return false
+hook.Add('OnTextEntryGetFocus', 'NewSpawnMenu', function(pan)
+    if !convar_newspawnmenu_on:GetBool() then
+        return
+    end
+
+	if IsValid(NewSpawnMenu.menu) and IsValid(pan) and pan:HasParent(NewSpawnMenu.menu) then
+        print(pan)
+		NewSpawnMenu.menu:StartFocus(pan)
+	end
+end)
+
+hook.Add('OnTextEntryLoseFocus', 'NewSpawnMenu', function(pan)
+    if !convar_newspawnmenu_on:GetBool() then
+        return
+    end
+
+	if IsValid(NewSpawnMenu.menu) and IsValid(pan) and pan:HasParent(NewSpawnMenu.menu) then
+		NewSpawnMenu.menu:EndFocus(pan)
+	end
 end)

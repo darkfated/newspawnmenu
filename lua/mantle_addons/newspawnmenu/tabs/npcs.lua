@@ -2,7 +2,8 @@ local PANEL = {}
 
 function PANEL:Init()
     self:AddFunc(function(tabl, itemIndex)
-        RunConsoleCommand('gm_spawnvehicle', itemIndex)
+        print(itemIndex)
+        RunConsoleCommand('gmod_spawnnpc', itemIndex)
     end)
 
     self:AddFuncPaint(function(name, itemIndex, tabl, w, h, btn)
@@ -26,17 +27,17 @@ function PANEL:Init()
             :Color(Mantle.color.panel_alpha[2])
             :Shape(RNDX.SHAPE_IOS)
         :Draw()
-        draw.SimpleText(tabl.Name, 'Fated.12', w * 0.5, h - 10, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM)
+        draw.SimpleText(name, 'Fated.12', w * 0.5, h - 10, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM)
     end)
 
-    local vehicles = list.Get('Vehicles')
+    local npcs = list.Get('NPC')
     local customIcons = list.Get('ContentCategoryIcons')
 
-    for k, veh in pairs(vehicles) do
-        self:AddItem(veh.PrintName, veh.Category, veh, k, customIcons[veh.Category] or 'icon16/bricks.png')
+    for k, npc in pairs(npcs) do
+        self:AddItem(npc.Name, npc.Category, npc, k, customIcons[npc.Category] or 'icon16/monkey.png')
     end
 end
 
-vgui.Register('NewSpawnMenu.Tabs.Vehicles', PANEL, 'NewSpawnMenu.Content')
+vgui.Register('NewSpawnMenu.Tabs.NPCS', PANEL, 'NewSpawnMenu.Content')
 
-NewSpawnMenu.CreateTab('vehicles', '#spawnmenu.category.vehicles', 'icon16/car.png', 'NewSpawnMenu.Tabs.Vehicles')
+NewSpawnMenu.CreateTab('npcs', '#spawnmenu.category.npcs', 'icon16/bricks.png', 'NewSpawnMenu.Tabs.NPCS')

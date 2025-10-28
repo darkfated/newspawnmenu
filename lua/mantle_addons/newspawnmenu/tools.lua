@@ -11,7 +11,7 @@ function PANEL:Init()
     for k, toolCategory in ipairs(tools) do
         local categoryContent = vgui.Create('Panel', self.categoryTabs)
         categoryContent:Dock(FILL)
-        self.categoryTabs:AddTab(toolCategory.Label, categoryContent)
+        self.categoryTabs:AddTab(toolCategory.Label, categoryContent, Material(toolCategory.Icon))
 
         local panelTools = vgui.Create('MantleScrollPanel', categoryContent)
         panelTools:Dock(LEFT)

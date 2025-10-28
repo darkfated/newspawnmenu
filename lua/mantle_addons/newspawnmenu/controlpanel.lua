@@ -27,8 +27,13 @@ function PANEL:AddPanel(pnl)
     return pnl
 end
 
-function PANEL:AddItem(left, right)
+function PANEL:AddItem(pnl)
+    print(pnl)
+    self:AddPanel(pnl)
+end
 
+function PANEL:Clear()
+    -- Clear :)
 end
 
 function PANEL:Help(text)
@@ -90,12 +95,8 @@ end
 function PANEL:TextEntry(strLabel, strConVar)
     local entry = vgui.Create('MantleEntry')
     entry:SetTitle(strLabel)
-    entry:SetValue('Тестовое поле')
 
-    function entry:SetUpdateOnType()
-    end
-
-    return self:AddPanel(entry)
+    return self:AddPanel(checkbox)
 end
 
 function PANEL:ColorPicker(label, r, g, b, a)
@@ -122,8 +123,6 @@ function PANEL:ColorPicker(label, r, g, b, a)
             if a then
                 lp:ConCommand(a .. ' ' .. col.a)
             end
-
-            color_default = col
         end, color_default)
     end
 
@@ -142,8 +141,9 @@ function PANEL:PropSelect(label, convar, mdlList, height)
 
 end
 
-function PANEL:ComboBoxMulti(label, list)
-
+function PANEL:ComboBoxMulti(label, tabl)
+    print(label)
+    PrintTable(tabl)
 end
 
 function PANEL:ControlHelp(text)
@@ -164,7 +164,7 @@ end
 PANEL.filter = function() end
 
 function PANEL:AddControl(control, data)
-
+    -- if
 end
 
 vgui.Register('NewSpawnMenu.ControlPanel', PANEL, 'EditablePanel')

@@ -29,7 +29,7 @@ local hideElements = {
 }
 
 hook.Add('HUDShouldDraw', 'NewSpawnMenu', function(elem)
-    if !hideElements[elem] then
-        return
+    if IsValid(NewSpawnMenu.menu) and NewSpawnMenu.menu:IsVisible() and hideElements[elem] then
+        return false
     end
 end)

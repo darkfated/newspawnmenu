@@ -13,7 +13,11 @@ end
 local itemSize = Mantle.func.sw * 0.07
 local itemsCols = Mantle.func.sw * 0.5 / (itemSize + 8)
 
-function PANEL:AddItem(name, category, tabl, itemIndex)
+function PANEL:AddItem(name, category, tabl, itemIndex, categoryIcon)
+    if !category then
+        category = 'Other'
+    end
+
     if !self.items[category] then
         local categorySp = vgui.Create('MantleScrollPanel')
 
@@ -25,22 +29,44 @@ function PANEL:AddItem(name, category, tabl, itemIndex)
 
         self.items[category] = categorySp
 
-        self.left:AddTab(category, self.items[category])
+        self.left:AddTab(category, self.items[category], Material(categoryIcon))
     end
 
     local panelItem = vgui.Create('Button')
     panelItem:SetSize(itemSize, itemSize)
     panelItem:SetText('')
-    panelItem.Paint = function(_, w, h)
+
+    panelItem.anim_scale = 1
+    panelItem.anim_target = 1
+    panelItem.anim_speed = 8
+    panelItem.is_pressed = false
+
+    panelItem.Paint = function(btn, w, h)
+        if !btn:IsDown() and btn.anim_target != 1 then
+            btn.anim_target = 1
+        end
+
         RNDX().Rect(0, 0, w, h)
             :Rad(32)
             :Color(Mantle.color.panel_alpha[1])
             :Shape(RNDX.SHAPE_IOS)
         :Draw()
 
-        self.funcPaint(name, itemIndex, tabl, w, h)
+        self.funcPaint(name, itemIndex, tabl, w, h, btn)
     end
-    panelItem.DoClick = function()
+
+    panelItem.Think = function(btn)
+        local dt = FrameTime()
+        btn.anim_scale = Mantle.func.approachExp(btn.anim_scale, btn.anim_target, btn.anim_speed, dt)
+
+        if btn:IsDown() and btn.anim_target != 0.9 then
+            btn.anim_target = 0.9
+        end
+    end
+
+    panelItem.DoClick = function(btn)
+        print(123)
+        Mantle.func.sound('UI/buttonclick.wav')
         self.func(tabl, itemIndex)
     end
 

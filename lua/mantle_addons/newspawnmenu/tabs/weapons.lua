@@ -5,9 +5,17 @@ function PANEL:Init()
         RunConsoleCommand('gm_giveswep', tabl.ClassName)
     end)
 
-    self:AddFuncPaint(function(name, itemIndex, tabl, w, h)
+    self:AddFuncPaint(function(name, itemIndex, tabl, w, h, btn)
+        local scale = btn.anim_scale
+        local offset = (1 - scale) * 0.5
+        local scaledW = w * scale
+        local scaledH = h * scale
+        local x = offset * w
+        local y = offset * h
+
         local mat = Material(tabl.IconOverride or 'entities/' .. tabl.ClassName .. '.png')
-        RNDX().Rect(0, 0, w, h)
+
+        RNDX().Rect(x, y, scaledW, scaledH)
             :Rad(32)
             :Material(mat)
             :Shape(RNDX.SHAPE_IOS)
@@ -22,13 +30,14 @@ function PANEL:Init()
     end)
 
     local weps = list.Get('Weapon')
+    local customIcons = list.Get('ContentCategoryIcons')
 
     for k, wep in pairs(weps) do
         if !wep.Spawnable then
             continue
         end
 
-        self:AddItem(wep.PrintName, wep.Category, wep)
+        self:AddItem(wep.PrintName, wep.Category, wep, nil, customIcons[wep.Category] or 'icon16/gun.png')
     end
 end
 
