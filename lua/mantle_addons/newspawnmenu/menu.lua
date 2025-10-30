@@ -30,7 +30,9 @@ local function CreateMenu()
     end
 
     function NewSpawnMenu.menu:OnKeyCodePressed(key)
-        self:Close()
+        if key == KEY_F1 then
+            self:Close()
+        end
     end
 
     function NewSpawnMenu.menu:StartFocus(pan)
