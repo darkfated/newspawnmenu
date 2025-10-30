@@ -1,3 +1,4 @@
+local convar_newspawnmenu_close_on_spawn = CreateClientConVar('newspawnmenu_close_on_spawn', 0, true, false)
 local PANEL = {}
 
 function PANEL:Init()
@@ -67,6 +68,10 @@ function PANEL:AddItem(name, category, tabl, itemIndex, categoryIcon)
     panelItem.DoClick = function(btn)
         Mantle.func.sound('UI/buttonclick.wav')
         self.func(tabl, itemIndex)
+
+        if convar_newspawnmenu_close_on_spawn:GetBool() then
+            NewSpawnMenu.menu:SetVisible(false)
+        end
     end
 
     panelItem.DoRightClick = function()
