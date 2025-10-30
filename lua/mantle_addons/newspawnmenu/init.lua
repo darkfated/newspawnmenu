@@ -3,6 +3,7 @@ NewSpawnMenu = {
 }
 
 Mantle.run_cl('utils.lua')
+Mantle.run_sv('utils.lua')
 Mantle.run_cl('menu.lua')
 Mantle.run_cl('main.lua')
 

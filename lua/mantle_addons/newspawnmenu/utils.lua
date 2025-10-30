@@ -1,3 +1,22 @@
+
+if SERVER then
+    -- sukk prediction: https://wiki.facepunch.com/gmod/GM:PlayerButtonDown
+    util.AddNetworkString('NewSpawnMenu-F1')
+
+    hook.Add('PlayerButtonDown', 'NewSpawnMenu', function(pl, btn)
+        if btn != KEY_F1 then return end
+
+        local t = CurTime()
+        if t - (pl.lastTimeF1 and pl.lastTimeF1 or 0) < 0.2 then return end
+        pl.lastTimeF1 = t
+
+        net.Start('NewSpawnMenu-F1')
+        net.Send(pl)
+    end)
+
+    return
+end
+
 function NewSpawnMenu.PanelPaint(w, h)
     RNDX().Rect(0, 0, w, h)
         :Rad(24)

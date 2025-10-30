@@ -110,17 +110,12 @@ hook.Add('OnTextEntryLoseFocus', 'NewSpawnMenu', function(pan)
 	end
 end)
 
-local lastF1Time = 0
-local F1Cooldown = 0.2
-
-hook.Add('PlayerButtonDown', 'NewSpawnMenu', function(ply, btn)
-    if btn != KEY_F1 then return end
+net.Receive('NewSpawnMenu-F1', function()
     if !convar_newspawnmenu_on:GetBool() then
         return
     end
-    local t = CurTime()
-    if t - lastF1Time < F1Cooldown then return end
-    lastF1Time = t
+
+    print(123)
 
     if !IsValid(NewSpawnMenu.menu) then return end
 
