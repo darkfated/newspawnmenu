@@ -115,8 +115,6 @@ net.Receive('NewSpawnMenu-F1', function()
         return
     end
 
-    print(123)
-
     if !IsValid(NewSpawnMenu.menu) then return end
 
     if !NewSpawnMenu.menu:IsVisible() then
