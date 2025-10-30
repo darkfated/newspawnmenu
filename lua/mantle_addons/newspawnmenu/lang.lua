@@ -23,7 +23,8 @@ tabl['en'] = {
     button_recreate_menu = 'Recreate menu',
     checkbox_enable_search = 'Enable the search bar',
     checkbox_close_on_spawn = 'Collapse the menu when spawn an item',
-    checkbox_compact_tools = 'Enable compact tools view'
+    checkbox_compact_tools = 'Enable compact tools view',
+    checkbox_toolname_left = 'Enable tool text on the left'
 }
 
 tabl['ru'] = {
@@ -49,7 +50,8 @@ tabl['ru'] = {
     button_recreate_menu = 'Пересоздать меню',
     checkbox_enable_search = 'Включить панель поиска',
     checkbox_close_on_spawn = 'Свернуть меню при спавне предмета',
-    checkbox_compact_tools = 'Включить компактный визуал инструментов'
+    checkbox_compact_tools = 'Включить компактный визуал инструментов',
+    checkbox_toolname_left = 'Включить текст инструмента слева'
 }
 
 return tabl

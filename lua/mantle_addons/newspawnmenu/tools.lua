@@ -1,5 +1,6 @@
 local convar_newspawnmenu_search_panel = CreateClientConVar('newspawnmenu_search_panel', 1, true, false)
 local convar_newspawnmenu_compact_tools = CreateClientConVar('newspawnmenu_compact_tools', 0, true, false)
+local convar_newspawnmenu_toolname_left = CreateClientConVar('newspawnmenu_toolname_left', 0, true, false)
 local PANEL = {}
 
 function PANEL:Init()
@@ -30,11 +31,14 @@ function PANEL:Init()
             spTools:Clear()
 
             local isCompactTools = convar_newspawnmenu_compact_tools:GetBool()
+            local isToolnameLeft = convar_newspawnmenu_toolname_left:GetBool()
 
             for i, groupTools in ipairs(toolCategory.Items) do
                 local category = vgui.Create('MantleCategory', spTools)
                 category:Dock(TOP)
-                category:SetCenterText(true)
+                if !isToolnameLeft then
+                    category:SetCenterText(true)
+                end
                 category:SetText(groupTools.Text)
                 category:SetActive(true)
 
@@ -51,7 +55,11 @@ function PANEL:Init()
                         local convarTool = GetConVar('gmod_toolmode'):GetString()
                         local col = convarTool == toolGroup.ItemName and Mantle.color.theme or Mantle.color.gray
 
-                        draw.SimpleText(toolGroup.Text, 'Fated.16', w * 0.5, h * 0.5, col, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+                        if isToolnameLeft then
+                            draw.SimpleText(toolGroup.Text, 'Fated.16', 8, h * 0.5, col, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                        else
+                            draw.SimpleText(toolGroup.Text, 'Fated.16', w * 0.5, h * 0.5, col, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+                        end
                     end
                     btnTool.DoClick = function()
                         Mantle.func.sound()
