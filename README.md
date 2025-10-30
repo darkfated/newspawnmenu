@@ -9,6 +9,7 @@ A New SpawnMenu for Garry's Mod with a minimalistic design with user-friendly fu
 | Visual Improvements | 🚧 In Progress |
 | Server Props Configuration | 🔄 Planned |
 | Tabs Access Configuration | 🔄 Planned |
+| Favorites System | 🔄 Planned |
 
 🔧 [Mantle](https://github.com/darkfated/mantle): to work, you need to use the library
 
