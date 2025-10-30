@@ -162,7 +162,202 @@ end
 PANEL.filter = function() end
 
 function PANEL:AddControl(control, data)
-    -- if
+    local data = table.LowerKeyNames(data or {})
+    local original = control
+    control = string.lower(control)
+
+    if control == 'header' then
+        if data.description then
+            return self:Help(data.description)
+        end
+
+        return
+    end
+
+    if control == 'textbox' then
+        local ctrl = self:TextEntry(data.label or 'Untitled', data.command)
+
+        return ctrl
+    end
+
+    if control == 'label' then
+        local ctrl = self:Help(data.text)
+
+        return ctrl
+    end
+
+    if control == 'checkbox' or control == 'toggle' then
+        local ctrl = self:CheckBox(data.label or 'Untitled', data.command)
+
+        if data.help then
+            self:ControlHelp(data.label .. '.help')
+        end
+
+        return ctrl
+    end
+
+    if control == 'slider' then
+        local decimals = 0
+
+        if data.type and string.lower(data.type) == 'float' then
+            decimals = 2
+        end
+
+        local ctrl = self:NumSlider(
+            data.label or 'Untitled',
+            data.command,
+            data.min or 0,
+            data.max or 100,
+            decimals
+        )
+
+        if data.help then
+            self:ControlHelp(data.label .. '.help')
+        end
+
+        return ctrl
+    end
+
+    if control == 'button' then
+        local ctrl = self:Button(data.label or data.text or 'No Label', data.command)
+
+        return ctrl
+    end
+
+    if control == 'color' then
+        local ctrl = self:ColorPicker(
+            data.label,
+            data.red,
+            data.green,
+            data.blue,
+            data.alpha
+        )
+
+        return ctrl
+    end
+
+    if control == 'combobox' and tostring(data.menubutton) == '1' then
+        local ctrl = self:ToolPresets(data.folder, data.cvars or {})
+
+        -- if data.options then
+        --     for k, v in pairs(data.options) do
+        --         -- Чисто
+        --     end
+        -- end
+
+        return ctrl
+    end
+
+    if control == 'listbox' then
+        if data.height then
+            local ctrl = vgui.Create('DListView')
+            ctrl:SetMultiSelect(false)
+            ctrl:AddColumn(data.label or 'unknown')
+            ctrl:SetTall(data.height)
+
+            if data.options then
+                for k, v in pairs(data.options) do
+                    local line = ctrl:AddLine(k)
+                    line.data = v
+
+                    for cvar, val in pairs(line.data) do
+                        if GetConVarString(cvar) == tostring(val) then
+                            line:SetSelected(true)
+                        end
+                    end
+                end
+            end
+
+            ctrl:SortByColumn(1, false)
+
+            function ctrl:OnRowSelected(LineID, Line)
+                for cvar, val in pairs(Line.data) do
+                    RunConsoleCommand(cvar, val)
+                end
+            end
+
+            self:AddPanel(ctrl)
+
+            return ctrl
+        else
+            local ctrl, labelPnl = self:ComboBoxMulti(data.label, data.options)
+
+            return ctrl
+        end
+    end
+
+    if control == 'materialgallery' then
+        local ctrl = vgui.Create('MatSelect', self)
+        ctrl:SetItemWidth(data.width or 32)
+        ctrl:SetItemHeight(data.height or 32)
+        ctrl:SetConVar(data.convar or nil)
+
+        if data.options then
+            for name, tab in pairs(data.options) do
+                ctrl:AddMaterial(name, tab.material or tab)
+            end
+        end
+
+        self:AddPanel(ctrl)
+
+        return ctrl
+    end
+
+    if control == 'ropematerial' then
+        local ctrl = self:RopeSelect(data.convar)
+        return ctrl
+    end
+
+    if control == 'propselect' then
+        local ctrl = self:PropSelect(
+            data.label,
+            data.convar,
+            data.options or {},
+            data.height
+        )
+
+        return ctrl
+    end
+
+    if control == 'matselect' then
+        local ctrl = self:MatSelect(
+            data.convar,
+            data.options,
+            data.autostretch,
+            data.width,
+            data.height
+        )
+
+        return ctrl
+    end
+
+    if control == 'numpad' then
+        local ctrl = self:KeyBinder(
+            data.label,
+            data.command,
+            data.label2,
+            data.command2
+        )
+
+        return ctrl
+    end
+
+    local ctrl = vgui.Create(original, self)
+    if !ctrl then
+        ctrl = vgui.Create(control, self)
+    end
+
+    if ctrl then
+        if ctrl.ControlValues then
+            ctrl:ControlValues(data)
+        end
+
+        self:AddPanel(ctrl)
+
+        return ctrl
+    end
+
+    return nil
 end
 
 vgui.Register('NewSpawnMenu.ControlPanel', PANEL, 'EditablePanel')
