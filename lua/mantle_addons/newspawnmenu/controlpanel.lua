@@ -161,6 +161,10 @@ end
 
 PANEL.filter = function() end
 
+function PANEL:ClearControls()
+    -- Clear
+end
+
 function PANEL:AddControl(control, data)
     local data = table.LowerKeyNames(data or {})
     local original = control
