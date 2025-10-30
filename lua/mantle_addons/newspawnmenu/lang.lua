@@ -22,7 +22,8 @@ tabl['en'] = {
     checkbox_enable_default_tabs = 'Enable default tabs',
     button_recreate_menu = 'Recreate menu',
     checkbox_enable_search = 'Enable the search bar',
-    checkbox_close_on_spawn = 'Collapse the menu when spawn an item'
+    checkbox_close_on_spawn = 'Collapse the menu when spawn an item',
+    checkbox_compact_tools = 'Enable compact tools view'
 }
 
 tabl['ru'] = {
@@ -47,7 +48,8 @@ tabl['ru'] = {
     checkbox_enable_default_tabs = 'Включение дефолтных вкладок',
     button_recreate_menu = 'Пересоздать меню',
     checkbox_enable_search = 'Включить панель поиска',
-    checkbox_close_on_spawn = 'Свернуть меню при спавне предмета'
+    checkbox_close_on_spawn = 'Свернуть меню при спавне предмета',
+    checkbox_compact_tools = 'Включить компактный визуал инструментов'
 }
 
 return tabl

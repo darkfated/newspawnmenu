@@ -1,4 +1,5 @@
 local convar_newspawnmenu_search_panel = CreateClientConVar('newspawnmenu_search_panel', 1, true, false)
+local convar_newspawnmenu_compact_tools = CreateClientConVar('newspawnmenu_compact_tools', 0, true, false)
 local PANEL = {}
 
 function PANEL:Init()
@@ -28,6 +29,8 @@ function PANEL:Init()
         local function BuildTools(filter)
             spTools:Clear()
 
+            local isCompactTools = convar_newspawnmenu_compact_tools:GetBool()
+
             for i, groupTools in ipairs(toolCategory.Items) do
                 local category = vgui.Create('MantleCategory', spTools)
                 category:Dock(TOP)
@@ -42,7 +45,7 @@ function PANEL:Init()
 
                     local btnTool = vgui.Create('MantleBtn', category)
                     btnTool:Dock(TOP)
-                    btnTool:SetTall(36)
+                    btnTool:SetTall(isCompactTools and 26 or 34)
                     btnTool:SetTxt('')
                     btnTool.Paint = function(_, w, h)
                         local convarTool = GetConVar('gmod_toolmode'):GetString()
