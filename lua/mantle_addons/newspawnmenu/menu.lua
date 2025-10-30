@@ -13,6 +13,7 @@ local function CreateMenu()
     NewSpawnMenu.menu:SetSize(menuW, menuH)
     NewSpawnMenu.menu:Center()
     NewSpawnMenu.menu:MakePopup()
+    NewSpawnMenu.menu:SetKeyboardInputEnabled(false)
     NewSpawnMenu.menu.Paint = nil
     NewSpawnMenu.menu.Focus = nil
     NewSpawnMenu.menu.HangOpen = nil
@@ -27,12 +28,6 @@ local function CreateMenu()
 
         NewSpawnMenu.menu:SetVisible(false)
         -- NewSpawnMenu.menu:Remove()
-    end
-
-    function NewSpawnMenu.menu:OnKeyCodePressed(key)
-        if key == KEY_F1 then
-            self:Close()
-        end
     end
 
     function NewSpawnMenu.menu:StartFocus(pan)
@@ -55,11 +50,7 @@ local function CreateMenu()
     tools:SetWide(menuW * 0.35)
 end
 
-hook.Add('OnSpawnMenuOpen', 'NewSpawnMenu', function()
-    if !convar_newspawnmenu_on:GetBool() then
-        return
-    end
-
+local function OpenMenu()
     if IsValid(NewSpawnMenu.menu) then
         NewSpawnMenu.menu:SetVisible(true)
     else
@@ -67,6 +58,14 @@ hook.Add('OnSpawnMenuOpen', 'NewSpawnMenu', function()
     end
 
     RestoreCursorPosition()
+end
+
+hook.Add('OnSpawnMenuOpen', 'NewSpawnMenu', function()
+    if !convar_newspawnmenu_on:GetBool() then
+        return
+    end
+
+    OpenMenu()
 
     return false
 end)
@@ -95,4 +94,27 @@ hook.Add('OnTextEntryLoseFocus', 'NewSpawnMenu', function(pan)
 	if IsValid(NewSpawnMenu.menu) and IsValid(pan) and pan:HasParent(NewSpawnMenu.menu) then
 		NewSpawnMenu.menu:EndFocus(pan)
 	end
+end)
+
+local lastF1Time = 0
+local F1Cooldown = 0.2
+
+hook.Add('PlayerButtonDown', 'NewSpawnMenu', function(ply, btn)
+    if btn != KEY_F1 then return end
+    if !convar_newspawnmenu_on:GetBool() then
+        return
+    end
+    local t = CurTime()
+    if t - lastF1Time < F1Cooldown then return end
+    lastF1Time = t
+
+    if !IsValid(NewSpawnMenu.menu) then return end
+
+    if !NewSpawnMenu.menu:IsVisible() then
+        OpenMenu()
+        return
+    end
+
+    NewSpawnMenu.menu.HangOpen = false
+    NewSpawnMenu.menu:Close()
 end)
