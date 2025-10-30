@@ -70,7 +70,7 @@ function PANEL:AddItem(name, category, tabl, itemIndex, categoryIcon)
         self.func(tabl, itemIndex)
 
         if convar_newspawnmenu_close_on_spawn:GetBool() then
-            NewSpawnMenu.menu:SetVisible(false)
+            NewSpawnMenu.menu:Close()
         end
     end
 

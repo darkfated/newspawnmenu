@@ -17,6 +17,22 @@ local function CreateMenu()
     NewSpawnMenu.menu.Focus = nil
     NewSpawnMenu.menu.HangOpen = nil
 
+    function NewSpawnMenu.menu:Close()
+        if NewSpawnMenu.menu.HangOpen then
+            NewSpawnMenu.menu.HangOpen = false
+            return
+        end
+
+        RememberCursorPosition()
+
+        NewSpawnMenu.menu:SetVisible(false)
+        -- NewSpawnMenu.menu:Remove()
+    end
+
+    function NewSpawnMenu.menu:OnKeyCodePressed(key)
+        self:Close()
+    end
+
     function NewSpawnMenu.menu:StartFocus(pan)
         self.Focus = pan
         self.HangOpen = true
@@ -48,18 +64,14 @@ hook.Add('OnSpawnMenuOpen', 'NewSpawnMenu', function()
         CreateMenu()
     end
 
+    RestoreCursorPosition()
+
     return false
 end)
 
 hook.Add('OnSpawnMenuClose', 'NewSpawnMenu', function()
     if IsValid(NewSpawnMenu.menu) then
-        if NewSpawnMenu.menu.HangOpen then
-            NewSpawnMenu.menu.HangOpen = false
-            return
-        end
-
-        NewSpawnMenu.menu:SetVisible(false)
-        -- NewSpawnMenu.menu:Remove()
+        NewSpawnMenu.menu:Close()
     end
 end)
 
