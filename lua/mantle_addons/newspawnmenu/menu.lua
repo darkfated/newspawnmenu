@@ -54,10 +54,15 @@ local function OpenMenu()
     if IsValid(NewSpawnMenu.menu) then
         NewSpawnMenu.menu:SetVisible(true)
     else
+        if !hook.Run('SpawnMenuEnabled') then return end
         CreateMenu()
     end
 
     RestoreCursorPosition()
+
+    hook.Call('SpawnMenuOpened', NewSpawnMenu.menu)
+
+    achievements.SpawnMenuOpen()
 end
 
 hook.Add('OnSpawnMenuOpen', 'NewSpawnMenu', function()
@@ -71,10 +76,19 @@ hook.Add('OnSpawnMenuOpen', 'NewSpawnMenu', function()
 end)
 
 hook.Add('OnSpawnMenuClose', 'NewSpawnMenu', function()
-    if IsValid(NewSpawnMenu.menu) then
-        NewSpawnMenu.menu:Close()
+    if !IsValid(NewSpawnMenu.menu) then
+        return
     end
+
+    NewSpawnMenu.menu:Close()
+    hook.Call('SpawnMenuClosed')
+
+    return false
 end)
+
+cvars.AddChangeCallback('gmod_language', function()
+    RunConsoleCommand('newspawnmenu_remove')
+end, 'newspawnmenu_reload')
 
 hook.Add('OnTextEntryGetFocus', 'NewSpawnMenu', function(pan)
     if !convar_newspawnmenu_on:GetBool() then
