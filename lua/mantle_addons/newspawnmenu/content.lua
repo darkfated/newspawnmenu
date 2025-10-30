@@ -69,6 +69,17 @@ function PANEL:AddItem(name, category, tabl, itemIndex, categoryIcon)
         self.func(tabl, itemIndex)
     end
 
+    panelItem.DoRightClick = function()
+        Mantle.func.sound()
+        local dm = Mantle.ui.derma_menu()
+        local targetCopy = tabl.ClassName and tabl.ClassName or tabl.Class
+        if targetCopy then
+            dm:AddOption('#spawnmenu.menu.copy', function()
+                SetClipboardText(targetCopy)
+            end, 'icon16/page_copy.png')
+        end
+    end
+
     self.items[category].grid:AddItem(panelItem)
 end
 

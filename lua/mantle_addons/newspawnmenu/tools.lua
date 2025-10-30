@@ -61,6 +61,13 @@ function PANEL:Init()
                             toolGroup.CPanelFunction(cnt, toolGroup)
                         end)
                     end
+                    btnTool.DoRightClick = function()
+                        Mantle.func.sound()
+                        local dm = Mantle.ui.derma_menu()
+                        dm:AddOption('#spawnmenu.menu.copy', function()
+                            SetClipboardText(toolGroup.ItemName)
+                        end, 'icon16/page_copy.png')
+                    end
 
                     category:AddItem(btnTool)
                 end
