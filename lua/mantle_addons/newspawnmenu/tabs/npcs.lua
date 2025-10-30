@@ -2,7 +2,6 @@ local PANEL = {}
 
 function PANEL:Init()
     self:AddFunc(function(tabl, itemIndex)
-        print(itemIndex)
         RunConsoleCommand('gmod_spawnnpc', itemIndex)
     end)
 

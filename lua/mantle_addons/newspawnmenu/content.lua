@@ -65,7 +65,6 @@ function PANEL:AddItem(name, category, tabl, itemIndex, categoryIcon)
     end
 
     panelItem.DoClick = function(btn)
-        print(123)
         Mantle.func.sound('UI/buttonclick.wav')
         self.func(tabl, itemIndex)
     end

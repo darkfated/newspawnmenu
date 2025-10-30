@@ -28,7 +28,6 @@ function PANEL:AddPanel(pnl)
 end
 
 function PANEL:AddItem(pnl)
-    print(pnl)
     self:AddPanel(pnl)
 end
 
@@ -142,8 +141,7 @@ function PANEL:PropSelect(label, convar, mdlList, height)
 end
 
 function PANEL:ComboBoxMulti(label, tabl)
-    print(label)
-    PrintTable(tabl)
+
 end
 
 function PANEL:ControlHelp(text)

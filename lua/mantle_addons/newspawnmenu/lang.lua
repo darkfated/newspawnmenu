@@ -20,7 +20,8 @@ tabl['en'] = {
     help_apply_settings = 'To apply the settings, recreate the menu by clicking on the button below',
     checkbox_enable_menu = 'Enable new menu (old one can be restored)',
     checkbox_enable_default_tabs = 'Enable default tabs',
-    button_recreate_menu = 'Recreate menu'
+    button_recreate_menu = 'Recreate menu',
+    checkbox_enable_search = 'Enable the search bar'
 }
 
 tabl['ru'] = {
@@ -43,7 +44,8 @@ tabl['ru'] = {
     help_apply_settings = 'Чтобы применить настройки, пересоздайте меню, нажав на кнопку ниже',
     checkbox_enable_menu = 'Включить новое меню (можно вернуть старое)',
     checkbox_enable_default_tabs = 'Включение дефолтных вкладок',
-    button_recreate_menu = 'Пересоздать меню'
+    button_recreate_menu = 'Пересоздать меню',
+    checkbox_enable_search = 'Включить панель поиска'
 }
 
 return tabl

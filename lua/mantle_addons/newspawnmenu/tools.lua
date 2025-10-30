@@ -1,3 +1,4 @@
+local convar_newspawnmenu_search_panel = CreateClientConVar('newspawnmenu_search_panel', 1, true, false)
 local PANEL = {}
 
 function PANEL:Init()
@@ -13,45 +14,68 @@ function PANEL:Init()
         categoryContent:Dock(FILL)
         self.categoryTabs:AddTab(toolCategory.Label, categoryContent, Material(toolCategory.Icon))
 
-        local panelTools = vgui.Create('MantleScrollPanel', categoryContent)
-        panelTools:Dock(LEFT)
-        panelTools:DockMargin(0, 0, 8, 0)
-        panelTools:SetWide(Mantle.func.sw * 0.1)
+        local leftPanel = vgui.Create('Panel', categoryContent)
+        leftPanel:Dock(LEFT)
+        leftPanel:DockMargin(0, 0, 8, 0)
+        leftPanel:SetWide(Mantle.func.sw * 0.1)
+
+        local spTools = vgui.Create('MantleScrollPanel', leftPanel)
+        spTools:Dock(FILL)
 
         local toolContent = vgui.Create('Panel', categoryContent)
         toolContent:Dock(FILL)
 
-        for i, groupTools in ipairs(toolCategory.Items) do
-            local category = vgui.Create('MantleCategory', panelTools)
-            category:Dock(TOP)
-            category:SetCenterText(true)
-            category:SetText(groupTools.Text)
-            category:SetActive(true)
+        local function BuildTools(filter)
+            spTools:Clear()
 
-            for n, toolGroup in ipairs(groupTools) do
-                local btnTool = vgui.Create('MantleBtn', category)
-                btnTool:Dock(TOP)
-                btnTool:SetTall(36)
-                btnTool:SetTxt('')
-                btnTool.Paint = function(_, w, h)
-                    local convarTool = GetConVar('gmod_toolmode'):GetString()
-                    local col = convarTool == toolGroup.ItemName and Mantle.color.theme or Mantle.color.gray
+            for i, groupTools in ipairs(toolCategory.Items) do
+                local category = vgui.Create('MantleCategory', spTools)
+                category:Dock(TOP)
+                category:SetCenterText(true)
+                category:SetText(groupTools.Text)
+                category:SetActive(true)
 
-                    draw.SimpleText(toolGroup.Text, 'Fated.16', w * 0.5, h * 0.5, col, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+                for n, toolGroup in ipairs(groupTools) do
+                    if !string.find(string.lower(toolGroup.Text), string.lower(filter)) then
+                        continue
+                    end
+
+                    local btnTool = vgui.Create('MantleBtn', category)
+                    btnTool:Dock(TOP)
+                    btnTool:SetTall(36)
+                    btnTool:SetTxt('')
+                    btnTool.Paint = function(_, w, h)
+                        local convarTool = GetConVar('gmod_toolmode'):GetString()
+                        local col = convarTool == toolGroup.ItemName and Mantle.color.theme or Mantle.color.gray
+
+                        draw.SimpleText(toolGroup.Text, 'Fated.16', w * 0.5, h * 0.5, col, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+                    end
+                    btnTool.DoClick = function()
+                        Mantle.func.sound()
+                        LocalPlayer():ConCommand(toolGroup.Command)
+
+                        toolContent:Clear()
+                        local cnt = vgui.Create('NewSpawnMenu.ControlPanel', toolContent)
+                        cnt:Dock(FILL)
+                        pcall(function()
+                            toolGroup.CPanelFunction(cnt, toolGroup)
+                        end)
+                    end
+
+                    category:AddItem(btnTool)
                 end
-                btnTool.DoClick = function()
-                    Mantle.func.sound()
-                    LocalPlayer():ConCommand(toolGroup.Command)
+            end
+        end
 
-                    toolContent:Clear()
-                    local cnt = vgui.Create('NewSpawnMenu.ControlPanel', toolContent)
-                    cnt:Dock(FILL)
-                    pcall(function()
-                        toolGroup.CPanelFunction(cnt, toolGroup)
-                    end)
-                end
+        BuildTools('')
 
-                category:AddItem(btnTool)
+        if convar_newspawnmenu_search_panel:GetBool() then
+            local searchBox = vgui.Create('MantleEntry', leftPanel)
+            searchBox:Dock(TOP)
+            searchBox:DockMargin(0, 0, 0, 4)
+            searchBox:SetPlaceholder('#spawnmenu.quick_filter')
+            searchBox.textEntry.OnValueChange = function(_, text)
+                BuildTools(text)
             end
         end
     end

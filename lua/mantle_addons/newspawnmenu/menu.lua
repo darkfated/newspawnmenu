@@ -69,7 +69,6 @@ hook.Add('OnTextEntryGetFocus', 'NewSpawnMenu', function(pan)
     end
 
 	if IsValid(NewSpawnMenu.menu) and IsValid(pan) and pan:HasParent(NewSpawnMenu.menu) then
-        print(pan)
 		NewSpawnMenu.menu:StartFocus(pan)
 	end
 end)

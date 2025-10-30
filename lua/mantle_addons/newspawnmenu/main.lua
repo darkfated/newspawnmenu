@@ -48,6 +48,7 @@ hook.Add('PopulateToolMenu', 'NewSpawnMenu', function()
         pan:Help(Mantle.lang.get('newspawnmenu', 'help_apply_settings'))
         pan:CheckBox(Mantle.lang.get('newspawnmenu', 'checkbox_enable_menu'), 'newspawnmenu_on')
         pan:CheckBox(Mantle.lang.get('newspawnmenu', 'checkbox_enable_default_tabs'), 'newspawnmenu_default_tabs')
+        pan:CheckBox(Mantle.lang.get('newspawnmenu', 'checkbox_enable_search'), 'newspawnmenu_search_panel')
         pan:Button(Mantle.lang.get('newspawnmenu', 'button_recreate_menu'), 'newspawnmenu_remove')
     end)
 
