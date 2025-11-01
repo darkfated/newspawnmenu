@@ -141,7 +141,20 @@ function PANEL:PropSelect(label, convar, mdlList, height)
 end
 
 function PANEL:ComboBoxMulti(label, tabl)
+    local combobox = vgui.Create('MantleComboBox')
+    combobox:SetPlaceholder(label)
 
+    for name, tabl in pairs(tabl) do
+        combobox:AddChoice(name, tabl)
+    end
+
+    combobox.OnSelect = function(idx, text, data)
+        for convar, value in pairs(data) do
+            LocalPlayer():ConCommand(convar .. ' ' .. value)
+        end
+    end
+
+    return self:AddPanel(combobox)
 end
 
 function PANEL:ControlHelp(text)
@@ -240,14 +253,8 @@ function PANEL:AddControl(control, data)
         return ctrl
     end
 
-    if control == 'combobox' and tostring(data.menubutton) == '1' then
-        local ctrl = self:ToolPresets(data.folder, data.cvars or {})
-
-        -- if data.options then
-        --     for k, v in pairs(data.options) do
-        --         -- Чисто
-        --     end
-        -- end
+    if control == 'combobox' then
+        local ctrl = self:ComboBoxMulti(data.label, data.options)
 
         return ctrl
     end
@@ -284,7 +291,7 @@ function PANEL:AddControl(control, data)
 
             return ctrl
         else
-            local ctrl, labelPnl = self:ComboBoxMulti(data.label, data.options)
+            local ctrl = self:ComboBoxMulti(data.label, data.options)
 
             return ctrl
         end

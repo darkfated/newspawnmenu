@@ -1,4 +1,5 @@
 local convar_newspawnmenu_on = CreateClientConVar('newspawnmenu_on', 1, true, false)
+local convar_newspawnmenu_mode = CreateClientConVar('newspawnmenu_mode', 0, true, false)
 
 local function CreateMenu()
     local w, h = Mantle.func.sw, Mantle.func.sh
@@ -7,6 +8,13 @@ local function CreateMenu()
         menuW, menuH = w, h
     else
         menuW, menuH = w * 0.9, h * 0.85
+    end
+
+    local menuMode = convar_newspawnmenu_mode:GetInt()
+    if menuMode == 2 then
+        menuW = w * 0.5
+    elseif menuMode == 1 then
+        menuW = w * 0.7
     end
 
     NewSpawnMenu.menu = vgui.Create('EditablePanel')
@@ -41,13 +49,26 @@ local function CreateMenu()
         self:SetKeyboardInputEnabled(false)
     end
 
-    local main = vgui.Create('NewSpawnMenu.Main', NewSpawnMenu.menu)
-    main:Dock(FILL)
+    if convar_newspawnmenu_mode:GetInt() != 2 then
+        local main = vgui.Create('NewSpawnMenu.Main', NewSpawnMenu.menu)
+        main:Dock(FILL)
 
-    local tools = vgui.Create('NewSpawnMenu.Tools', NewSpawnMenu.menu)
-    tools:Dock(RIGHT)
-    tools:DockMargin(6, 0, 0, 0)
-    tools:SetWide(menuW * 0.35)
+        local btnReturnTools = vgui.Create('MantleBtn', main)
+        btnReturnTools:SetPos(menuW - 54, 10)
+        btnReturnTools:SetSize(44, 32)
+        btnReturnTools:SetTxt('Tools')
+        btnReturnTools.DoClick = function()
+            RunConsoleCommand('newspawnmenu_mode', 0)
+            RunConsoleCommand('newspawnmenu_remove')
+        end
+    end
+
+    if convar_newspawnmenu_mode:GetInt() != 1 then
+        local tools = vgui.Create('NewSpawnMenu.Tools', NewSpawnMenu.menu)
+        tools:Dock(convar_newspawnmenu_mode:GetInt() == 2 and FILL or RIGHT)
+        tools:DockMargin(6, 0, 0, 0)
+        tools:SetWide(menuW * 0.35)
+    end
 end
 
 local function OpenMenu()

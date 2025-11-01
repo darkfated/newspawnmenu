@@ -24,7 +24,11 @@ tabl['en'] = {
     checkbox_enable_search = 'Enable the search bar',
     checkbox_close_on_spawn = 'Collapse the menu when spawn an item',
     checkbox_compact_tools = 'Enable compact tools view',
-    checkbox_toolname_left = 'Enable tool text on the left'
+    checkbox_toolname_left = 'Enable tool text on the left',
+    checkbox_mode = 'Menu mode',
+    checkbox_mode_0 = 'Default',
+    checkbox_mode_1 = 'Without tools',
+    checkbox_mode_2 = 'Tools only'
 }
 
 tabl['ru'] = {
@@ -51,7 +55,11 @@ tabl['ru'] = {
     checkbox_enable_search = 'Включить панель поиска',
     checkbox_close_on_spawn = 'Свернуть меню при спавне предмета',
     checkbox_compact_tools = 'Включить компактный визуал инструментов',
-    checkbox_toolname_left = 'Включить текст инструмента слева'
+    checkbox_toolname_left = 'Включить текст инструмента слева',
+    checkbox_mode = 'Режим меню',
+    checkbox_mode_0 = 'Стандартный',
+    checkbox_mode_1 = 'Без инструментов',
+    checkbox_mode_2 = 'Только инструменты'
 }
 
 return tabl

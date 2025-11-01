@@ -1,4 +1,5 @@
 local convar_newspawnmenu_close_on_spawn = CreateClientConVar('newspawnmenu_close_on_spawn', 0, true, false)
+local convar_newspawnmenu_mode = GetConVar('newspawnmenu_mode')
 local PANEL = {}
 
 function PANEL:Init()
@@ -11,16 +12,17 @@ function PANEL:Init()
     self.left:SetTabStyle('classic')
 end
 
-local itemSize = Mantle.func.sw * 0.07
-local itemsCols = Mantle.func.sw * 0.5 / (itemSize + 8)
-
 function PANEL:AddItem(name, category, tabl, itemIndex, categoryIcon)
     if !category then
         category = 'Other'
     end
 
+    local itemSize = Mantle.func.sw * 0.07
+
     if !self.items[category] then
         local categorySp = vgui.Create('MantleScrollPanel')
+
+        local itemsCols = Mantle.func.sw * (convar_newspawnmenu_mode:GetInt() == 1 and 0.65 or 0.5) / (itemSize + 8)
 
         categorySp.grid = vgui.Create('DGrid', categorySp)
         categorySp.grid:Dock(TOP)

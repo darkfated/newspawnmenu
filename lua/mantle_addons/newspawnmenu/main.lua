@@ -52,6 +52,19 @@ hook.Add('PopulateToolMenu', 'NewSpawnMenu', function()
         pan:CheckBox(Mantle.lang.get('newspawnmenu', 'checkbox_close_on_spawn'), 'newspawnmenu_close_on_spawn')
         pan:CheckBox(Mantle.lang.get('newspawnmenu', 'checkbox_compact_tools'), 'newspawnmenu_compact_tools')
         pan:CheckBox(Mantle.lang.get('newspawnmenu', 'checkbox_toolname_left'), 'newspawnmenu_toolname_left')
+
+        pan:ComboBoxMulti(Mantle.lang.get('newspawnmenu', 'checkbox_mode'), {
+            [Mantle.lang.get('newspawnmenu', 'checkbox_mode_0')] = {
+                newspawnmenu_mode = 0
+            },
+            [Mantle.lang.get('newspawnmenu', 'checkbox_mode_1')] = {
+                newspawnmenu_mode = 1
+            },
+            [Mantle.lang.get('newspawnmenu', 'checkbox_mode_2')] = {
+                newspawnmenu_mode = 2
+            }
+        })
+
         pan:Button(Mantle.lang.get('newspawnmenu', 'button_recreate_menu'), 'newspawnmenu_remove')
     end)
 
