@@ -13,13 +13,11 @@ function PANEL:Init()
         local x = offset * w
         local y = offset * h
 
-        local mat = Material(tabl.IconOverride or 'entities/' .. tabl.ClassName .. '.png')
-
         render.PushFilterMag(TEXFILTER.ANISOTROPIC)
         render.PushFilterMin(TEXFILTER.ANISOTROPIC)
             RNDX().Rect(x, y, scaledW, scaledH)
                 :Rad(32)
-                :Material(mat)
+                :Material(btn.mat)
                 :Shape(RNDX.SHAPE_IOS)
             :Draw()
         render.PopFilterMin()
@@ -37,10 +35,11 @@ function PANEL:Init()
     local customIcons = list.Get('ContentCategoryIcons')
 
     for k, ent in pairs(entities) do
-        self:AddItem(ent.PrintName, ent.Category, ent, nil, customIcons[ent.Category] or 'icon16/bricks.png')
+        local btn = self:AddItem(ent.PrintName, ent.Category, ent, nil, customIcons[ent.Category] or 'icon16/bricks.png')
+        btn.mat = Material(ent.IconOverride or 'entities/' .. ent.ClassName .. '.png')
     end
 end
 
 vgui.Register('NewSpawnMenu.Tabs.Entities', PANEL, 'NewSpawnMenu.Content')
 
-NewSpawnMenu.CreateTab('entities', '#spawnmenu.category.entities', 'icon16/bricks.png', 'NewSpawnMenu.Tabs.Entities')
+NewSpawnMenu.CreateTab(3, '#spawnmenu.category.entities', 'icon16/bricks.png', 'NewSpawnMenu.Tabs.Entities')

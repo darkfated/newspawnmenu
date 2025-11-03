@@ -13,13 +13,11 @@ function PANEL:Init()
         local x = offset * w
         local y = offset * h
 
-        local mat = Material(tabl.IconOverride or 'entities/' .. tabl.ClassName .. '.png')
-
         render.PushFilterMag(TEXFILTER.ANISOTROPIC)
         render.PushFilterMin(TEXFILTER.ANISOTROPIC)
             RNDX().Rect(x, y, scaledW, scaledH)
                 :Rad(32)
-                :Material(mat)
+                :Material(btn.mat)
                 :Shape(RNDX.SHAPE_IOS)
             :Draw()
         render.PopFilterMin()
@@ -41,10 +39,11 @@ function PANEL:Init()
             continue
         end
 
-        self:AddItem(wep.PrintName, wep.Category, wep, nil, customIcons[wep.Category] or 'icon16/gun.png')
+        local btn = self:AddItem(wep.PrintName, wep.Category, wep, nil, customIcons[wep.Category] or 'icon16/gun.png')
+        btn.mat = Material(wep.IconOverride or 'entities/' .. wep.ClassName .. '.png')
     end
 end
 
 vgui.Register('NewSpawnMenu.Tabs.Weapons', PANEL, 'NewSpawnMenu.Content')
 
-NewSpawnMenu.CreateTab('weapons', '#spawnmenu.category.weapons', 'icon16/gun.png', 'NewSpawnMenu.Tabs.Weapons')
+NewSpawnMenu.CreateTab(2, '#spawnmenu.category.weapons', 'icon16/gun.png', 'NewSpawnMenu.Tabs.Weapons')

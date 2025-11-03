@@ -79,15 +79,39 @@ function PANEL:AddItem(name, category, tabl, itemIndex, categoryIcon)
     panelItem.DoRightClick = function()
         Mantle.func.sound()
         local dm = Mantle.ui.derma_menu()
-        local targetCopy = tabl.ClassName and tabl.ClassName or tabl.Class
+
+        local className = tabl.ClassName
+        local targetCopy = className and className or tabl.Class
         if targetCopy then
             dm:AddOption('#spawnmenu.menu.copy', function()
                 SetClipboardText(targetCopy)
             end, 'icon16/page_copy.png')
         end
+
+        local itemMdl = tabl.Model
+
+        if !itemMdl then
+            local wepTabl = weapons.Get(className)
+            if wepTabl then
+                itemMdl = wepTabl.WorldModel and wepTabl.WorldModel or wepTabl.ViewModel
+            end
+        end
+
+        if itemMdl then
+            dm:AddOption(Mantle.lang.get('newspawnmenu', 'inspect'), function()
+                self.left:SetVisible(false)
+
+                local inspector = vgui.Create('NewSpawnMenu.Inspector', self)
+                inspector:Dock(FILL)
+                inspector:SetModel(itemMdl)
+                inspector:SetPan(self)
+            end, 'icon16/camera.png')
+        end
     end
 
     self.items[category].grid:AddItem(panelItem)
+
+    return panelItem
 end
 
 function PANEL:AddFunc(func)

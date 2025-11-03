@@ -10,6 +10,8 @@ function PANEL:Init()
     self.categoryTabs:Dock(FILL)
 
     local tools = spawnmenu.GetTools()
+    local activeTool = GetConVar('gmod_toolmode'):GetString()
+    local foundActiveTool = false
 
     for k, toolCategory in ipairs(tools) do
         local categoryContent = vgui.Create('Panel', self.categoryTabs)
@@ -39,11 +41,13 @@ function PANEL:Init()
                 if !isToolnameLeft then
                     category:SetCenterText(true)
                 end
-                category:SetText(groupTools.Text)
+                local categoryName = language.GetPhrase(groupTools.Text)
+                category:SetText(categoryName)
                 category:SetActive(true)
 
                 for n, toolGroup in ipairs(groupTools) do
-                    if !string.find(string.lower(toolGroup.Text), string.lower(filter)) then
+                    local toolName = language.GetPhrase(toolGroup.Text)
+                    if !string.find(utf8.lower(toolName), utf8.lower(filter), 1, true) then
                         continue
                     end
 
@@ -56,19 +60,19 @@ function PANEL:Init()
                         local col = convarTool == toolGroup.ItemName and Mantle.color.theme or Mantle.color.gray
 
                         if isToolnameLeft then
-                            draw.SimpleText(toolGroup.Text, 'Fated.16', 8, h * 0.5, col, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                            draw.SimpleText(toolName, 'Fated.16', 8, h * 0.5, col, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
                         else
-                            draw.SimpleText(toolGroup.Text, 'Fated.16', w * 0.5, h * 0.5, col, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+                            draw.SimpleText(toolName, 'Fated.16', w * 0.5, h * 0.5, col, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
                         end
                     end
                     btnTool.DoClick = function()
                         Mantle.func.sound()
-                        LocalPlayer():ConCommand(toolGroup.Command)
 
                         toolContent:Clear()
                         local cnt = vgui.Create('NewSpawnMenu.ControlPanel', toolContent)
                         cnt:Dock(FILL)
                         pcall(function()
+                            LocalPlayer():ConCommand(toolGroup.Command)
                             toolGroup.CPanelFunction(cnt, toolGroup)
                         end)
                     end
@@ -78,6 +82,11 @@ function PANEL:Init()
                         dm:AddOption('#spawnmenu.menu.copy', function()
                             SetClipboardText(toolGroup.ItemName)
                         end, 'icon16/page_copy.png')
+                    end
+
+                    if toolGroup.ItemName == activeTool and !foundActiveTool then
+                        foundActiveTool = true
+                        btnTool:DoClick()
                     end
 
                     category:AddItem(btnTool)

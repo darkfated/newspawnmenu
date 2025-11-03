@@ -28,7 +28,9 @@ tabl['en'] = {
     checkbox_mode = 'Menu mode',
     checkbox_mode_0 = 'Default',
     checkbox_mode_1 = 'Without tools',
-    checkbox_mode_2 = 'Tools only'
+    checkbox_mode_2 = 'Tools only',
+    back = 'Back',
+    inspect = 'Inspect the item'
 }
 
 tabl['ru'] = {
@@ -59,7 +61,42 @@ tabl['ru'] = {
     checkbox_mode = 'Режим меню',
     checkbox_mode_0 = 'Стандартный',
     checkbox_mode_1 = 'Без инструментов',
-    checkbox_mode_2 = 'Только инструменты'
+    checkbox_mode_2 = 'Только инструменты',
+    back = 'Вернуться',
+    inspect = 'Осмотреть предмет'
+}
+
+tabl['fr'] = {
+    select_color = 'Sélectionner la couleur',
+    select_interface_theme = 'Choisir un thème d\'interface',
+    theme_dark = 'Sombre (dark)',
+    theme_dark_mono = 'Mono sombre (dark_mono)',
+    theme_light = 'Clair (light)',
+    theme_blue = 'Bleu (blue)',
+    theme_red = 'Rouge (red)',
+    theme_green = 'Vert (green)',
+    theme_orange = 'Orange (orange)',
+    theme_purple = 'Violet (purple)',
+    theme_coffee = 'Café (coffee)',
+    theme_ice = 'Glace (ice)',
+    theme_wine = 'Vin (wine)',
+    theme_violet = 'Violet (violet)',
+    theme_moss = 'Mousse (moss)',
+    theme_coral = 'Corail (coral)',
+    help_apply_settings = 'Pour appliquer les paramètres, recréez le menu en cliquant sur le bouton ci-dessous',
+    checkbox_enable_menu = 'Activer le nouveau menu (l\'ancien peut être restauré)',
+    checkbox_enable_default_tabs = 'Activer les onglets par défaut',
+    button_recreate_menu = 'Recréer le menu',
+    checkbox_enable_search = 'Activer la barre de recherche',
+    checkbox_close_on_spawn = 'Réduire le menu lors du spawn d\'un objet',
+    checkbox_compact_tools = 'Activer la vue compacte des outils',
+    checkbox_toolname_left = 'Activer le texte de l\'outil à gauche',
+    checkbox_mode = 'Mode du menu',
+    checkbox_mode_0 = 'Par défaut',
+    checkbox_mode_1 = 'Sans outils',
+    checkbox_mode_2 = 'Outils uniquement',
+    back = 'Retour',
+    inspect = 'Inspecter l\'objet'
 }
 
 return tabl
