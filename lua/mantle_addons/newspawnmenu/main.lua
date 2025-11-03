@@ -72,8 +72,7 @@ hook.Add('PopulateToolMenu', 'NewSpawnMenu', function()
     end)
 
     spawnmenu.AddToolMenuOption('newspawnmenu','newspawnmenu_v', 'newspawnmenu_v_themes', 'Themes', '', '', function(pan)
-        local comboboxTheme = vgui.Create('MantleComboBox', pan)
-        comboboxTheme:Dock(TOP)
+        local comboboxTheme = vgui.Create('MantleComboBox')
         comboboxTheme:SetPlaceholder(Mantle.lang.get('newspawnmenu', 'select_interface_theme'))
         comboboxTheme:AddChoice(Mantle.lang.get('newspawnmenu', 'theme_dark'), 'dark')
         comboboxTheme:AddChoice(Mantle.lang.get('newspawnmenu', 'theme_dark_mono'), 'dark_mono')
@@ -92,13 +91,14 @@ hook.Add('PopulateToolMenu', 'NewSpawnMenu', function()
         comboboxTheme.OnSelect = function(_, _, data)
             RunConsoleCommand('mantle_theme', data)
         end
+        pan:AddPanel(comboboxTheme)
 
-        local listThemeColors = vgui.Create('DIconLayout', pan)
-        listThemeColors:Dock(TOP)
+        local listThemeColors = vgui.Create('DIconLayout')
         listThemeColors:DockMargin(6, 8, 6, 0)
         listThemeColors:SetTall(164)
         listThemeColors:SetSpaceX(8)
         listThemeColors:SetSpaceY(8)
+        pan:AddPanel(listThemeColors)
 
         for colId, _ in pairs(Mantle.color) do
             local panCol = vgui.Create('DPanel', listThemeColors)
