@@ -66,6 +66,9 @@ hook.Add('PopulateToolMenu', 'NewSpawnMenu', function()
         })
 
         pan:Button(Mantle.lang.get('newspawnmenu', 'button_recreate_menu'), 'newspawnmenu_remove')
+
+        pan:CheckBox(Mantle.lang.get('newspawnmenu', 'checkbox_background'), 'newspawnmenu_background')
+        pan:CheckBox(Mantle.lang.get('newspawnmenu', 'checkbox_blur'), 'newspawnmenu_blur')
     end)
 
     spawnmenu.AddToolMenuOption('newspawnmenu','newspawnmenu_v', 'newspawnmenu_v_themes', 'Themes', '', '', function(pan)
@@ -109,5 +112,8 @@ hook.Add('PopulateToolMenu', 'NewSpawnMenu', function()
                 draw.SimpleText(colId, 'Fated.12', w * 0.5, h * 0.5, color_black, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
             end
         end
+
+        pan:ControlHelp(Mantle.lang.get('newspawnmenu', 'help_background'))
+        pan:CheckBox(Mantle.lang.get('newspawnmenu', 'checkbox_background'), 'newspawnmenu_background')
     end)
 end)

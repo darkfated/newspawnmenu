@@ -198,7 +198,7 @@ function PANEL:AddControl(control, data)
     end
 
     if control == 'label' then
-        local ctrl = self:Help(data.text)
+        local ctrl = self:ControlHelp(data.text)
 
         return ctrl
     end

@@ -30,7 +30,10 @@ tabl['en'] = {
     checkbox_mode_1 = 'Without tools',
     checkbox_mode_2 = 'Tools only',
     back = 'Back',
-    inspect = 'Inspect the item'
+    inspect = 'Inspect the item',
+    checkbox_background = 'Background',
+    checkbox_blur = 'Blur',
+    help_background = 'Advise you to turn off the background when using light themes'
 }
 
 tabl['ru'] = {
@@ -63,7 +66,10 @@ tabl['ru'] = {
     checkbox_mode_1 = 'Без инструментов',
     checkbox_mode_2 = 'Только инструменты',
     back = 'Вернуться',
-    inspect = 'Осмотреть предмет'
+    inspect = 'Осмотреть предмет',
+    checkbox_background = 'Фон',
+    checkbox_blur = 'Размытие',
+    help_background = 'Советую при светлых темам отключать фон'
 }
 
 tabl['fr'] = {
@@ -96,7 +102,10 @@ tabl['fr'] = {
     checkbox_mode_1 = 'Sans outils',
     checkbox_mode_2 = 'Outils uniquement',
     back = 'Retour',
-    inspect = 'Inspecter l\'objet'
+    inspect = 'Inspecter l\'objet',
+    checkbox_background = 'Contexte',
+    checkbox_blur = 'Flou',
+    help_background = 'Je conseille aux sujets légers de désactiver l\'arrière-plan'
 }
 
 return tabl

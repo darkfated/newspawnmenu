@@ -28,7 +28,7 @@ function PANEL:Init()
             :Color(Mantle.color.panel_alpha[2])
             :Shape(RNDX.SHAPE_IOS)
         :Draw()
-        draw.SimpleText(tabl.Name, 'Fated.12', w * 0.5, h - 10, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM)
+        draw.SimpleText(tabl.Name, 'Fated.12', w * 0.5, h - 10, Mantle.color.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM)
     end)
 
     local vehicles = list.Get('Vehicles')
