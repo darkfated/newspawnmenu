@@ -19,7 +19,7 @@ function PANEL:AddItem(name, category, tabl, itemIndex, categoryIcon)
 
     local menuW = NewSpawnMenu.menu:GetWide()
     local menuScale = GetConVar('newspawnmenu_scale'):GetFloat()
-    local itemSize = menuW * 0.0825
+    local itemSize = menuW * 0.0825 - 8
 
     if !self.items[category] then
         local categorySp = vgui.Create('MantleScrollPanel')
