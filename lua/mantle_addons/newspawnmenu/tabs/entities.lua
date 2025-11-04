@@ -13,10 +13,22 @@ function PANEL:Init()
         local x = offset * w
         local y = offset * h
 
+        RNDX().Rect(0, 0, w, h)
+            :Rad(32)
+            :Material(btn.mat)
+            :Shape(RNDX.SHAPE_IOS)
+        :Draw()
+
+        RNDX().Rect(0, 0, w, h)
+            :Rad(24)
+            :Shape(RNDX.SHAPE_IOS)
+            :Blur(2, 8)
+        :Draw()
+
         render.PushFilterMag(TEXFILTER.ANISOTROPIC)
         render.PushFilterMin(TEXFILTER.ANISOTROPIC)
             RNDX().Rect(x, y, scaledW, scaledH)
-                :Rad(32)
+                :Rad(24)
                 :Material(btn.mat)
                 :Shape(RNDX.SHAPE_IOS)
             :Draw()
@@ -24,7 +36,7 @@ function PANEL:Init()
         render.PopFilterMag()
 
         RNDX().Rect(0, h - 30, w, 30)
-            :Radii(0, 0, 32, 32)
+            :Radii(0, 0, 24, 24)
             :Color(Mantle.color.panel_alpha[2])
             :Shape(RNDX.SHAPE_IOS)
         :Draw()

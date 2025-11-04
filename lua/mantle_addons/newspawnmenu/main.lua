@@ -1,4 +1,4 @@
-local convar_newspawnmenu_default_tabs = CreateClientConVar('newspawnmenu_default_tabs', 1, true, false)
+local convar_newspawnmenu_default_tabs = CreateClientConVar('newspawnmenu_default_tabs', 0, true, false)
 local PANEL = {}
 
 function PANEL:Init()
