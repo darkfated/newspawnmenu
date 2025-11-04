@@ -19,13 +19,13 @@ function PANEL:AddItem(name, category, tabl, itemIndex, categoryIcon)
 
     local menuW = NewSpawnMenu.menu:GetWide()
     local menuScale = GetConVar('newspawnmenu_scale'):GetFloat()
-    local itemSize = menuW * 0.0825 - 8
+    local itemSize = menuW * 0.0825 - 2
 
     if !self.items[category] then
         local categorySp = vgui.Create('MantleScrollPanel')
 
         local itemsCols = (menuW * (0.65 + (convar_newspawnmenu_mode:GetInt() == 1 and 0.25 or 0)) - 12 - 240) / (itemSize)
-        print(itemsCols)
+
         categorySp.grid = vgui.Create('DGrid', categorySp)
         categorySp.grid:Dock(TOP)
         categorySp.grid:SetCols(itemsCols)
