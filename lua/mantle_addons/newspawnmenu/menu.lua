@@ -1,5 +1,6 @@
 local convar_newspawnmenu_on = CreateClientConVar('newspawnmenu_on', 1, true, false)
 local convar_newspawnmenu_mode = CreateClientConVar('newspawnmenu_mode', 0, true, false)
+local convar_newspawnmenu_scale = CreateClientConVar('newspawnmenu_scale', 1, true, false)
 
 local function CreateMenu()
     local w, h = Mantle.func.sw, Mantle.func.sh
@@ -7,7 +8,7 @@ local function CreateMenu()
     if w < 1600 then
         menuW, menuH = w, h
     else
-        menuW, menuH = w * 0.9, h * 0.85
+        menuW, menuH = w * 0.85, h * 0.85
     end
 
     local menuMode = convar_newspawnmenu_mode:GetInt()
@@ -16,6 +17,12 @@ local function CreateMenu()
     elseif menuMode == 1 then
         menuW = w * 0.7
     end
+
+    local scaleMenu = convar_newspawnmenu_scale:GetFloat()
+    menuW = menuW * scaleMenu
+    menuH = menuH * scaleMenu
+    if menuW > w then menuW = w end
+    if menuH > h then menuH = h end
 
     NewSpawnMenu.menu = vgui.Create('EditablePanel')
     NewSpawnMenu.menu:SetSize(menuW, menuH)

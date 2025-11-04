@@ -1,9 +1,13 @@
 local PANEL = {}
+local math_floor = math.floor
 
 function PANEL:Init()
     self:AddFunc(function(tabl, itemIndex)
         RunConsoleCommand('gmod_spawnnpc', itemIndex)
     end)
+
+    local fontI = math_floor(14 * GetConVar('newspawnmenu_scale'):GetFloat())
+    local textFont = 'Fated.' .. fontI
 
     self:AddFuncPaint(function(name, itemIndex, tabl, w, h, btn)
         local scale = btn.anim_scale
@@ -40,7 +44,7 @@ function PANEL:Init()
             :Color(Mantle.color.panel_alpha[2])
             :Shape(RNDX.SHAPE_IOS)
         :Draw()
-        draw.SimpleText(name, 'Fated.12', w * 0.5, h - 10, Mantle.color.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM)
+        draw.SimpleText(name, textFont, w * 0.5, h - fontI * 0.5 - 1, Mantle.color.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM)
     end)
 
     local npcs = list.Get('NPC')

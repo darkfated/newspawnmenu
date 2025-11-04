@@ -33,7 +33,8 @@ tabl['en'] = {
     inspect = 'Inspect the item',
     checkbox_background = 'Background',
     checkbox_blur = 'Blur',
-    help_background = 'Advise you to turn off the background when using light themes'
+    help_background = 'Advise you to turn off the background when using light themes',
+    scale = 'Scale'
 }
 
 tabl['ru'] = {
@@ -69,7 +70,8 @@ tabl['ru'] = {
     inspect = 'Осмотреть предмет',
     checkbox_background = 'Фон',
     checkbox_blur = 'Размытие',
-    help_background = 'Советую при светлых темам отключать фон'
+    help_background = 'Советую при светлых темам отключать фон',
+    scale = 'Масштаб'
 }
 
 tabl['fr'] = {
@@ -105,7 +107,8 @@ tabl['fr'] = {
     inspect = 'Inspecter l\'objet',
     checkbox_background = 'Contexte',
     checkbox_blur = 'Flou',
-    help_background = 'Je conseille aux sujets légers de désactiver l\'arrière-plan'
+    help_background = 'Je conseille aux sujets légers de désactiver l\'arrière-plan',
+    scale = 'Échelle'
 }
 
 return tabl

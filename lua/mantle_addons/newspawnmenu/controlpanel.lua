@@ -1,4 +1,5 @@
 local PANEL = {}
+local math_floor = math.floor
 
 function PANEL:Init()
     self:DockPadding(8, 8, 8, 8)
@@ -46,11 +47,14 @@ function PANEL:Help(text)
         :Draw()
     end
 
+    local textFont = 'Fated.' .. math_floor(16 * GetConVar('newspawnmenu_scale'):GetFloat())
+
     local label = vgui.Create('MantleText', panelLabel)
     label:Dock(FILL)
     label:SetText(language.GetPhrase(text))
     label:SetAlign(TEXT_ALIGN_CENTER)
     label:SetVAlign('center')
+    label:SetFont(textFont)
 
     return self:AddPanel(panelLabel)
 end
@@ -167,7 +171,8 @@ function PANEL:ControlHelp(text)
     label:SetText(language.GetPhrase(text))
     label:SetAlign(TEXT_ALIGN_CENTER)
     label:SetVAlign('center')
-    label:SetFont('Fated.15')
+    local textFont = 'Fated.' .. math_floor(15 * GetConVar('newspawnmenu_scale'):GetFloat())
+    label:SetFont(textFont)
 
     return self:AddPanel(panelLabel)
 end

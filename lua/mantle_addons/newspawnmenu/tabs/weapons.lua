@@ -6,6 +6,9 @@ function PANEL:Init()
         RunConsoleCommand('gm_giveswep', tabl.ClassName)
     end)
 
+    local fontI = math_floor(14 * GetConVar('newspawnmenu_scale'):GetFloat())
+    local textFont = 'Fated.' .. fontI
+
     self:AddFuncPaint(function(name, itemIndex, tabl, w, h, btn)
         local scale = btn.anim_scale
         local offset = (1 - scale) * 0.5
@@ -36,12 +39,12 @@ function PANEL:Init()
         render.PopFilterMin()
         render.PopFilterMag()
 
-        RNDX().Rect(0, h - 30, w, 30)
+        RNDX().Rect(0, h - fontI * 2, w, fontI * 2)
             :Radii(0, 0, 24, 24)
             :Color(Mantle.color.panel_alpha[2])
             :Shape(RNDX.SHAPE_IOS)
         :Draw()
-        draw.SimpleText(tabl.PrintName, 'Fated.12', w * 0.5, h - 10, Mantle.color.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM)
+        draw.SimpleText(tabl.PrintName, textFont, w * 0.5, h - fontI * 0.5 - 1, Mantle.color.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM)
     end)
 
     local weps = list.Get('Weapon')

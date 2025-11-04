@@ -12,6 +12,7 @@ function PANEL:Init()
     local tools = spawnmenu.GetTools()
     local activeTool = GetConVar('gmod_toolmode'):GetString()
     local foundActiveTool = false
+    local textFont = 'Fated.' .. math.floor(16 * GetConVar('newspawnmenu_scale'):GetFloat())
 
     for k, toolCategory in ipairs(tools) do
         local categoryContent = vgui.Create('Panel', self.categoryTabs)
@@ -21,7 +22,7 @@ function PANEL:Init()
         local leftPanel = vgui.Create('Panel', categoryContent)
         leftPanel:Dock(LEFT)
         leftPanel:DockMargin(0, 0, 8, 0)
-        leftPanel:SetWide(Mantle.func.sw * 0.1)
+        leftPanel:SetWide(math.max(200, NewSpawnMenu.menu:GetWide() * 0.115))
 
         local spTools = vgui.Create('MantleScrollPanel', leftPanel)
         spTools:Dock(FILL)
@@ -60,9 +61,9 @@ function PANEL:Init()
                         local col = convarTool == toolGroup.ItemName and Mantle.color.theme or Mantle.color.gray
 
                         if isToolnameLeft then
-                            draw.SimpleText(toolName, 'Fated.16', 8, h * 0.5, col, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                            draw.SimpleText(toolName, textFont, 8, h * 0.5, col, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
                         else
-                            draw.SimpleText(toolName, 'Fated.16', w * 0.5, h * 0.5, col, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+                            draw.SimpleText(toolName, textFont, w * 0.5, h * 0.5, col, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
                         end
                     end
 
