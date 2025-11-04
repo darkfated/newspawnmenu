@@ -65,16 +65,23 @@ function PANEL:Init()
                             draw.SimpleText(toolName, 'Fated.16', w * 0.5, h * 0.5, col, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
                         end
                     end
+
+                    local function createContent(boolCommand)
+                        local cnt = vgui.Create('NewSpawnMenu.ControlPanel', toolContent)
+                        cnt:Dock(FILL)
+                        pcall(function()
+                            if boolCommand then
+                                LocalPlayer():ConCommand(toolGroup.Command)
+                            end
+                            toolGroup.CPanelFunction(cnt, toolGroup)
+                        end)
+                    end
+
                     btnTool.DoClick = function()
                         Mantle.func.sound()
 
                         toolContent:Clear()
-                        local cnt = vgui.Create('NewSpawnMenu.ControlPanel', toolContent)
-                        cnt:Dock(FILL)
-                        pcall(function()
-                            LocalPlayer():ConCommand(toolGroup.Command)
-                            toolGroup.CPanelFunction(cnt, toolGroup)
-                        end)
+                        createContent(true)
                     end
                     btnTool.DoRightClick = function()
                         Mantle.func.sound()
@@ -86,7 +93,7 @@ function PANEL:Init()
 
                     if toolGroup.ItemName == activeTool and !foundActiveTool then
                         foundActiveTool = true
-                        btnTool:DoClick()
+                        createContent()
                     end
 
                     category:AddItem(btnTool)
