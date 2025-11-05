@@ -19,6 +19,7 @@ end
 
 local convar_newspawnmenu_background = CreateClientConVar('newspawnmenu_background', 1, true, false)
 local convar_newspawnmenu_blur = CreateClientConVar('newspawnmenu_blur', 1, true, false)
+local convar_newspawnmenu_opt = CreateClientConVar('newspawnmenu_opt', 1, true, false)
 
 function NewSpawnMenu.PanelPaint(w, h)
     if convar_newspawnmenu_blur:GetBool() then
@@ -58,4 +59,10 @@ hook.Add('HUDShouldDraw', 'NewSpawnMenu', function(elem)
     if IsValid(NewSpawnMenu.menu) and NewSpawnMenu.menu:IsVisible() and hideElements[elem] then
         return false
     end
+end)
+
+NewSpawnMenu.convar.opt = convar_newspawnmenu_opt:GetBool()
+
+cvars.AddChangeCallback('newspawnmenu_opt', function(_, _, newValue)
+    NewSpawnMenu.convar.opt = newValue == '1' and true or false
 end)

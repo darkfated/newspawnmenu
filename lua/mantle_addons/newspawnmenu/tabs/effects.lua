@@ -28,17 +28,19 @@ function PANEL:Init()
         local y = offset * h
 
         if btn.icon then
-            RNDX().Rect(0, 0, w, h)
-                :Rad(32)
-                :Material(btn.icon)
-                :Shape(RNDX.SHAPE_IOS)
-            :Draw()
+            if !NewSpawnMenu.convar.opt then
+                RNDX().Rect(0, 0, w, h)
+                    :Rad(32)
+                    :Material(btn.icon)
+                    :Shape(RNDX.SHAPE_IOS)
+                :Draw()
 
-            RNDX().Rect(0, 0, w, h)
-                :Rad(24)
-                :Shape(RNDX.SHAPE_IOS)
-                :Blur(2, 8)
-            :Draw()
+                RNDX().Rect(0, 0, w, h)
+                    :Rad(24)
+                    :Shape(RNDX.SHAPE_IOS)
+                    :Blur(2, 8)
+                :Draw()
+            end
 
             render.PushFilterMag(TEXFILTER.ANISOTROPIC)
             render.PushFilterMin(TEXFILTER.ANISOTROPIC)

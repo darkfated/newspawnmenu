@@ -70,6 +70,7 @@ hook.Add('PopulateToolMenu', 'NewSpawnMenu', function()
 
         pan:CheckBox(Mantle.lang.get('newspawnmenu', 'checkbox_background'), 'newspawnmenu_background')
         pan:CheckBox(Mantle.lang.get('newspawnmenu', 'checkbox_blur'), 'newspawnmenu_blur')
+        pan:CheckBox(Mantle.lang.get('newspawnmenu', 'checkbox_opt'), 'newspawnmenu_opt')
     end)
 
     spawnmenu.AddToolMenuOption('newspawnmenu','newspawnmenu_v', 'newspawnmenu_v_themes', 'Themes', '', '', function(pan)

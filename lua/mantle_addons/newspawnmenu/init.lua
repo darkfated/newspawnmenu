@@ -1,5 +1,6 @@
 NewSpawnMenu = {
-    tabs = {}
+    tabs = {},
+    convar = {}
 }
 
 Mantle.run_cl('utils.lua')
