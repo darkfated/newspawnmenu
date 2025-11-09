@@ -2,15 +2,34 @@ local PANEL = {}
 local math_floor = math.floor
 
 function PANEL:Init()
+    self.on = true
+
     self:AddFunc(function(tabl, itemIndex)
         if tabl.onclick then
             tabl.onclick()
             return
         end
 
-        if !tabl.convar then
+        if tabl.convars then
+            local isOn = true
+            for k, v in pairs(tabl.convars) do
+                if GetConVarString(k) != v.on then
+                    isOn = false
+                end
+            end
+
+            for k, v in pairs(tabl.convars) do
+                if isOn then
+                    RunConsoleCommand(k, v.off or '')
+                else
+                    RunConsoleCommand(k, v.on)
+                end
+            end
+
             return
         end
+
+        if !tabl.convar then return end
 
         local convarValue = GetConVar(tabl.convar):GetInt() == 1 and 0 or 1
         LocalPlayer():ConCommand(tabl.convar .. ' ' .. convarValue)
@@ -54,10 +73,23 @@ function PANEL:Init()
             render.PopFilterMag()
         end
 
-        if tabl.convar != nil then
+        local isOn = true
+        if tabl.convars then
+            for k, v in pairs(tabl.convars) do
+                if GetConVarString(k) != v.on then
+                    isOn = false
+                end
+            end
+        elseif tabl.convar then
+            isOn = GetConVar(tabl.convar):GetInt() == 1
+        else
+            isOn = false
+        end
+
+        if !tabl.onclick then
             RNDX().Rect(x + 8, x + 8, 16, 16)
                 :Rad(6)
-                :Color(GetConVar(tabl.convar):GetInt() == 1 and Mantle.color.theme or Mantle.color.text)
+                :Color(isOn and Mantle.color.theme or Mantle.color.text)
             :Draw()
         end
 
@@ -75,11 +107,34 @@ function PANEL:Init()
 
     local effs = list.Get('PostProcess')
 
-    for name, effect in pairs(effs) do
+    local function CreateEffect(name, effect)
         local btn = self:AddItem(name, effect.category, effect, nil, 'icon16/picture.png')
         if effect.icon then
+            if effect.icon:StartWith('models/') then return end
             btn.icon = Material(effect.icon)
         end
+    end
+
+    local otherEffects = {}
+
+    for name, effect in pairs(effs) do
+        if effect.func then
+            local pan = vgui.Create('Panel')
+            effect.func(pan)
+
+            for k, v in pairs(pan:GetChildren()) do
+                local infoTable = {}
+                v:ToTable(infoTable)
+                infoTable = infoTable[1]
+                infoTable.category = name
+                CreateEffect(infoTable.name, infoTable)
+            end
+
+            pan:Remove()
+            continue
+        end
+
+        CreateEffect(name, effect)
     end
 end
 

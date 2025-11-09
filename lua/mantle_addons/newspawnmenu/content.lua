@@ -5,6 +5,8 @@ local PANEL = {}
 function PANEL:Init()
     self.items = {}
     self.func = nil
+    self.funcMiddle = nil
+    self.funcTool = nil
     self.funcPaint = nil
 
     self.left = vgui.Create('MantleTabs', self)
@@ -23,7 +25,7 @@ function PANEL:AddItem(name, category, tabl, itemIndex, categoryIcon)
 
     if !self.items[category] then
         local categorySp = vgui.Create('MantleScrollPanel')
-        local itemsCols = (menuW * (0.65 + (convar_newspawnmenu_mode:GetInt() == 1 and 0.25 or 0)) - 12 - 240) / itemSize
+        local itemsCols = (menuW * (0.65 + (convar_newspawnmenu_mode:GetInt() == 1 and 0.34 or 0)) - 12 - 240) / itemSize
 
         categorySp.grid = vgui.Create('DGrid', categorySp)
         categorySp.grid:Dock(TOP)
@@ -73,8 +75,25 @@ function PANEL:AddItem(name, category, tabl, itemIndex, categoryIcon)
     end
 
     panelItem.DoClick = function(btn)
+        if !self.func then
+            return
+        end
+
         Mantle.func.sound('UI/buttonclick.wav')
         self.func(tabl, itemIndex)
+
+        if convar_newspawnmenu_close_on_spawn:GetBool() then
+            NewSpawnMenu.menu:Close()
+        end
+    end
+
+    panelItem.DoMiddleClick = function(btn)
+        if !self.funcMiddle then
+            return
+        end
+
+        Mantle.func.sound('UI/buttonclick.wav')
+        self.funcMiddle(tabl)
 
         if convar_newspawnmenu_close_on_spawn:GetBool() then
             NewSpawnMenu.menu:Close()
@@ -108,6 +127,15 @@ function PANEL:AddItem(name, category, tabl, itemIndex, categoryIcon)
             end
         end
 
+        if self.ToolMode then
+            dm:AddOption('#spawnmenu.menu.spawn_with_toolgun', function()
+                RunConsoleCommand('gmod_tool', 'creator')
+                RunConsoleCommand('creator_type', self.ToolMode)
+                local creatorName = self.ToolMode == 1 and itemIndex or self.ToolMode == 2 and tabl.Class or tabl.ClassName
+                RunConsoleCommand('creator_name', creatorName)
+            end, 'icon16/brick_add.png')
+        end
+
         if itemMdl then
             dm:AddOption(Mantle.lang.get('newspawnmenu', 'inspect'), function()
                 self.left:SetVisible(false)
@@ -127,6 +155,14 @@ end
 
 function PANEL:AddFunc(func)
     self.func = func
+end
+
+function PANEL:AddFuncMiddle(func)
+    self.funcMiddle = func
+end
+
+function PANEL:AddFuncTool(func)
+    self.funcTool = func
 end
 
 function PANEL:AddFuncPaint(func)

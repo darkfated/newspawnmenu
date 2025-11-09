@@ -6,6 +6,8 @@ function PANEL:Init()
         RunConsoleCommand('gm_spawnvehicle', itemIndex)
     end)
 
+    self.ToolMode = 1
+
     local fontI = math_floor(14 * GetConVar('newspawnmenu_scale'):GetFloat())
     local textFont = 'Fated.' .. fontI
     local isNameLeft = GetConVar('newspawnmenu_itemname_left'):GetBool()

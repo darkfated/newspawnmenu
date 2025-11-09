@@ -57,23 +57,25 @@ local function CreateMenu()
         self:SetKeyboardInputEnabled(false)
     end
 
-    if convar_newspawnmenu_mode:GetInt() != 2 then
+    if menuMode != 2 then
         local main = vgui.Create('NewSpawnMenu.Main', NewSpawnMenu.menu)
         main:Dock(FILL)
 
-        local btnReturnTools = vgui.Create('MantleBtn', main)
-        btnReturnTools:SetPos(menuW - 54, 10)
-        btnReturnTools:SetSize(44, 32)
-        btnReturnTools:SetTxt('Tools')
-        btnReturnTools.DoClick = function()
-            RunConsoleCommand('newspawnmenu_mode', 0)
-            RunConsoleCommand('newspawnmenu_remove')
+        if menuMode == 1 then
+            local btnReturnTools = vgui.Create('MantleBtn', main)
+            btnReturnTools:SetPos(menuW - 54, 10)
+            btnReturnTools:SetSize(44, 32)
+            btnReturnTools:SetTxt('Tools')
+            btnReturnTools.DoClick = function()
+                RunConsoleCommand('newspawnmenu_mode', 0)
+                RunConsoleCommand('newspawnmenu_remove')
+            end
         end
     end
 
-    if convar_newspawnmenu_mode:GetInt() != 1 then
+    if menuMode != 1 then
         local tools = vgui.Create('NewSpawnMenu.Tools', NewSpawnMenu.menu)
-        tools:Dock(convar_newspawnmenu_mode:GetInt() == 2 and FILL or RIGHT)
+        tools:Dock(menuMode == 2 and FILL or RIGHT)
         tools:DockMargin(6, 0, 0, 0)
         tools:SetWide(menuW * 0.35)
     end

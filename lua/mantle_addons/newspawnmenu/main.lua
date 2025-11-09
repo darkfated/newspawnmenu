@@ -1,26 +1,4 @@
 local PANEL = {}
-local replaceTabs = {
-    ['#spawnmenu.category.weapons'] = {
-        ui = 'NewSpawnMenu.Weapons',
-        id = 2,
-    },
-    ['#spawnmenu.category.entities'] = {
-        ui = 'NewSpawnMenu.Entities',
-        id = 3,
-    },
-    ['#spawnmenu.category.vehicles'] = {
-        ui = 'NewSpawnMenu.Vehicles',
-        id = 4,
-    },
-    ['#spawnmenu.category.npcs'] = {
-        ui = 'NewSpawnMenu.NPCs',
-        id = 5,
-    },
-    ['#spawnmenu.category.postprocess'] = {
-        ui = 'NewSpawnMenu.Effects',
-        id = 6,
-    },
-}
 
 function PANEL:Init()
     self.tabs = vgui.Create('MantleTabs', self)
@@ -29,14 +7,16 @@ function PANEL:Init()
 
     local tabsList = spawnmenu.GetCreationTabs()
 
+    local cacheTabs = {}
+    for id, tab in pairs(NewSpawnMenu.tabs) do
+        cacheTabs[tab.name] = tab
+    end
+
     for name, tab in SortedPairsByMemberValue(tabsList, 'Order') do
-        if replaceTabs[name] then
-            local newTab = replaceTabs[name]
-            local tabData = NewSpawnMenu.tabs[newTab.id]
-
-            local panelTab = vgui.Create(tabData.panel)
-
-            self.tabs:AddTab(tabData.name, panelTab, Material(tabData.icon))
+        if cacheTabs[name] then
+            local newTab = cacheTabs[name]
+            local panelTab = vgui.Create(newTab.panel)
+            self.tabs:AddTab(newTab.name, panelTab, Material(newTab.icon))
 
             continue
         end

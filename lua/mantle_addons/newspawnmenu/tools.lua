@@ -43,12 +43,21 @@ function PANEL:Init()
                 if !isToolnameLeft then
                     category:SetCenterText(true)
                 end
+
                 local categoryName = language.GetPhrase(groupTools.Text)
+                if categoryName[1] == '#' then
+                    categoryName = string.sub(categoryName, 2)
+                end
+
                 category:SetText(categoryName)
                 category:SetActive(true)
 
                 for n, toolGroup in ipairs(groupTools) do
                     local toolName = language.GetPhrase(toolGroup.Text)
+                    if toolName[1] == '#' then
+                        toolName = string.sub(toolName, 2)
+                    end
+
                     if !string.find(utf8.lower(toolName), utf8.lower(filter), 1, true) then
                         continue
                     end

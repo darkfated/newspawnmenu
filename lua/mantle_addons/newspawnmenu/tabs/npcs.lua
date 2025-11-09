@@ -6,6 +6,8 @@ function PANEL:Init()
         RunConsoleCommand('gmod_spawnnpc', itemIndex)
     end)
 
+    self.ToolMode = 2
+
     local fontI = math_floor(14 * GetConVar('newspawnmenu_scale'):GetFloat())
     local textFont = 'Fated.' .. fontI
     local isNameLeft = GetConVar('newspawnmenu_itemname_left'):GetBool()

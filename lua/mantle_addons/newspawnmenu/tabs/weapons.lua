@@ -6,6 +6,12 @@ function PANEL:Init()
         RunConsoleCommand('gm_giveswep', tabl.ClassName)
     end)
 
+    self:AddFuncMiddle(function(tabl)
+        RunConsoleCommand('gm_spawnswep', tabl.ClassName)
+    end)
+
+    self.ToolMode = 3
+
     local fontI = math_floor(14 * GetConVar('newspawnmenu_scale'):GetFloat())
     local textFont = 'Fated.' .. fontI
     local isNameLeft = GetConVar('newspawnmenu_itemname_left'):GetBool()
