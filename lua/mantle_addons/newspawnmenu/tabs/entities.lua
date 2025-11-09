@@ -8,6 +8,7 @@ function PANEL:Init()
 
     local fontI = math_floor(14 * GetConVar('newspawnmenu_scale'):GetFloat())
     local textFont = 'Fated.' .. fontI
+    local isNameLeft = GetConVar('newspawnmenu_itemname_left'):GetBool()
 
     self:AddFuncPaint(function(name, itemIndex, tabl, w, h, btn)
         local scale = btn.anim_scale
@@ -17,21 +18,21 @@ function PANEL:Init()
         local x = offset * w
         local y = offset * h
 
-        if !NewSpawnMenu.convar.opt then
-            RNDX().Rect(0, 0, w, h)
-                :Rad(32)
-                :Material(btn.mat)
-                :Shape(RNDX.SHAPE_IOS)
-            :Draw()
-
-            RNDX().Rect(0, 0, w, h)
-                :Rad(24)
-                :Shape(RNDX.SHAPE_IOS)
-                :Blur(2, 8)
-            :Draw()
-        end
-
         if btn.mat then
+            if !NewSpawnMenu.convar.opt then
+                RNDX().Rect(0, 0, w, h)
+                    :Rad(32)
+                    :Material(btn.mat)
+                    :Shape(RNDX.SHAPE_IOS)
+                :Draw()
+
+                RNDX().Rect(0, 0, w, h)
+                    :Rad(24)
+                    :Shape(RNDX.SHAPE_IOS)
+                    :Blur(2, 8)
+                :Draw()
+            end
+
             render.PushFilterMag(TEXFILTER.ANISOTROPIC)
             render.PushFilterMin(TEXFILTER.ANISOTROPIC)
                 RNDX().Rect(x, y, scaledW, scaledH)
@@ -43,12 +44,16 @@ function PANEL:Init()
             render.PopFilterMag()
         end
 
-        RNDX().Rect(0, h - 30, w, 30)
+        RNDX().Rect(0, h - fontI * 2, w, fontI * 2)
             :Radii(0, 0, 24, 24)
             :Color(Mantle.color.panel_alpha[2])
             :Shape(RNDX.SHAPE_IOS)
         :Draw()
-        draw.SimpleText(name, textFont, w * 0.5, h - fontI * 0.5 - 1, Mantle.color.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM)
+        if isNameLeft then
+            draw.SimpleText(name, textFont, 8, h - fontI * 0.5 - 1, Mantle.color.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_BOTTOM)
+        else
+            draw.SimpleText(name, textFont, w * 0.5, h - fontI * 0.5 - 1, Mantle.color.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM)
+        end
     end)
 
     local entities = list.Get('SpawnableEntities')

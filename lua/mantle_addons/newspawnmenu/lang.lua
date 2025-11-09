@@ -35,7 +35,8 @@ tabl['en'] = {
     help_background = 'Advise you to turn off the background when using light themes',
     scale = 'Scale',
     checkbox_opt = 'Simplification of the visual (more FPS)',
-    checkbox_contrast_tools = 'Contrast mode for tools'
+    checkbox_contrast_tools = 'Contrast mode for tools',
+    checkbox_itemname_left = 'Name of items on the left'
 }
 
 tabl['ru'] = {
@@ -73,7 +74,8 @@ tabl['ru'] = {
     help_background = 'Советую при светлых темам отключать фон',
     scale = 'Масштаб',
     checkbox_opt = 'Упрощение визуала (больше FPS)',
-    checkbox_contrast_tools = 'Контрастный режим для инструментов'
+    checkbox_contrast_tools = 'Контрастный режим для инструментов',
+    checkbox_itemname_left = 'Название предметов слева'
 }
 
 tabl['fr'] = {
@@ -111,7 +113,8 @@ tabl['fr'] = {
     help_background = 'Je conseille aux sujets légers de désactiver l\'arrière-plan',
     scale = 'Échelle',
     checkbox_opt = 'Simplification du visuel (plus de FPS)',
-    checkbox_contrast_tools = 'Mode contraste pour les outils'
+    checkbox_contrast_tools = 'Mode contraste pour les outils',
+    checkbox_itemname_left = 'Nom des articles à gauche'
 }
 
 return tabl

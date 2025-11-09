@@ -8,6 +8,7 @@ function PANEL:Init()
 
     local fontI = math_floor(14 * GetConVar('newspawnmenu_scale'):GetFloat())
     local textFont = 'Fated.' .. fontI
+    local isNameLeft = GetConVar('newspawnmenu_itemname_left'):GetBool()
 
     self:AddFuncPaint(function(name, itemIndex, tabl, w, h, btn)
         local scale = btn.anim_scale
@@ -17,21 +18,21 @@ function PANEL:Init()
         local x = offset * w
         local y = offset * h
 
-        if !NewSpawnMenu.convar.opt then
-            RNDX().Rect(0, 0, w, h)
-                :Rad(32)
-                :Material(btn.mat)
-                :Shape(RNDX.SHAPE_IOS)
-            :Draw()
-
-            RNDX().Rect(0, 0, w, h)
-                :Rad(24)
-                :Shape(RNDX.SHAPE_IOS)
-                :Blur(2, 8)
-            :Draw()
-        end
-
         if btn.mat then
+            if !NewSpawnMenu.convar.opt then
+                RNDX().Rect(0, 0, w, h)
+                    :Rad(32)
+                    :Material(btn.mat)
+                    :Shape(RNDX.SHAPE_IOS)
+                :Draw()
+
+                RNDX().Rect(0, 0, w, h)
+                    :Rad(24)
+                    :Shape(RNDX.SHAPE_IOS)
+                    :Blur(2, 8)
+                :Draw()
+            end
+
             render.PushFilterMag(TEXFILTER.ANISOTROPIC)
             render.PushFilterMin(TEXFILTER.ANISOTROPIC)
                 RNDX().Rect(x, y, scaledW, scaledH)
@@ -48,7 +49,11 @@ function PANEL:Init()
             :Color(Mantle.color.panel_alpha[2])
             :Shape(RNDX.SHAPE_IOS)
         :Draw()
-        draw.SimpleText(tabl.PrintName, textFont, w * 0.5, h - fontI * 0.5 - 1, Mantle.color.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM)
+        if isNameLeft then
+            draw.SimpleText(tabl.PrintName, textFont, 8, h - fontI * 0.5 - 1, Mantle.color.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_BOTTOM)
+        else
+            draw.SimpleText(tabl.PrintName, textFont, w * 0.5, h - fontI * 0.5 - 1, Mantle.color.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM)
+        end
     end)
 
     local weps = list.Get('Weapon')

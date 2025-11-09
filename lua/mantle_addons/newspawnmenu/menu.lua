@@ -1,6 +1,7 @@
 local convar_newspawnmenu_on = CreateClientConVar('newspawnmenu_on', 1, true, false)
 local convar_newspawnmenu_mode = CreateClientConVar('newspawnmenu_mode', 0, true, false)
 local convar_newspawnmenu_scale = CreateClientConVar('newspawnmenu_scale', 1, true, false)
+CreateClientConVar('newspawnmenu_itemname_left', 1, true, false)
 
 local function CreateMenu()
     local w, h = Mantle.func.sw, Mantle.func.sh

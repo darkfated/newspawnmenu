@@ -18,6 +18,7 @@ function PANEL:Init()
 
     local fontI = math_floor(14 * GetConVar('newspawnmenu_scale'):GetFloat())
     local textFont = 'Fated.' .. fontI
+    local isNameLeft = GetConVar('newspawnmenu_itemname_left'):GetBool()
 
     self:AddFuncPaint(function(name, itemIndex, tabl, w, h, btn)
         local scale = btn.anim_scale
@@ -60,12 +61,16 @@ function PANEL:Init()
             :Draw()
         end
 
-        RNDX().Rect(0, h - 30, w, 30)
+        RNDX().Rect(0, h - fontI * 2, w, fontI * 2)
             :Radii(0, 0, 24, 24)
             :Color(Mantle.color.panel_alpha[2])
             :Shape(RNDX.SHAPE_IOS)
         :Draw()
-        draw.SimpleText(name, textFont, w * 0.5, h - fontI * 0.5 - 1, Mantle.color.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM)
+        if isNameLeft then
+            draw.SimpleText(name, textFont, 8, h - fontI * 0.5 - 1, Mantle.color.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_BOTTOM)
+        else
+            draw.SimpleText(name, textFont, w * 0.5, h - fontI * 0.5 - 1, Mantle.color.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM)
+        end
     end)
 
     local effs = list.Get('PostProcess')
