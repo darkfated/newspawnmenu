@@ -66,13 +66,10 @@ hook.Add('AddToolMenuTabs', 'NewSpawnMenu', function()
 end )
 
 hook.Add('PopulateToolMenu', 'NewSpawnMenu', function()
-    spawnmenu.AddToolMenuOption('newspawnmenu','newspawnmenu_v', 'newspawnmenu_v_basic', 'Basic', '', '', function(pan)
+    spawnmenu.AddToolMenuOption('newspawnmenu','newspawnmenu_v', 'newspawnmenu_v_menu', 'Menu', '', '', function(pan)
         pan:Help(Mantle.lang.get('newspawnmenu', 'help_apply_settings'))
         pan:CheckBox(Mantle.lang.get('newspawnmenu', 'checkbox_enable_menu'), 'newspawnmenu_on')
-        pan:CheckBox(Mantle.lang.get('newspawnmenu', 'checkbox_enable_search'), 'newspawnmenu_search_panel')
         pan:CheckBox(Mantle.lang.get('newspawnmenu', 'checkbox_close_on_spawn'), 'newspawnmenu_close_on_spawn')
-        pan:CheckBox(Mantle.lang.get('newspawnmenu', 'checkbox_compact_tools'), 'newspawnmenu_compact_tools')
-        pan:CheckBox(Mantle.lang.get('newspawnmenu', 'checkbox_toolname_left'), 'newspawnmenu_toolname_left')
         pan:NumSlider(Mantle.lang.get('newspawnmenu', 'scale'), 'newspawnmenu_scale', 0.8, 1.2, 2)
 
         pan:ComboBoxMulti(Mantle.lang.get('newspawnmenu', 'checkbox_mode'), {
@@ -92,6 +89,17 @@ hook.Add('PopulateToolMenu', 'NewSpawnMenu', function()
         pan:CheckBox(Mantle.lang.get('newspawnmenu', 'checkbox_background'), 'newspawnmenu_background')
         pan:CheckBox(Mantle.lang.get('newspawnmenu', 'checkbox_blur'), 'newspawnmenu_blur')
         pan:CheckBox(Mantle.lang.get('newspawnmenu', 'checkbox_opt'), 'newspawnmenu_opt')
+    end)
+
+    spawnmenu.AddToolMenuOption('newspawnmenu','newspawnmenu_v', 'newspawnmenu_v_tools', 'Tools', '', '', function(pan)
+        pan:Help(Mantle.lang.get('newspawnmenu', 'help_apply_settings'))
+        pan:CheckBox(Mantle.lang.get('newspawnmenu', 'checkbox_enable_search'), 'newspawnmenu_search_panel')
+        pan:CheckBox(Mantle.lang.get('newspawnmenu', 'checkbox_compact_tools'), 'newspawnmenu_compact_tools')
+        pan:CheckBox(Mantle.lang.get('newspawnmenu', 'checkbox_toolname_left'), 'newspawnmenu_toolname_left')
+
+        pan:Button(Mantle.lang.get('newspawnmenu', 'button_recreate_menu'), 'newspawnmenu_remove')
+
+        pan:CheckBox(Mantle.lang.get('newspawnmenu', 'checkbox_contrast_tools'), 'newspawnmenu_contrast_tools')
     end)
 
     spawnmenu.AddToolMenuOption('newspawnmenu','newspawnmenu_v', 'newspawnmenu_v_themes', 'Themes', '', '', function(pan)

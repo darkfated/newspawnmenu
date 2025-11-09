@@ -1,6 +1,7 @@
 local convar_newspawnmenu_search_panel = CreateClientConVar('newspawnmenu_search_panel', 1, true, false)
 local convar_newspawnmenu_compact_tools = CreateClientConVar('newspawnmenu_compact_tools', 0, true, false)
 local convar_newspawnmenu_toolname_left = CreateClientConVar('newspawnmenu_toolname_left', 0, true, false)
+local convar_newspawnmenu_contrast_tools = CreateClientConVar('newspawnmenu_contrast_tools', 0, true, false)
 local PANEL = {}
 
 function PANEL:Init()
@@ -56,12 +57,24 @@ function PANEL:Init()
                     btnTool:Dock(TOP)
                     btnTool:SetTall(isCompactTools and 26 or 34)
                     btnTool:SetTxt('')
-                    btnTool.Paint = function(_, w, h)
+                    btnTool.Paint = function(s, w, h)
                         local convarTool = GetConVar('gmod_toolmode'):GetString()
-                        local col = convarTool == toolGroup.ItemName and Mantle.color.theme or Mantle.color.gray
+                        local isContrastTools = convar_newspawnmenu_contrast_tools:GetBool()
+                        local col = Mantle.color.theme
+                        if convarTool != toolGroup.ItemName then
+                            col = s:IsHovered() and isContrastTools and Mantle.color.text or Mantle.color.gray
+                        end
+
+                        if isContrastTools then
+                            RNDX().Rect(4, 4, w - 8, h - 8)
+                                :Rad(32)
+                                :Color(Mantle.color.panel_alpha[2])
+                                :Shape(RNDX.SHAPE_IOS)
+                            :Draw()
+                        end
 
                         if isToolnameLeft then
-                            draw.SimpleText(toolName, textFont, 8, h * 0.5, col, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                            draw.SimpleText(toolName, textFont, isContrastTools and 12 or 8, h * 0.5, col, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
                         else
                             draw.SimpleText(toolName, textFont, w * 0.5, h * 0.5, col, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
                         end

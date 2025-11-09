@@ -34,7 +34,8 @@ tabl['en'] = {
     checkbox_blur = 'Blur',
     help_background = 'Advise you to turn off the background when using light themes',
     scale = 'Scale',
-    checkbox_opt = 'Simplification of the visual (more FPS)'
+    checkbox_opt = 'Simplification of the visual (more FPS)',
+    checkbox_contrast_tools = 'Contrast mode for tools'
 }
 
 tabl['ru'] = {
@@ -71,7 +72,8 @@ tabl['ru'] = {
     checkbox_blur = 'Размытие',
     help_background = 'Советую при светлых темам отключать фон',
     scale = 'Масштаб',
-    checkbox_opt = 'Упрощение визуала (больше FPS)'
+    checkbox_opt = 'Упрощение визуала (больше FPS)',
+    checkbox_contrast_tools = 'Контрастный режим для инструментов'
 }
 
 tabl['fr'] = {
@@ -108,7 +110,8 @@ tabl['fr'] = {
     checkbox_blur = 'Flou',
     help_background = 'Je conseille aux sujets légers de désactiver l\'arrière-plan',
     scale = 'Échelle',
-    checkbox_opt = 'Simplification du visuel (plus de FPS)'
+    checkbox_opt = 'Simplification du visuel (plus de FPS)',
+    checkbox_contrast_tools = 'Mode contraste pour les outils'
 }
 
 return tabl
