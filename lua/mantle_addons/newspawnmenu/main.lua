@@ -148,3 +148,7 @@ hook.Add('PopulateToolMenu', 'NewSpawnMenu', function()
         pan:CheckBox(Mantle.lang.get('newspawnmenu', 'checkbox_background'), 'newspawnmenu_background')
     end)
 end)
+
+cvars.AddChangeCallback('spawnmenu_reload', function()
+    RunConsoleCommand('newspawnmenu_remove')
+end)

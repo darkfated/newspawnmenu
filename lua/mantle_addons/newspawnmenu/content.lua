@@ -23,8 +23,7 @@ function PANEL:AddItem(name, category, tabl, itemIndex, categoryIcon)
 
     if !self.items[category] then
         local categorySp = vgui.Create('MantleScrollPanel')
-
-        local itemsCols = (menuW * (0.65 + (convar_newspawnmenu_mode:GetInt() == 1 and 0.25 or 0)) - 12 - 240) / (itemSize)
+        local itemsCols = (menuW * (0.65 + (convar_newspawnmenu_mode:GetInt() == 1 and 0.25 or 0)) - 12 - 240) / itemSize
 
         categorySp.grid = vgui.Create('DGrid', categorySp)
         categorySp.grid:Dock(TOP)
@@ -33,39 +32,43 @@ function PANEL:AddItem(name, category, tabl, itemIndex, categoryIcon)
         categorySp.grid:SetRowHeight(itemSize + 8)
 
         self.items[category] = categorySp
-
         self.left:AddTab(category, self.items[category], Material(categoryIcon))
     end
 
     local panelItem = vgui.Create('Button')
     panelItem:SetSize(itemSize, itemSize)
     panelItem:SetText('')
-
     panelItem.anim_scale = 1
     panelItem.anim_target = 1
-    panelItem.anim_speed = 8
-    panelItem.is_pressed = false
+    panelItem.anim_speed = 10
 
     panelItem.Paint = function(btn, w, h)
-        if !btn:IsDown() and btn.anim_target != 1 then
-            btn.anim_target = 1
-        end
+        local dt = FrameTime()
 
-        RNDX().Rect(0, 0, w, h)
+        btn.anim_scale = Mantle.func.approachExp(btn.anim_scale, btn.anim_target, btn.anim_speed, dt)
+        local eased = Mantle.func.easeOutCubic(btn.anim_scale)
+        local scale = eased
+        local scaledW, scaledH = w * scale, h * scale
+        local offsetX, offsetY = (w - scaledW) * 0.5, (h - scaledH) * 0.5
+
+        RNDX().Rect(offsetX, offsetY, scaledW, scaledH)
             :Rad(32)
             :Color(Mantle.color.panel_alpha[1])
             :Shape(RNDX.SHAPE_IOS)
         :Draw()
 
-        self.funcPaint(name, itemIndex, tabl, w, h, btn)
+        self.funcPaint(name, itemIndex, tabl, scaledW, scaledH, btn)
     end
 
     panelItem.Think = function(btn)
         local dt = FrameTime()
-        btn.anim_scale = Mantle.func.approachExp(btn.anim_scale, btn.anim_target, btn.anim_speed, dt)
 
-        if btn:IsDown() and btn.anim_target != 0.9 then
-            btn.anim_target = 0.9
+        if btn:IsHovered() and !btn:IsDown() then
+            btn.anim_target = 0.95
+        elseif btn:IsDown() then
+            btn.anim_target = 0.89
+        else
+            btn.anim_target = 1
         end
     end
 
@@ -91,11 +94,17 @@ function PANEL:AddItem(name, category, tabl, itemIndex, categoryIcon)
         end
 
         local itemMdl = tabl.Model
-
         if !itemMdl then
             local wepTabl = weapons.Get(className)
             if wepTabl then
-                itemMdl = wepTabl.WorldModel and wepTabl.WorldModel or wepTabl.ViewModel
+                itemMdl = wepTabl.WorldModel or wepTabl.ViewModel
+            end
+        end
+
+        if !itemMdl then
+            local entTabl = scripted_ents.Get(className)
+            if entTabl then
+                itemMdl = entTabl.Model
             end
         end
 
