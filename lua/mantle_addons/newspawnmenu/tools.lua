@@ -1,7 +1,7 @@
 local convar_newspawnmenu_search_panel = CreateClientConVar('newspawnmenu_search_panel', 1, true, false)
 local convar_newspawnmenu_compact_tools = CreateClientConVar('newspawnmenu_compact_tools', 0, true, false)
 local convar_newspawnmenu_toolname_left = CreateClientConVar('newspawnmenu_toolname_left', 0, true, false)
-local convar_newspawnmenu_contrast_tools = CreateClientConVar('newspawnmenu_contrast_tools', 0, true, false)
+local convar_newspawnmenu_contrast_tools = CreateClientConVar('newspawnmenu_contrast_tools', 1, true, false)
 local PANEL = {}
 
 function PANEL:Init()
