@@ -31,15 +31,17 @@ function PANEL:Init()
             :Draw()
         end
 
-        render.PushFilterMag(TEXFILTER.ANISOTROPIC)
-        render.PushFilterMin(TEXFILTER.ANISOTROPIC)
-            RNDX().Rect(x, y, scaledW, scaledH)
-                :Rad(24)
-                :Material(btn.mat)
-                :Shape(RNDX.SHAPE_IOS)
-            :Draw()
-        render.PopFilterMin()
-        render.PopFilterMag()
+        if btn.mat then
+            render.PushFilterMag(TEXFILTER.ANISOTROPIC)
+            render.PushFilterMin(TEXFILTER.ANISOTROPIC)
+                RNDX().Rect(x, y, scaledW, scaledH)
+                    :Rad(24)
+                    :Material(btn.mat)
+                    :Shape(RNDX.SHAPE_IOS)
+                :Draw()
+            render.PopFilterMin()
+            render.PopFilterMag()
+        end
 
         RNDX().Rect(0, h - 30, w, 30)
             :Radii(0, 0, 24, 24)
@@ -54,7 +56,18 @@ function PANEL:Init()
 
     for k, npc in pairs(npcs) do
         local btn = self:AddItem(npc.Name, npc.Category, npc, k, customIcons[npc.Category] or 'icon16/monkey.png')
-        btn.mat = Material(npc.IconOverride or 'entities/' .. k .. '.png')
+
+        local matName = npc.IconOverride or 'entities/' .. k .. '.png'
+        local mat = Material(matName)
+
+        if mat:IsError() then
+            matName = matName:Replace('entities/', 'vgui/entities/'):Replace('.png', '')
+            mat = Material(matName)
+        end
+
+        if !mat:IsError() then
+            btn.mat = mat
+        end
     end
 end
 
