@@ -146,7 +146,10 @@ net.Receive('NewSpawnMenu-F1', function()
         return
     end
 
-    if !IsValid(NewSpawnMenu.menu) then return end
+    if !IsValid(NewSpawnMenu.menu) then
+        CreateMenu()
+        return
+    end
 
     if !NewSpawnMenu.menu:IsVisible() then
         OpenMenu()
