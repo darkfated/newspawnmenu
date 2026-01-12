@@ -329,7 +329,7 @@ function PANEL:PropSelect(label, convar, mdlList, height)
 	local PropSelect = vgui.Create('PropSelect')
     PropSelect:DockPadding(6, 6, 6, 6)
 	PropSelect:SetConVar(convar)
-    PropSelect:SetAutoStretch(true)
+    PropSelect.List.Paint = nil
 	PropSelect.Label:SetText(label or '')
 	PropSelect.Height = height or 2
 
