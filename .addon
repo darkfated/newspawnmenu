@@ -1,0 +1,12 @@
+{
+  "name": "The New SpawnMenu",
+  "description": "A completely new spawnmenu for the sandbox",
+  "author": "darkfated",
+  "version": "1.0.0",
+  "github": {
+    "url": "https://github.com/darkfated/newspawnmenu",
+    "branch": "master"
+  },
+  "dependencies": [],
+  "preserve": []
+}
