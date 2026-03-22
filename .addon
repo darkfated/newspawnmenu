@@ -4,7 +4,7 @@
   "author": "darkfated",
   "version": "1.0.0",
   "github": {
-    "url": "https://github.com/darkfated/newspawnmenu",
+    "url": "darkfated/newspawnmenu",
     "branch": "master"
   },
   "dependencies": [
