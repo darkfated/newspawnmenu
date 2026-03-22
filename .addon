@@ -7,6 +7,11 @@
     "url": "https://github.com/darkfated/newspawnmenu",
     "branch": "master"
   },
-  "dependencies": [],
+  "dependencies": [
+    {
+      "url": "https://github.com/darkfated/mantle",
+      "branch": "master"
+    }
+  ],
   "preserve": []
 }
