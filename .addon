@@ -9,7 +9,7 @@
   },
   "dependencies": [
     {
-      "url": "https://github.com/darkfated/mantle",
+      "url": "darkfated/mantle",
       "branch": "master"
     }
   ],
