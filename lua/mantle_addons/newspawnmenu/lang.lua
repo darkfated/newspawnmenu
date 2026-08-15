@@ -1,7 +1,6 @@
 local tabl = {}
 
 tabl['en'] = {
-    select_color = 'Select color',
     select_interface_theme = 'Choose an interface theme',
     theme_dark = 'Dark (dark)',
     theme_dark_mono = 'Dark mono (dark_mono)',
@@ -38,7 +37,6 @@ tabl['en'] = {
 }
 
 tabl['ru'] = {
-    select_color = 'Выберите цвет',
     select_interface_theme = 'Выберите тему интерфейса',
     theme_dark = 'Тёмная (dark)',
     theme_dark_mono = 'Тёмная монотонная (dark_mono)',
@@ -75,7 +73,6 @@ tabl['ru'] = {
 }
 
 tabl['fr'] = {
-    select_color = 'Sélectionner la couleur',
     select_interface_theme = 'Choisir un thème d\'interface',
     theme_dark = 'Sombre (dark)',
     theme_dark_mono = 'Mono sombre (dark_mono)',

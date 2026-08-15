@@ -7,6 +7,8 @@ local PANEL = {}
 function PANEL:Init()
     self:DockPadding(8, 8, 8, 8)
 
+    self.toolsByMode = {}
+
     self.categoryTabs = vgui.Create('MantleTabs', self)
     self.categoryTabs:Dock(FILL)
 
@@ -30,6 +32,27 @@ function PANEL:Init()
 
         local toolContent = vgui.Create('Panel', categoryContent)
         toolContent:Dock(FILL)
+
+        local state = {
+            toolContent = toolContent,
+            activeToolName = nil
+        }
+
+        local function createContent(toolGroup, boolCommand)
+            state.activeToolName = toolGroup.ItemName
+
+            local cnt = vgui.Create('NewSpawnMenu.ControlPanel', toolContent)
+            cnt:Dock(FILL)
+
+            toolContent:InvalidateLayout(true)
+
+            pcall(function()
+                if boolCommand then
+                    LocalPlayer():ConCommand(toolGroup.Command)
+                end
+                toolGroup.CPanelFunction(cnt, toolGroup)
+            end)
+        end
 
         local function BuildTools(filter)
             spTools:Clear()
@@ -75,7 +98,7 @@ function PANEL:Init()
                         end
 
                         if isContrastTools then
-                            RNDX().Rect(4, 4, w - 8, h - 8)
+                            RNDX.Rect(4, 4, w - 8, h - 8)
                                 :Rad(32)
                                 :Color(Mantle.color.panel_alpha[2])
                                 :Shape(RNDX.SHAPE_IOS)
@@ -89,35 +112,32 @@ function PANEL:Init()
                         end
                     end
 
-                    local function createContent(boolCommand)
-                        local cnt = vgui.Create('NewSpawnMenu.ControlPanel', toolContent)
-                        cnt:Dock(FILL)
-                        pcall(function()
-                            if boolCommand then
-                                LocalPlayer():ConCommand(toolGroup.Command)
-                            end
-                            toolGroup.CPanelFunction(cnt, toolGroup)
-                        end)
-                    end
-
                     btnTool.DoClick = function()
                         Mantle.func.sound()
 
                         toolContent:Clear()
-                        createContent(true)
+                        createContent(toolGroup, true)
                     end
                     btnTool.DoRightClick = function()
                         Mantle.func.sound()
                         local dm = Mantle.ui.derma_menu()
-                        dm:AddOption('#spawnmenu.menu.copy', function()
+                        dm:AddOption(language.GetPhrase('#spawnmenu.menu.copy'), function()
                             SetClipboardText(toolGroup.ItemName)
                         end, 'icon16/page_copy.png')
                     end
 
                     if toolGroup.ItemName == activeTool and !foundActiveTool then
                         foundActiveTool = true
-                        createContent()
+                        createContent(toolGroup, false)
                     end
+
+                    self.toolsByMode[toolGroup.ItemName] = {
+                        state = state,
+                        build = function(boolCommand)
+                            toolContent:Clear()
+                            createContent(toolGroup, boolCommand)
+                        end
+                    }
 
                     category:AddItem(btnTool)
                 end
@@ -131,12 +151,23 @@ function PANEL:Init()
             searchBox:Dock(TOP)
             searchBox:DockMargin(0, 0, 0, 4)
             searchBox:SetTall(26)
-            searchBox:SetPlaceholder('#spawnmenu.quick_filter')
+            searchBox:SetPlaceholder(language.GetPhrase('#spawnmenu.quick_filter'))
+            searchBox.textEntry:SetUpdateOnType(true)
             searchBox.textEntry.OnValueChange = function(_, text)
                 BuildTools(text)
             end
         end
     end
+
+    cvars.AddChangeCallback('gmod_toolmode', function(_, _, newValue)
+        if !IsValid(self) then return end
+
+        local entry = self.toolsByMode[newValue]
+        if !entry then return end
+        if entry.state.activeToolName == newValue then return end
+
+        entry.build(false)
+    end, 'newspawnmenu_toolmode_sync')
 end
 
 function PANEL:Paint(w, h)

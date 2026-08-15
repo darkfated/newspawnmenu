@@ -1,5 +1,44 @@
 local convar_newspawnmenu_close_on_spawn = CreateClientConVar('newspawnmenu_close_on_spawn', 0, true, false)
 local convar_newspawnmenu_mode = GetConVar('newspawnmenu_mode')
+local math_floor = math.floor
+
+local function OpenNPCWeaponMenu(npcKey, npcData)
+    local menu = Mantle.ui.derma_menu()
+    local customIcons = list.Get('ContentCategoryIcons')
+
+    local function addOption(text, weaponClass, icon)
+        menu:AddOption(text, function()
+            RunConsoleCommand('gmod_spawnnpc', npcKey, weaponClass)
+        end, icon)
+    end
+
+    for _, class in ipairs(npcData.Weapons) do
+        if class != '' then
+            addOption(language.GetPhrase(class), class, 'icon16/gun.png')
+        end
+    end
+
+    menu:AddSpacer()
+    addOption(language.GetPhrase('#menubar.npcs.noweapon'), 'none', 'icon16/cross.png')
+
+    local groupedWeps = {}
+    for _, v in pairs(list.Get('NPCUsableWeapons')) do
+        if table.HasValue(npcData.Weapons, v.class) then continue end
+
+        local cat = (v.category or ''):lower()
+        groupedWeps[cat] = groupedWeps[cat] or {}
+        groupedWeps[cat][language.GetPhrase(v.title)] = { class = v.class, icon = customIcons[v.category or ''] or 'icon16/gun.png' }
+    end
+    for group, items in SortedPairs(groupedWeps) do
+        menu:AddSpacer()
+        for title, info in SortedPairs(items) do
+            menu:AddOption(title, function()
+                RunConsoleCommand('gmod_spawnnpc', npcKey, info.class)
+            end, info.icon)
+        end
+    end
+end
+
 local PANEL = {}
 
 function PANEL:Init()
@@ -53,13 +92,17 @@ function PANEL:AddItem(name, category, tabl, itemIndex, categoryIcon)
         local scaledW, scaledH = w * scale, h * scale
         local offsetX, offsetY = (w - scaledW) * 0.5, (h - scaledH) * 0.5
 
-        RNDX().Rect(offsetX, offsetY, scaledW, scaledH)
+        RNDX.Rect(offsetX, offsetY, scaledW, scaledH)
             :Rad(32)
             :Color(Mantle.color.panel_alpha[1])
             :Shape(RNDX.SHAPE_IOS)
         :Draw()
 
-        self.funcPaint(name, itemIndex, tabl, scaledW, scaledH, btn)
+        if self.funcPaint then
+            self.funcPaint(name, itemIndex, tabl, scaledW, scaledH, btn)
+        else
+            self:PaintItem(name, itemIndex, tabl, scaledW, scaledH, btn)
+        end
     end
 
     panelItem.Think = function(btn)
@@ -107,7 +150,7 @@ function PANEL:AddItem(name, category, tabl, itemIndex, categoryIcon)
         local className = tabl.ClassName
         local targetCopy = className and className or tabl.Class
         if targetCopy then
-            dm:AddOption('#spawnmenu.menu.copy', function()
+            dm:AddOption(language.GetPhrase('#spawnmenu.menu.copy'), function()
                 SetClipboardText(targetCopy)
             end, 'icon16/page_copy.png')
         end
@@ -128,12 +171,23 @@ function PANEL:AddItem(name, category, tabl, itemIndex, categoryIcon)
         end
 
         if self.ToolMode then
-            dm:AddOption('#spawnmenu.menu.spawn_with_toolgun', function()
+            local creatorName = (self.ToolMode == 1 or self.ToolMode == 2) and itemIndex or tabl.ClassName
+
+            dm:AddOption(language.GetPhrase('#spawnmenu.menu.spawn_with_toolgun'), function()
                 RunConsoleCommand('gmod_tool', 'creator')
                 RunConsoleCommand('creator_type', self.ToolMode)
-                local creatorName = self.ToolMode == 1 and itemIndex or self.ToolMode == 2 and tabl.Class or tabl.ClassName
                 RunConsoleCommand('creator_name', creatorName)
+
+                if self.ToolMode == 2 then
+                    RunConsoleCommand('creator_override', '')
+                end
             end, 'icon16/brick_add.png')
+
+            if self.ToolMode == 2 and tabl.Weapons and #tabl.Weapons > 0 then
+                dm:AddOption(language.GetPhrase('#spawnmenu.menu.spawn_with_weapon'), function()
+                    OpenNPCWeaponMenu(itemIndex, tabl)
+                end, 'icon16/gun.png')
+            end
         end
 
         if itemMdl then
@@ -151,6 +205,56 @@ function PANEL:AddItem(name, category, tabl, itemIndex, categoryIcon)
     self.items[category].grid:AddItem(panelItem)
 
     return panelItem
+end
+
+function PANEL:PaintItem(name, itemIndex, tabl, w, h, btn)
+    local scale = btn.anim_scale
+    local offset = (1 - scale) * 0.5
+    local scaledW = w * scale
+    local scaledH = h * scale
+    local x = offset * w
+    local y = offset * h
+    local mat = btn.mat or btn.icon
+    local fontI = math_floor(14 * GetConVar('newspawnmenu_scale'):GetFloat())
+    local textFont = 'Fated.' .. fontI
+    local isNameLeft = GetConVar('newspawnmenu_itemname_left'):GetBool()
+
+    if mat then
+        if !NewSpawnMenu.convar.opt then
+            RNDX.Rect(0, 0, w, h)
+                :Rad(32)
+                :Material(mat)
+                :Shape(RNDX.SHAPE_IOS)
+            :Draw()
+
+            RNDX.Rect(0, 0, w, h)
+                :Rad(24)
+                :Shape(RNDX.SHAPE_IOS)
+                :Blur(2, 8)
+            :Draw()
+        end
+
+        render.PushFilterMag(TEXFILTER.ANISOTROPIC)
+        render.PushFilterMin(TEXFILTER.ANISOTROPIC)
+            RNDX.Rect(x, y, scaledW, scaledH)
+                :Rad(24)
+                :Material(mat)
+                :Shape(RNDX.SHAPE_IOS)
+            :Draw()
+        render.PopFilterMin()
+        render.PopFilterMag()
+    end
+
+    RNDX.Rect(0, h - fontI * 2, w, fontI * 2)
+        :Radii(0, 0, 24, 24)
+        :Color(Mantle.color.panel_alpha[2])
+        :Shape(RNDX.SHAPE_IOS)
+    :Draw()
+    if isNameLeft then
+        draw.SimpleText(name, textFont, 8, h - fontI * 0.5 - 1, Mantle.color.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_BOTTOM)
+    else
+        draw.SimpleText(name, textFont, w * 0.5, h - fontI * 0.5 - 1, Mantle.color.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM)
+    end
 end
 
 function PANEL:AddFunc(func)

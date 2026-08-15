@@ -22,14 +22,14 @@ local convar_newspawnmenu_opt = CreateClientConVar('newspawnmenu_opt', 1, true, 
 
 function NewSpawnMenu.PanelPaint(w, h)
     if convar_newspawnmenu_blur:GetBool() then
-        RNDX().Rect(0, 0, w, h)
+        RNDX.Rect(0, 0, w, h)
             :Rad(24)
             :Blur(2, 10)
             :Shape(SHAPE_IOS)
         :Draw()
     end
 
-    RNDX().Rect(0, 0, w, h)
+    RNDX.Rect(0, 0, w, h)
         :Rad(24)
         :Color(Mantle.color.background_alpha)
         :Shape(SHAPE_IOS)
@@ -39,7 +39,7 @@ end
 local color_background = Color(0, 0, 0, 45)
 hook.Add('HUDPaint', 'NewSpawnMenu', function()
     if IsValid(NewSpawnMenu.menu) and NewSpawnMenu.menu:IsVisible() then
-        RNDX().Rect(0, 0, Mantle.func.sw, Mantle.func.sh)
+        RNDX.Rect(0, 0, Mantle.func.sw, Mantle.func.sh)
             :Color(color_background)
         :Draw()
 

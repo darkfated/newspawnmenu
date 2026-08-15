@@ -1,19 +1,20 @@
 local PANEL = {}
 
 function PANEL:Init()
-	self:SetItemWidth(0.14)
-	self:SetItemHeight(0.3)
-	self:SetAutoHeight(true)
+    self:SetItemWidth(0.14)
+    self:SetItemHeight(0.3)
+    self:SetAutoHeight(true)
+    self.List.Paint = nil
 
-	local mats = list.Get('RopeMaterials')
+    local mats = list.Get('RopeMaterials')
 
-	for k, v in pairs(mats) do
-		self:AddMaterial(k, v)
-	end
+    for k, v in pairs(mats) do
+        self:AddMaterial(k, v)
+    end
 end
 
 function PANEL:Paint(w, h)
-    RNDX().Rect(0, 0, w, h)
+    RNDX.Rect(0, 0, w, h)
         :Rad(12)
         :Color(Mantle.color.panel_alpha[1])
     :Draw()
@@ -31,7 +32,7 @@ local function paintBtn(btn)
     btn:SetFont('Fated.16')
     btn:SetTextColor(Mantle.color.gray)
     btn.Paint = function(_, w, h)
-        RNDX().Rect(0, 0, w, h)
+        RNDX.Rect(0, 0, w, h)
             :Rad(12)
             :Color(Mantle.color.panel_alpha[1])
         :Draw()
@@ -39,220 +40,316 @@ local function paintBtn(btn)
 end
 
 function PANEL:Init()
-	self.NumPad1 = vgui.Create('DBinder', self)
+    self.NumPad1 = vgui.Create('DBinder', self)
     paintBtn(self.NumPad1)
-	self.Label1 = vgui.Create('DLabel', self)
+    self.Label1 = vgui.Create('DLabel', self)
     self.Label1:SetFont('Fated.16')
     self.Label1:SetTextColor(Mantle.color.text)
-	self.Label1:SetDark(true)
+    self.Label1:SetDark(true)
 
-	self.NumPad2 = vgui.Create('DBinder', self)
+    self.NumPad2 = vgui.Create('DBinder', self)
     paintBtn(self.NumPad2)
-	self.Label2 = vgui.Create('DLabel', self)
+    self.Label2 = vgui.Create('DLabel', self)
     self.Label2:SetFont('Fated.16')
     self.Label2:SetTextColor(Mantle.color.text)
-	self.Label2:SetDark(true)
+    self.Label2:SetDark(true)
 
-	self:SetHeight(200)
+    self:SetHeight(200)
 end
 
 function PANEL:SetLabel1(txt)
-	if !txt then return end
-	self.Label1:SetText(txt)
+    if !txt then return end
+    self.Label1:SetText(txt)
 end
 
 function PANEL:SetLabel2(txt)
-	if !txt then return end
-	self.Label2:SetText(txt)
+    if !txt then return end
+    self.Label2:SetText(txt)
 end
 
 function PANEL:SetConVar1(cvar)
-	self.NumPad1:SetConVar(cvar)
-	self.m_ConVar1 = cvar
+    self.NumPad1:SetConVar(cvar)
+    self.m_ConVar1 = cvar
 end
 
 function PANEL:SetConVar2(cvar)
-	self.NumPad2:SetConVar(cvar)
-	self.m_ConVar2 = cvar
+    self.NumPad2:SetConVar(cvar)
+    self.m_ConVar2 = cvar
 end
 
 function PANEL:GetValue1()
-	if !self.m_ConVar1 or !IsValid(self.NumPad1) then return KEY_NONE end
-	return self.NumPad1:GetValue()
+    if !self.m_ConVar1 or !IsValid(self.NumPad1) then return KEY_NONE end
+    return self.NumPad1:GetValue()
 end
 
 function PANEL:GetValue2()
-	if !self.m_ConVar2 or !IsValid(self.NumPad2) then return KEY_NONE end
-	return self.NumPad2:GetValue()
+    if !self.m_ConVar2 or !IsValid(self.NumPad2) then return KEY_NONE end
+    return self.NumPad2:GetValue()
 end
 
 function PANEL:PerformLayout()
-	self:SetTall(80)
+    self:SetTall(80)
 
-	self.NumPad1:InvalidateLayout(true)
-	self.NumPad1:SetSize(100, 50)
+    self.NumPad1:InvalidateLayout(true)
+    self.NumPad1:SetSize(100, 50)
 
-	if self.m_ConVar2 then
-		self.NumPad2:InvalidateLayout(true)
-		self.NumPad2:SetSize(100, 50)
-	end
+    if self.m_ConVar2 then
+        self.NumPad2:InvalidateLayout(true)
+        self.NumPad2:SetSize(100, 50)
+    end
 
-	if !self.m_ConVar2 then
-		self.Label1:SizeToContents()
+    if !self.m_ConVar2 then
+        self.Label1:SizeToContents()
 
-		self.NumPad2:SetVisible(false)
-		self.Label2:SetVisible(false)
+        self.NumPad2:SetVisible(false)
+        self.Label2:SetVisible(false)
 
-		self.NumPad1:CenterHorizontal(0.5)
-		self.NumPad1:AlignTop(30)
+        self.NumPad1:CenterHorizontal(0.5)
+        self.NumPad1:AlignTop(30)
 
-		self.Label1:CenterHorizontal()
-		self.Label1:AlignTop(0)
-	else
-		self.Label1:SizeToContents()
-		self.Label2:SizeToContents()
+        self.Label1:CenterHorizontal()
+        self.Label1:AlignTop(0)
+    else
+        self.Label1:SizeToContents()
+        self.Label2:SizeToContents()
 
-		self.NumPad2:SetVisible(true)
-		self.Label2:SetVisible(true)
+        self.NumPad2:SetVisible(true)
+        self.Label2:SetVisible(true)
 
-		self.NumPad1:CenterHorizontal(0.25)
-		self.Label1:CenterHorizontal(0.25)
-		self.NumPad1:AlignTop(30)
+        self.NumPad1:CenterHorizontal(0.25)
+        self.Label1:CenterHorizontal(0.25)
+        self.NumPad1:AlignTop(30)
 
-		self.NumPad2:CenterHorizontal(0.75)
-		self.Label2:CenterHorizontal(0.75)
-		self.NumPad2:AlignTop(30)
-		self.Label2:AlignTop(0)
-	end
+        self.NumPad2:CenterHorizontal(0.75)
+        self.Label2:CenterHorizontal(0.75)
+        self.NumPad2:AlignTop(30)
+        self.Label2:AlignTop(0)
+    end
 end
 
 vgui.Register('NSM.CtrlNumPad', PANEL, 'Panel')
 
+
 local PANEL = {}
 local math_floor = math.floor
 
+AccessorFunc(PANEL, 'm_bInitialized', 'Initialized')
+AccessorFunc(PANEL, 'm_Name', 'Name')
+
+local function controlFont(size)
+    return 'Fated.' .. math_floor(size * GetConVar('newspawnmenu_scale'):GetFloat())
+end
+
+local function estimateLines(font, text, maxW)
+    surface.SetFont(font)
+    local lines, cur = 1, ''
+
+    for word in string.gmatch(text, '%S+') do
+        local cand = cur == '' and word or (cur .. ' ' .. word)
+        if cur != '' and surface.GetTextSize(cand) > maxW then
+            lines = lines + 1
+            cur = word
+        else
+            cur = cand
+        end
+    end
+
+    return lines
+end
+
+local function estimateFit(panel, label, text, font, cw, minTall)
+    local maxW = cw > 0 and (cw - 12) or 260
+
+    surface.SetFont(font)
+    local _, lineH = surface.GetTextSize('Ay')
+    local lines = estimateLines(font, text, maxW)
+    local tall = math.max(minTall or 34, lines * lineH + 12)
+
+    label:SetTall(tall)
+    panel:SetTall(tall)
+end
+
+local function realFit(panel, label, font, minTall)
+    if label:GetWide() < 40 then return end
+
+    label:SetTall(1000)
+    label:_rebuild()
+
+    local lines = label._lines and #label._lines or 1
+    local lineH = label._line_h or 16
+    local tall = math.max(minTall or 34, lines * lineH + 12)
+
+    label:SetTall(tall)
+    panel:SetTall(tall)
+end
+
+local function textPanel(owner, text, font, color, valign)
+    local panel = vgui.Create('Panel')
+
+    local label = vgui.Create('MantleText', panel)
+    label:Dock(FILL)
+    label:SetText(text)
+    label:SetFont(font)
+    label:SetColor(color)
+    label:SetAlign(TEXT_ALIGN_CENTER)
+    label:SetVAlign(valign or 'center')
+
+    estimateFit(panel, label, text, font, owner:GetWide(), 34)
+
+    local lastFitW = 0
+    label.OnSizeChanged = function(_, w, h)
+        if w < 40 or w == lastFitW then return end
+        lastFitW = w
+        realFit(panel, label, font, 34)
+    end
+
+    return panel, label
+end
+
+local function labeledControl(label, control, controlTall)
+    if !label or label == '' then
+        control:SetTall(controlTall)
+        return control
+    end
+
+    local wrapper = vgui.Create('Panel')
+    wrapper:SetTall(controlTall + 24)
+
+    local title = vgui.Create('DPanel', wrapper)
+    title:Dock(TOP)
+    title:DockMargin(0, 0, 0, 6)
+    title:SetTall(18)
+    title.Paint = function(_, w, h)
+        draw.SimpleText(language.GetPhrase(label), 'Fated.18', 0, 0, Mantle.color.text)
+    end
+
+    control:SetParent(wrapper)
+    control:Dock(FILL)
+    control:DockMargin(6, 0, 6, 0)
+
+    return wrapper
+end
+
 function PANEL:Init()
-    self:DockPadding(8, 8, 8, 8)
+    self:SetInitialized(false)
 
     self.sp = vgui.Create('MantleScrollPanel', self)
     self.sp:Dock(FILL)
+    self.sp:DockPadding(0, 0, 0, 10)
 end
 
-function PANEL:Paint(w, h)
-    -- RNDX().Rect(0, 0, w, h)
-    --     :Rad(32)
-    --     :Color(Mantle.color.panel_alpha[2])
-    --     :Shape(RNDX.SHAPE_IOS)
-    -- :Draw()
+function PANEL:ClearControls()
+    self.sp:Clear()
+end
+
+function PANEL:Clear()
+    self.sp:Clear()
+end
+
+function PANEL:GetEmbeddedPanel()
+    return self
 end
 
 function PANEL:AddPanel(pnl)
-    if !IsValid(pnl) then
-        return
+    if !IsValid(pnl) then return end
+
+    if pnl:GetParent() == self.sp:GetCanvas() then
+        return pnl
     end
 
-    pnl:SetParent(self.sp)
     pnl:Dock(TOP)
-    pnl:DockMargin(0, 0, 0, 6)
+    pnl:DockMargin(0, 0, 0, 8)
+    self.sp:AddItem(pnl)
 
     return pnl
 end
 
 function PANEL:AddItem(pnl)
-    self:AddPanel(pnl)
-end
-
-function PANEL:Clear()
-    -- Clear :)
+    return self:AddPanel(pnl)
 end
 
 function PANEL:Help(text)
-    local panelLabel = vgui.Create('Panel')
-    panelLabel:SetTall(110)
-    panelLabel.Paint = function(_, w, h)
-        RNDX().Rect(0, 0, w, h)
-            :Rad(32)
+    local panel, label = textPanel(self, language.GetPhrase(text), controlFont(16), Mantle.color.gray, 'center')
+
+    panel.Paint = function(_, w, h)
+        RNDX.Rect(0, 0, w, h)
+            :Rad(14)
             :Color(Mantle.color.panel_alpha[2])
             :Shape(RNDX.SHAPE_IOS)
         :Draw()
     end
 
-    local textFont = 'Fated.' .. math_floor(16 * GetConVar('newspawnmenu_scale'):GetFloat())
+    panel.SetText = function(_, t)
+        label:SetText(t)
+        label:InvalidateTextLayout()
+        estimateFit(panel, label, t, controlFont(16), panel:GetWide(), 34)
+    end
 
-    local label = vgui.Create('MantleText', panelLabel)
-    label:Dock(FILL)
-    label:SetText(language.GetPhrase(text))
-    label:SetAlign(TEXT_ALIGN_CENTER)
-    label:SetVAlign('center')
-    label:SetFont(textFont)
-    label:SetColor(Mantle.color.gray)
-
-    return self:AddPanel(panelLabel)
+    return self:AddPanel(panel)
 end
 
-function PANEL:ToolPresets(group, cvarlist)
+function PANEL:ControlHelp(text)
+    return self:AddPanel(textPanel(self, language.GetPhrase(text), controlFont(15), Mantle.color.gray, 'center'))
+end
+
+function PANEL:CheckBox(label, convar)
+    local checkbox = vgui.Create('MantleCheckBox')
+    checkbox:SetTxt(language.GetPhrase(label))
+    checkbox:SetConvar(convar)
+
+    local ctrl = self:AddPanel(checkbox)
+    ctrl:DockMargin(6, 0, 6, 8)
+
+    return ctrl
 end
 
 function PANEL:NumSlider(label, convar, min, max, decimals)
     local slider = vgui.Create('MantleSlideBox')
     slider:SetRange(min, max, decimals)
     slider:SetConvar(convar)
-    slider:SetText(label)
-
-    function slider:SetHeight()
-    end
+    slider:SetText(language.GetPhrase(label))
 
     return self:AddPanel(slider)
 end
 
--- TODO: Remake
-function PANEL:KeyBinder(label1, convar1, label2, convar2)
-	local binder = vgui.Create('NSM.CtrlNumPad')
-	binder:SetLabel1(label1)
-	binder:SetConVar1(convar1)
-
-	if label2 != nil and convar2 != nil then
-		binder:SetLabel2(label2)
-		binder:SetConVar2(convar2)
-	end
-
-	return self:AddPanel(binder)
-end
-
-function PANEL:Button(label, command)
-    local btn = vgui.Create('MantleBtn')
-    btn:SetTall(32)
-    btn:SetTxt(label)
-    btn.DoClick = function()
-        RunConsoleCommand(command)
-    end
-
-    return self:AddPanel(btn)
-end
-
-function PANEL:CheckBox(label, convar)
-    local checkbox = vgui.Create('MantleCheckBox')
-    checkbox:SetTxt(label)
-    checkbox:SetConvar(convar)
-
-    return self:AddPanel(checkbox)
-end
-
 function PANEL:TextEntry(strLabel, strConVar)
     local entry = vgui.Create('MantleEntry')
-    entry:SetTitle(strLabel)
+
+    if strLabel and strLabel != '' then
+        entry:SetTitle(language.GetPhrase(strLabel))
+    end
 
     if strConVar and strConVar != '' then
         local convar = GetConVar(strConVar)
         if convar then
             entry:SetValue(convar:GetString())
         end
+
+        entry.action = function(_, text)
+            LocalPlayer():ConCommand(strConVar .. ' ' .. text)
+        end
     end
 
-    function entry:SetUpdateOnType()
+    local ctrl = self:AddPanel(entry)
+    ctrl:DockMargin(6, 0, 6, 8)
+
+    return entry.textEntry, entry
+end
+
+function PANEL:Button(label, command, ...)
+    local args = { ... }
+
+    local btn = vgui.Create('MantleBtn')
+    btn:SetTall(32)
+    btn:SetRadius(10)
+    btn:SetTxt(language.GetPhrase(label))
+    btn.DoClick = function()
+        if command then
+            RunConsoleCommand(command, unpack(args))
+        end
     end
 
-    return self:AddPanel(entry)
+    return self:AddPanel(btn)
 end
 
 function PANEL:ColorPicker(label, r, g, b, a)
@@ -272,11 +369,24 @@ function PANEL:ColorPicker(label, r, g, b, a)
         return col
     end
 
-    local colorBtn = vgui.Create('MantleBtn')
-    colorBtn:SetTall(30)
-    colorBtn:SetTxt(Mantle.lang.get('newspawnmenu', 'select_color'))
-    colorBtn:SetColorHover(getColor())
-    colorBtn.DoClick = function()
+    local swatch = vgui.Create('DPanel')
+    swatch:SetCursor('hand')
+    swatch:SetMouseInputEnabled(true)
+
+    swatch.Paint = function(_, w, h)
+        RNDX.Rect(0, 0, w, h)
+            :Rad(12)
+            :Color(Mantle.color.window_shadow)
+            :Shadow(4, 2)
+        :Draw()
+
+        RNDX.Rect(0, 0, w, h)
+            :Rad(12)
+            :Color(getColor())
+        :Draw()
+    end
+
+    swatch.OnMousePressed = function()
         local colorSet = getColor()
 
         Mantle.ui.color_picker(function(col)
@@ -287,129 +397,151 @@ function PANEL:ColorPicker(label, r, g, b, a)
             if a then
                 lp:ConCommand(a .. ' ' .. col.a)
             end
-
-            colorBtn:SetColorHover(col)
         end, colorSet)
     end
 
-    return self:AddPanel(colorBtn)
+    return self:AddPanel(labeledControl(label, swatch, 34))
 end
 
 function PANEL:RopeSelect(convar)
-	local ctrl = vgui.Create('NSM.RopeMaterial')
-	ctrl:SetConVar(convar)
+    local ctrl = vgui.Create('NSM.RopeMaterial')
+    ctrl:SetConVar(convar)
 
-	return self:AddPanel(ctrl)
+    return self:AddPanel(ctrl)
 end
 
 function PANEL:MatSelect(convar, options, autoStretch, iWidth, iHeight)
-	local MatSelect = vgui.Create('MatSelect')
-	MatSelect:SetConVar(convar)
-    MatSelect:SetAutoHeight(true)
+    local MatSelect = vgui.Create('MatSelect')
+    MatSelect:SetConVar(convar)
 
-	if iWidth != nil then
+    if autoStretch != nil then
+        MatSelect:SetAutoHeight(autoStretch)
+    end
+
+    MatSelect.List.Paint = nil
+
+    if iWidth != nil then
         MatSelect:SetItemWidth(iWidth)
     end
 
-	if iHeight != nil then
+    if iHeight != nil then
         MatSelect:SetItemHeight(iHeight)
     end
 
-	if options != nil then
-		for k, v in pairs(options) do
-			local nam = isnumber(k) and v or k
-			MatSelect:AddMaterial(nam, v)
-		end
-	end
+    if options != nil then
+        for k, v in pairs(options) do
+            local nam = isnumber(k) and v or k
+            MatSelect:AddMaterial(nam, v)
+        end
+    end
 
-	return self:AddPanel(MatSelect)
+    return self:AddPanel(MatSelect)
 end
 
 function PANEL:PropSelect(label, convar, mdlList, height)
-	local PropSelect = vgui.Create('PropSelect')
-    PropSelect:DockPadding(6, 6, 6, 6)
-	PropSelect:SetConVar(convar)
+    local PropSelect = vgui.Create('PropSelect')
+    PropSelect:SetConVar(convar or '')
     PropSelect.List.Paint = nil
-	PropSelect.Label:SetText(label or '')
-	PropSelect.Height = height or 2
+    PropSelect.Label:SetText(label or '')
+    PropSelect.Height = height or 2
 
-	local firstKey, firstVal = next(mdlList)
+    local firstKey, firstVal = next(mdlList)
 
-	if istable(firstVal) and isstring(firstVal.model) then
-		local tmp = {}
+    if istable(firstVal) and isstring(firstVal.model) then
+        local tmp = {}
 
-		for k, v in SortedPairsByMemberValue(mdlList, 'model') do
-			tmp[k] = v.model:lower() .. (v.skin or 0)
-		end
+        for k, v in SortedPairsByMemberValue(mdlList, 'model') do
+            tmp[k] = v.model:lower() .. (v.skin or 0)
+        end
 
-		for k, v in SortedPairsByValue(tmp) do
-			v = mdlList[k]
-			PropSelect:AddModelEx(k, v.model, v.skin or 0)
-		end
-	else
-		for k, v in SortedPairs(mdlList) do
-			PropSelect:AddModel(k, v)
-		end
-	end
+        for k, v in SortedPairsByValue(tmp) do
+            v = mdlList[k]
+            PropSelect:AddModelEx(k, v.model, v.skin or 0)
+        end
+    else
+        for k, v in SortedPairs(mdlList) do
+            PropSelect:AddModel(k, v)
+        end
+    end
 
-	return self:AddPanel(PropSelect)
+    return self:AddPanel(PropSelect)
+end
+
+function PANEL:ToolPresets(group, cvarlist)
+end
+
+function PANEL:KeyBinder(label1, convar1, label2, convar2)
+    local binder = vgui.Create('NSM.CtrlNumPad')
+    binder:SetLabel1(label1)
+    binder:SetConVar1(convar1)
+
+    if label2 != nil and convar2 != nil then
+        binder:SetLabel2(label2)
+        binder:SetConVar2(convar2)
+    end
+
+    return self:AddPanel(binder)
 end
 
 function PANEL:ComboBoxMulti(label, tabl)
     local combobox = vgui.Create('MantleComboBox')
-    combobox:SetPlaceholder(label)
-
-    for name, tabl in pairs(tabl) do
-        combobox:AddChoice(name, tabl)
+    combobox:SetPlaceholder(label and language.GetPhrase(label) or '')
+    combobox.AddOption = function(cb, text, data)
+        cb:AddChoice(text, data)
     end
 
-    combobox.OnSelect = function(idx, text, data)
+    for name, data in pairs(tabl or {}) do
+        combobox:AddChoice(name, data)
+    end
+
+    combobox.OnSelect = function(_, _, data)
+        if !istable(data) then return end
+
         for convar, value in pairs(data) do
             LocalPlayer():ConCommand(convar .. ' ' .. value)
         end
     end
 
-    return self:AddPanel(combobox)
+    for _, choice in ipairs(combobox.choices) do
+        if !istable(choice.data) then continue end
+
+        local match = true
+        for convar, value in pairs(choice.data) do
+            if GetConVarString(convar) != tostring(value) then
+                match = false
+                break
+            end
+        end
+
+        if match then
+            combobox:SetValue(choice.text)
+            break
+        end
+    end
+
+    local wrapper = labeledControl(label, combobox, 32)
+    self:AddPanel(wrapper)
+
+    return combobox, wrapper
 end
 
-function PANEL:ControlHelp(text)
-    local panelLabel = vgui.Create('Panel')
-    panelLabel:SetTall(70)
+function PANEL:FillViaTable(Table)
+    self:SetInitialized(true)
+    self:SetName(Table.Text)
 
-    local label = vgui.Create('MantleText', panelLabel)
-    label:Dock(FILL)
-    label:DockMargin(0, -14, 0, 4)
-    label:SetText(language.GetPhrase(text))
-    label:SetAlign(TEXT_ALIGN_CENTER)
-    label:SetVAlign('center')
-    local textFont = 'Fated.' .. math_floor(15 * GetConVar('newspawnmenu_scale'):GetFloat())
-    label:SetFont(textFont)
-    label:SetColor(Mantle.color.gray)
-
-    return self:AddPanel(panelLabel)
+    if Table.ControlPanelBuildFunction then
+        Table.ControlPanelBuildFunction(self)
+    end
 end
 
-function PANEL:Help(text)
-    local panelLabel = vgui.Create('Panel')
-    panelLabel:SetTall(70)
-
-    local label = vgui.Create('MantleText', panelLabel)
-    label:Dock(FILL)
-    label:DockMargin(0, 0, 0, 4)
-    label:SetText(language.GetPhrase(text))
-    label:SetAlign(TEXT_ALIGN_CENTER)
-    label:SetVAlign('center')
-    local textFont = 'Fated.' .. math_floor(15 * GetConVar('newspawnmenu_scale'):GetFloat())
-    label:SetFont(textFont)
-    label:SetColor(Mantle.color.gray)
-
-    return self:AddPanel(panelLabel)
+function PANEL:FillViaFunction(func)
+    func(self)
 end
 
-PANEL.filter = function() end
-
-function PANEL:ClearControls()
-    -- Clear
+function PANEL:ControlValues(data)
+    if data.label then
+        self:SetName(data.label)
+    end
 end
 
 function PANEL:AddControl(control, data)
@@ -426,15 +558,11 @@ function PANEL:AddControl(control, data)
     end
 
     if control == 'textbox' then
-        local ctrl = self:TextEntry(data.label or 'Untitled', data.command)
-
-        return ctrl
+        return self:TextEntry(data.label or 'Untitled', data.command)
     end
 
     if control == 'label' then
-        local ctrl = self:ControlHelp(data.text)
-
-        return ctrl
+        return self:ControlHelp(data.text)
     end
 
     if control == 'checkbox' or control == 'toggle' then
@@ -469,28 +597,32 @@ function PANEL:AddControl(control, data)
         return ctrl
     end
 
-    if control == 'button' then
-        local ctrl = self:Button(data.label or data.text or 'No Label', data.command)
+    if control == 'propselect' then
+        return self:PropSelect(data.label, data.convar, data.options or {}, data.height)
+    end
 
-        return ctrl
+    if control == 'matselect' then
+        return self:MatSelect(data.convar, data.options, data.autostretch, data.width, data.height)
+    end
+
+    if control == 'ropematerial' then
+        return self:RopeSelect(data.convar)
+    end
+
+    if control == 'button' then
+        return self:Button(data.label or data.text or 'No Label', data.command)
+    end
+
+    if control == 'numpad' then
+        return self:KeyBinder(data.label, data.command, data.label2, data.command2)
     end
 
     if control == 'color' then
-        local ctrl = self:ColorPicker(
-            data.label,
-            data.red,
-            data.green,
-            data.blue,
-            data.alpha
-        )
-
-        return ctrl
+        return self:ColorPicker(data.label, data.red, data.green, data.blue, data.alpha)
     end
 
     if control == 'combobox' then
-        local ctrl = self:ComboBoxMulti(data.label, data.options)
-
-        return ctrl
+        control = 'listbox'
     end
 
     if control == 'listbox' then
@@ -521,70 +653,34 @@ function PANEL:AddControl(control, data)
                 end
             end
 
-            self:AddPanel(ctrl)
-
-            return ctrl
-        else
-            local ctrl = self:ComboBoxMulti(data.label, data.options)
-
-            return ctrl
+            return self:AddPanel(ctrl)
         end
+
+        return self:ComboBoxMulti(data.label, data.options)
     end
 
     if control == 'materialgallery' then
-        local ctrl = vgui.Create('MatSelect', self)
+        local ctrl = vgui.Create('MatSelect')
         ctrl:SetItemWidth(data.width or 32)
         ctrl:SetItemHeight(data.height or 32)
+        ctrl:SetNumRows(data.rows or 4)
         ctrl:SetConVar(data.convar or nil)
+        ctrl.List.Paint = nil
 
         if data.options then
             for name, tab in pairs(data.options) do
-                ctrl:AddMaterial(name, tab.material or tab)
+                local infoTable = table.Copy(tab)
+                local mat = infoTable.material
+                local value = infoTable.value
+
+                infoTable.material = nil
+                infoTable.value = nil
+
+                ctrl:AddMaterialEx(name, mat, value, infoTable)
             end
         end
 
-        self:AddPanel(ctrl)
-
-        return ctrl
-    end
-
-    if control == 'ropematerial' then
-        local ctrl = self:RopeSelect(data.convar)
-        return ctrl
-    end
-
-    if control == 'propselect' then
-        local ctrl = self:PropSelect(
-            data.label,
-            data.convar,
-            data.options or {},
-            data.height
-        )
-
-        return ctrl
-    end
-
-    if control == 'matselect' then
-        local ctrl = self:MatSelect(
-            data.convar,
-            data.options,
-            data.autostretch,
-            data.width,
-            data.height
-        )
-
-        return ctrl
-    end
-
-    if control == 'numpad' then
-        local ctrl = self:KeyBinder(
-            data.label,
-            data.command,
-            data.label2,
-            data.command2
-        )
-
-        return ctrl
+        return self:AddPanel(ctrl)
     end
 
     local ctrl = vgui.Create(original, self)
@@ -597,10 +693,10 @@ function PANEL:AddControl(control, data)
             ctrl:ControlValues(data)
         end
 
-        self:AddPanel(ctrl)
-
-        return ctrl
+        return self:AddPanel(ctrl)
     end
+
+    MsgN('UNHANDLED CONTROL: ', control)
 
     return nil
 end
