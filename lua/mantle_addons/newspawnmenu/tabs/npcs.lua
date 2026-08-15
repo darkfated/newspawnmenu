@@ -3,7 +3,14 @@ local math_floor = math.floor
 
 function PANEL:Init()
     self:AddFunc(function(tabl, itemIndex)
-        RunConsoleCommand('gmod_spawnnpc', itemIndex)
+        local weapon = table.Random(tabl.Weapons or {}) or ''
+
+        local cvar = GetConVar('gmod_npcweapon')
+        if cvar and cvar:GetString() != '' then
+            weapon = cvar:GetString()
+        end
+
+        RunConsoleCommand('gmod_spawnnpc', itemIndex, weapon)
     end)
 
     self.ToolMode = 2
