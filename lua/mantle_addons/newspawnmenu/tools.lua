@@ -63,6 +63,7 @@ function PANEL:Init()
             for i, groupTools in ipairs(toolCategory.Items) do
                 local category = vgui.Create('MantleCategory', spTools)
                 category:Dock(TOP)
+                category:DockMargin(0, 0, 0, 0)
                 if !isToolnameLeft then
                     category:SetCenterText(true)
                 end
@@ -87,6 +88,7 @@ function PANEL:Init()
 
                     local btnTool = vgui.Create('MantleBtn', category)
                     btnTool:Dock(TOP)
+                    btnTool:DockMargin(0, 0, 0, 0)
                     btnTool:SetTall(isCompactTools and 26 or 34)
                     btnTool:SetTxt('')
                     btnTool.Paint = function(s, w, h)

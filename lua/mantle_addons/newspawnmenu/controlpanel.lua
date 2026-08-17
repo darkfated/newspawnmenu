@@ -140,49 +140,6 @@ local function controlFont(size)
     return 'Fated.' .. math_floor(size * GetConVar('newspawnmenu_scale'):GetFloat())
 end
 
-local function estimateLines(font, text, maxW)
-    surface.SetFont(font)
-    local lines, cur = 1, ''
-
-    for word in string.gmatch(text, '%S+') do
-        local cand = cur == '' and word or (cur .. ' ' .. word)
-        if cur != '' and surface.GetTextSize(cand) > maxW then
-            lines = lines + 1
-            cur = word
-        else
-            cur = cand
-        end
-    end
-
-    return lines
-end
-
-local function estimateFit(panel, label, text, font, cw, minTall)
-    local maxW = cw > 0 and (cw - 12) or 260
-
-    surface.SetFont(font)
-    local _, lineH = surface.GetTextSize('Ay')
-    local lines = estimateLines(font, text, maxW)
-    local tall = math.max(minTall or 34, lines * lineH + 12)
-
-    label:SetTall(tall)
-    panel:SetTall(tall)
-end
-
-local function realFit(panel, label, font, minTall)
-    if label:GetWide() < 40 then return end
-
-    label:SetTall(1000)
-    label:_rebuild()
-
-    local lines = label._lines and #label._lines or 1
-    local lineH = label._line_h or 16
-    local tall = math.max(minTall or 34, lines * lineH + 12)
-
-    label:SetTall(tall)
-    panel:SetTall(tall)
-end
-
 local function textPanel(owner, text, font, color, valign)
     local panel = vgui.Create('Panel')
 
@@ -194,14 +151,35 @@ local function textPanel(owner, text, font, color, valign)
     label:SetAlign(TEXT_ALIGN_CENTER)
     label:SetVAlign(valign or 'center')
 
-    estimateFit(panel, label, text, font, owner:GetWide(), 34)
+    local function fit(useW)
+        local pw = useW or panel:GetWide()
+        if pw < 40 then return end
+
+        local ml, mt, mr, mb = label:GetDockMargin()
+        local padding = label.padding or 6
+
+        label:SetSize(math.max(1, pw - ml - mr), 10000)
+        label:InvalidateTextLayout()
+        label:PerformLayout()
+
+        local lines = label._lines and #label._lines or 1
+        local lineH = label._lineH or 16
+        local tall = math.max(34, lines * lineH + padding * 2 + mt + mb)
+
+        label:SetTall(math.max(1, tall - mt - mb))
+        panel:SetTall(tall)
+    end
+
+    panel.Fit = fit
 
     local lastFitW = 0
-    label.OnSizeChanged = function(_, w, h)
+    panel.OnSizeChanged = function(_, w, h)
         if w < 40 or w == lastFitW then return end
         lastFitW = w
-        realFit(panel, label, font, 34)
+        fit()
     end
+
+    fit(owner:GetWide())
 
     return panel, label
 end
@@ -282,7 +260,7 @@ function PANEL:Help(text)
     panel.SetText = function(_, t)
         label:SetText(t)
         label:InvalidateTextLayout()
-        estimateFit(panel, label, t, controlFont(16), panel:GetWide(), 34)
+        panel.Fit()
     end
 
     return self:AddPanel(panel)
