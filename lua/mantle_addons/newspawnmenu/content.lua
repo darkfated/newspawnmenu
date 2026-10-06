@@ -59,18 +59,27 @@ function PANEL:AddItem(name, category, tabl, itemIndex, categoryIcon)
     end
 
     local menuW = NewSpawnMenu.menu:GetWide()
-    local menuScale = GetConVar('newspawnmenu_scale'):GetFloat()
-    local itemSize = menuW * 0.0825 - 2
+    local isWide = convar_newspawnmenu_mode:GetInt() == 1
+    local gap = 8
+    local gridW = menuW * (0.65 + (isWide and 0.34 or 0)) - 240 - 16
+
+    local cols = isWide and 8 or 6
+
+    if math.floor(gridW / cols) - gap < 100 then
+        cols = isWide and 6 or 4
+    end
+
+    local cellW = math.floor(gridW / cols)
+    local itemSize = cellW - gap
 
     if !self.items[category] then
         local categorySp = vgui.Create('MantleScrollPanel')
-        local itemsCols = (menuW * (0.65 + (convar_newspawnmenu_mode:GetInt() == 1 and 0.34 or 0)) - 12 - 240) / itemSize
 
         categorySp.grid = vgui.Create('DGrid', categorySp)
         categorySp.grid:Dock(TOP)
-        categorySp.grid:SetCols(itemsCols)
-        categorySp.grid:SetColWide(itemSize + 8)
-        categorySp.grid:SetRowHeight(itemSize + 8)
+        categorySp.grid:SetCols(cols)
+        categorySp.grid:SetColWide(cellW)
+        categorySp.grid:SetRowHeight(cellW)
 
         self.items[category] = categorySp
         self.left:AddTab(category, self.items[category], Material(categoryIcon))
