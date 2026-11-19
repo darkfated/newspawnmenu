@@ -239,7 +239,7 @@ function PANEL:PaintItem(name, itemIndex, tabl, w, h, btn)
             RNDX.Rect(0, 0, w, h)
                 :Rad(24)
                 :Shape(RNDX.SHAPE_IOS)
-                :Blur(2, 8)
+                :KBlur(4, 2)
             :Draw()
         end
 

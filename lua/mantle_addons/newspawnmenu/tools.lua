@@ -5,8 +5,6 @@ local convar_newspawnmenu_contrast_tools = CreateClientConVar('newspawnmenu_cont
 local PANEL = {}
 
 function PANEL:Init()
-    self:DockPadding(8, 8, 8, 8)
-
     self.toolsByMode = {}
 
     self.categoryTabs = vgui.Create('MantleTabs', self)
@@ -24,8 +22,8 @@ function PANEL:Init()
 
         local leftPanel = vgui.Create('Panel', categoryContent)
         leftPanel:Dock(LEFT)
-        leftPanel:DockMargin(0, 0, 8, 0)
-        leftPanel:SetWide(math.max(200, NewSpawnMenu.menu:GetWide() * 0.115))
+        leftPanel:DockMargin(0, 0, 6, 0)
+        leftPanel:SetWide(math.max(200, NewSpawnMenu.menu:GetWide() * 0.12))
 
         local spTools = vgui.Create('MantleScrollPanel', leftPanel)
         spTools:Dock(FILL)
@@ -152,7 +150,6 @@ function PANEL:Init()
             local searchBox = vgui.Create('MantleEntry', leftPanel)
             searchBox:Dock(TOP)
             searchBox:DockMargin(0, 0, 0, 4)
-            searchBox:SetTall(26)
             searchBox:SetPlaceholder(language.GetPhrase('#spawnmenu.quick_filter'))
             searchBox.textEntry:SetUpdateOnType(true)
             searchBox.textEntry.OnValueChange = function(_, text)

@@ -213,7 +213,7 @@ function PANEL:Init()
 
     self.sp = vgui.Create('MantleScrollPanel', self)
     self.sp:Dock(FILL)
-    self.sp:DockPadding(0, 0, 0, 10)
+    self.sp:DockPadding(0, 0, 0, 8)
 end
 
 function PANEL:ClearControls()

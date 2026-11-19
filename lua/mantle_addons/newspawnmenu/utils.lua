@@ -24,7 +24,7 @@ function NewSpawnMenu.PanelPaint(w, h)
     if convar_newspawnmenu_blur:GetBool() then
         RNDX.Rect(0, 0, w, h)
             :Rad(24)
-            :Blur(2, 10)
+            :KBlur(4, 2)
             :Shape(SHAPE_IOS)
         :Draw()
     end
