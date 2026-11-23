@@ -44,12 +44,10 @@ function PANEL:Init()
 
             toolContent:InvalidateLayout(true)
 
-            pcall(function()
-                if boolCommand then
-                    LocalPlayer():ConCommand(toolGroup.Command)
-                end
-                toolGroup.CPanelFunction(cnt, toolGroup)
-            end)
+            if boolCommand then
+                LocalPlayer():ConCommand(toolGroup.Command)
+            end
+            toolGroup.CPanelFunction(cnt, toolGroup)
         end
 
         local function BuildTools(filter)
