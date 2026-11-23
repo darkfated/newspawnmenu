@@ -1,42 +1,4 @@
-local L = function(key)
-    return Mantle.lang.get('newspawnmenu', key)
-end
-
-local function buildMenuSettings(pan)
-    pan:Help(L('help_apply_settings'))
-    pan:CheckBox(L('checkbox_enable_menu'), 'newspawnmenu_on')
-    pan:CheckBox(L('checkbox_close_on_spawn'), 'newspawnmenu_close_on_spawn')
-    pan:NumSlider(L('scale'), 'newspawnmenu_scale', 0.8, 1.2, 2)
-    pan:CheckBox(L('checkbox_itemname_left'), 'newspawnmenu_itemname_left')
-
-    pan:ComboBoxMulti(L('checkbox_mode'), {
-        [L('checkbox_mode_0')] = {
-            newspawnmenu_mode = 0
-        },
-        [L('checkbox_mode_1')] = {
-            newspawnmenu_mode = 1
-        },
-        [L('checkbox_mode_2')] = {
-            newspawnmenu_mode = 2
-        }
-    })
-
-    pan:Button(L('button_recreate_menu'), 'newspawnmenu_remove')
-
-    pan:CheckBox(L('checkbox_blur'), 'newspawnmenu_blur')
-    pan:CheckBox(L('checkbox_opt'), 'newspawnmenu_opt')
-end
-
-local function buildToolsSettings(pan)
-    pan:Help(L('help_apply_settings'))
-    pan:CheckBox(L('checkbox_enable_search'), 'newspawnmenu_search_panel')
-    pan:CheckBox(L('checkbox_compact_tools'), 'newspawnmenu_compact_tools')
-    pan:CheckBox(L('checkbox_toolname_left'), 'newspawnmenu_toolname_left')
-
-    pan:Button(L('button_recreate_menu'), 'newspawnmenu_remove')
-
-    pan:CheckBox(L('checkbox_contrast_tools'), 'newspawnmenu_contrast_tools')
-end
+local L = NewSpawnMenu.settings.L
 
 local function getThemeColors()
     local rows = {}
@@ -65,7 +27,7 @@ local function getRowColor(entry)
     return Mantle.color[entry.key]
 end
 
-local function buildThemeSettings(pan)
+function NewSpawnMenu.settings.buildThemes(pan)
     local comboboxTheme = vgui.Create('MantleComboBox')
     comboboxTheme:SetPlaceholder(L('select_interface_theme'))
 
@@ -154,14 +116,3 @@ local function buildThemeSettings(pan)
         self.hoveredRow = 0
     end
 end
-
-hook.Add('AddToolMenuTabs', 'NewSpawnMenu', function()
-    spawnmenu.AddToolTab('newspawnmenu', 'Custom', 'icon16/application_osx_terminal.png')
-    spawnmenu.AddToolCategory('newspawnmenu', 'newspawnmenu_v', 'Visual')
-end)
-
-hook.Add('PopulateToolMenu', 'NewSpawnMenu', function()
-    spawnmenu.AddToolMenuOption('newspawnmenu', 'newspawnmenu_v', 'newspawnmenu_v_menu', 'Menu', '', '', buildMenuSettings)
-    spawnmenu.AddToolMenuOption('newspawnmenu', 'newspawnmenu_v', 'newspawnmenu_v_tools', 'Tools', '', '', buildToolsSettings)
-    spawnmenu.AddToolMenuOption('newspawnmenu', 'newspawnmenu_v', 'newspawnmenu_v_themes', 'Themes', '', '', buildThemeSettings)
-end)

@@ -1,0 +1,15 @@
+Mantle.run_cl('mantle_addons/newspawnmenu/settings/shared.lua')
+Mantle.run_cl('mantle_addons/newspawnmenu/settings/menu.lua')
+Mantle.run_cl('mantle_addons/newspawnmenu/settings/tools.lua')
+Mantle.run_cl('mantle_addons/newspawnmenu/settings/themes.lua')
+
+hook.Add('AddToolMenuTabs', 'NewSpawnMenu', function()
+    spawnmenu.AddToolTab('newspawnmenu', 'Custom', 'icon16/application_osx_terminal.png')
+    spawnmenu.AddToolCategory('newspawnmenu', 'newspawnmenu_v', 'Visual')
+end)
+
+hook.Add('PopulateToolMenu', 'NewSpawnMenu', function()
+    spawnmenu.AddToolMenuOption('newspawnmenu', 'newspawnmenu_v', 'newspawnmenu_v_menu', 'Menu', '', '', NewSpawnMenu.settings.buildMenu)
+    spawnmenu.AddToolMenuOption('newspawnmenu', 'newspawnmenu_v', 'newspawnmenu_v_tools', 'Tools', '', '', NewSpawnMenu.settings.buildTools)
+    spawnmenu.AddToolMenuOption('newspawnmenu', 'newspawnmenu_v', 'newspawnmenu_v_themes', 'Themes', '', '', NewSpawnMenu.settings.buildThemes)
+end)

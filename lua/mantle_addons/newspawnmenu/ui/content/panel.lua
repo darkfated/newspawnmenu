@@ -1,43 +1,6 @@
-local convar_newspawnmenu_close_on_spawn = CreateClientConVar('newspawnmenu_close_on_spawn', 0, true, false)
-local convar_newspawnmenu_mode = GetConVar('newspawnmenu_mode')
+local convar_close_on_spawn = CreateClientConVar('newspawnmenu_close_on_spawn', 0, true, false)
+local convar_mode = GetConVar('newspawnmenu_mode')
 local math_floor = math.floor
-
-local function OpenNPCWeaponMenu(npcKey, npcData)
-    local menu = Mantle.ui.derma_menu()
-    local customIcons = list.Get('ContentCategoryIcons')
-
-    local function addOption(text, weaponClass, icon)
-        menu:AddOption(text, function()
-            RunConsoleCommand('gmod_spawnnpc', npcKey, weaponClass)
-        end, icon)
-    end
-
-    for _, class in ipairs(npcData.Weapons) do
-        if class != '' then
-            addOption(language.GetPhrase(class), class, 'icon16/gun.png')
-        end
-    end
-
-    menu:AddSpacer()
-    addOption(language.GetPhrase('#menubar.npcs.noweapon'), 'none', 'icon16/cross.png')
-
-    local groupedWeps = {}
-    for _, v in pairs(list.Get('NPCUsableWeapons')) do
-        if table.HasValue(npcData.Weapons, v.class) then continue end
-
-        local cat = (v.category or ''):lower()
-        groupedWeps[cat] = groupedWeps[cat] or {}
-        groupedWeps[cat][language.GetPhrase(v.title)] = { class = v.class, icon = customIcons[v.category or ''] or 'icon16/gun.png' }
-    end
-    for group, items in SortedPairs(groupedWeps) do
-        menu:AddSpacer()
-        for title, info in SortedPairs(items) do
-            menu:AddOption(title, function()
-                RunConsoleCommand('gmod_spawnnpc', npcKey, info.class)
-            end, info.icon)
-        end
-    end
-end
 
 local PANEL = {}
 
@@ -59,17 +22,17 @@ function PANEL:AddItem(name, category, tabl, itemIndex, categoryIcon)
     end
 
     local menuW = NewSpawnMenu.menu:GetWide()
-    local isWide = convar_newspawnmenu_mode:GetInt() == 1
+    local isWide = convar_mode:GetInt() == 1
     local gap = 8
     local gridW = menuW * (0.65 + (isWide and 0.34 or 0)) - 240 - 16
 
     local cols = isWide and 8 or 6
 
-    if math.floor(gridW / cols) - gap < 100 then
+    if math_floor(gridW / cols) - gap < 100 then
         cols = isWide and 6 or 4
     end
 
-    local cellW = math.floor(gridW / cols)
+    local cellW = math_floor(gridW / cols)
     local itemSize = cellW - gap
 
     if !self.items[category] then
@@ -126,28 +89,24 @@ function PANEL:AddItem(name, category, tabl, itemIndex, categoryIcon)
         end
     end
 
-    panelItem.DoClick = function(btn)
-        if !self.func then
-            return
-        end
+    panelItem.DoClick = function()
+        if !self.func then return end
 
         Mantle.func.sound('UI/buttonclick.wav')
         self.func(tabl, itemIndex)
 
-        if convar_newspawnmenu_close_on_spawn:GetBool() then
+        if convar_close_on_spawn:GetBool() then
             NewSpawnMenu.menu:Close()
         end
     end
 
-    panelItem.DoMiddleClick = function(btn)
-        if !self.funcMiddle then
-            return
-        end
+    panelItem.DoMiddleClick = function()
+        if !self.funcMiddle then return end
 
         Mantle.func.sound('UI/buttonclick.wav')
         self.funcMiddle(tabl)
 
-        if convar_newspawnmenu_close_on_spawn:GetBool() then
+        if convar_close_on_spawn:GetBool() then
             NewSpawnMenu.menu:Close()
         end
     end
@@ -194,7 +153,7 @@ function PANEL:AddItem(name, category, tabl, itemIndex, categoryIcon)
 
             if self.ToolMode == 2 and tabl.Weapons and #tabl.Weapons > 0 then
                 dm:AddOption(language.GetPhrase('#spawnmenu.menu.spawn_with_weapon'), function()
-                    OpenNPCWeaponMenu(itemIndex, tabl)
+                    NewSpawnMenu.content.openNPCWeaponMenu(itemIndex, tabl)
                 end, 'icon16/gun.png')
             end
         end
@@ -283,11 +242,3 @@ function PANEL:AddFuncPaint(func)
 end
 
 vgui.Register('NewSpawnMenu.Content', PANEL, 'Panel')
-
-function NewSpawnMenu.CreateTab(id, name, icon, panel)
-    NewSpawnMenu.tabs[id] = {
-        name = name,
-        icon = icon,
-        panel = panel
-    }
-end

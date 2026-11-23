@@ -1,27 +1,15 @@
+local convar_blur = CreateClientConVar('newspawnmenu_blur', 1, true, false)
+local convar_opt = CreateClientConVar('newspawnmenu_opt', 1, true, false)
+local color_background = Color(0, 0, 0, 45)
 
-if SERVER then
-    -- sukk prediction: https://wiki.facepunch.com/gmod/GM:PlayerButtonDown
-    util.AddNetworkString('NewSpawnMenu-F1')
-
-    hook.Add('ShowHelp', 'NewSpawnMenu', function(pl)
-        local t = CurTime()
-        if t - (pl.lastTimeF1 and pl.lastTimeF1 or 0) < 0.2 then return end
-        pl.lastTimeF1 = t
-
-        net.Start('NewSpawnMenu-F1')
-        net.Send(pl)
-
-        return false
-    end)
-
-    return
-end
-
-local convar_newspawnmenu_blur = CreateClientConVar('newspawnmenu_blur', 1, true, false)
-local convar_newspawnmenu_opt = CreateClientConVar('newspawnmenu_opt', 1, true, false)
+local hideElements = {
+    CHudHealth = true,
+    CHudAmmo = true,
+    CHudBattery = true
+}
 
 function NewSpawnMenu.PanelPaint(w, h)
-    if convar_newspawnmenu_blur:GetBool() then
+    if convar_blur:GetBool() then
         RNDX.Rect(0, 0, w, h)
             :Rad(24)
             :KBlur(4, 2)
@@ -36,7 +24,6 @@ function NewSpawnMenu.PanelPaint(w, h)
     :Draw()
 end
 
-local color_background = Color(0, 0, 0, 45)
 hook.Add('HUDPaint', 'NewSpawnMenu', function()
     if IsValid(NewSpawnMenu.menu) and NewSpawnMenu.menu:IsVisible() then
         RNDX.Rect(0, 0, Mantle.func.sw, Mantle.func.sh)
@@ -47,19 +34,13 @@ hook.Add('HUDPaint', 'NewSpawnMenu', function()
     end
 end)
 
-local hideElements = {
-    CHudHealth = true,
-    CHudAmmo = true,
-    CHudBattery = true
-}
-
 hook.Add('HUDShouldDraw', 'NewSpawnMenu', function(elem)
     if IsValid(NewSpawnMenu.menu) and NewSpawnMenu.menu:IsVisible() and hideElements[elem] then
         return false
     end
 end)
 
-NewSpawnMenu.convar.opt = convar_newspawnmenu_opt:GetBool()
+NewSpawnMenu.convar.opt = convar_opt:GetBool()
 
 cvars.AddChangeCallback('newspawnmenu_opt', function(_, _, newValue)
     NewSpawnMenu.convar.opt = newValue == '1' and true or false

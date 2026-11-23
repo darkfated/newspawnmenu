@@ -2,7 +2,6 @@ local PANEL = {}
 
 function PANEL:Init()
     self.panel = nil
-    -- NewSpawnMenu.menu:StartFocus(self)
 
     self.ModelPanel = vgui.Create('DModelPanel', self)
     self.ModelPanel:Dock(FILL)
@@ -92,7 +91,6 @@ function PANEL:Init()
     self.BackBtn:SetTxt(backText)
     self.BackBtn.DoClick = function()
         self.panel.left:SetVisible(true)
-        -- NewSpawnMenu.menu:EndFocus(self)
         self:Remove()
     end
 end
