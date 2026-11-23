@@ -6,6 +6,7 @@ NewSpawnMenu = {
 
 Mantle.run_cl('utils.lua')
 Mantle.run_sv('utils.lua')
+Mantle.run_cl('api/init.lua')
 Mantle.run_cl('menu.lua')
 Mantle.run_cl('main.lua')
 Mantle.run_cl('settings.lua')
@@ -42,3 +43,5 @@ Mantle.run_cl('tabs/entities.lua')
 Mantle.run_cl('tabs/vehicles.lua')
 Mantle.run_cl('tabs/npcs.lua')
 Mantle.run_cl('tabs/effects.lua')
+
+Mantle.run_cl('compatibility/init.lua')

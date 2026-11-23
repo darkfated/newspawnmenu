@@ -3,7 +3,7 @@ local convar_newspawnmenu_mode = CreateClientConVar('newspawnmenu_mode', 0, true
 local convar_newspawnmenu_scale = CreateClientConVar('newspawnmenu_scale', 1, true, false)
 CreateClientConVar('newspawnmenu_itemname_left', 1, true, false)
 
-local function CreateMenu()
+function NewSpawnMenu.CreateMenu()
     local w, h = Mantle.func.sw, Mantle.func.sh
     local menuW, menuH
     if w < 1600 then
@@ -25,40 +25,21 @@ local function CreateMenu()
     if menuW > w then menuW = w end
     if menuH > h then menuH = h end
 
-    NewSpawnMenu.menu = vgui.Create('EditablePanel')
-    NewSpawnMenu.menu:SetSize(menuW, menuH)
-    NewSpawnMenu.menu:Center()
-    NewSpawnMenu.menu:MakePopup()
-    NewSpawnMenu.menu:SetKeyboardInputEnabled(false)
-    NewSpawnMenu.menu.Paint = nil
-    NewSpawnMenu.menu.Focus = nil
-    NewSpawnMenu.menu.HangOpen = nil
+    local menu = vgui.Create('EditablePanel')
+    NewSpawnMenu.menu = menu
+    menu:SetSize(menuW, menuH)
+    menu:Center()
+    menu:MakePopup()
+    menu:SetVisible(false)
+    menu:SetKeyboardInputEnabled(false)
+    menu.Paint = nil
+    menu.HangOpen = nil
 
-    function NewSpawnMenu.menu:Close()
-        if NewSpawnMenu.menu.HangOpen then
-            NewSpawnMenu.menu.HangOpen = false
-            return
-        end
-
-        RememberCursorPosition()
-
-        NewSpawnMenu.menu:SetVisible(false)
-        -- NewSpawnMenu.menu:Remove()
-    end
-
-    function NewSpawnMenu.menu:StartFocus(pan)
-        self.Focus = pan
-        self.HangOpen = true
-        self:SetKeyboardInputEnabled(true)
-    end
-
-    function NewSpawnMenu.menu:EndFocus(pan)
-        if self.Focus != pan then return end
-        self:SetKeyboardInputEnabled(false)
-    end
+    NewSpawnMenu.api.menu.install(menu)
 
     if menuMode != 2 then
-        local main = vgui.Create('NewSpawnMenu.Main', NewSpawnMenu.menu)
+        local main = vgui.Create('NewSpawnMenu.Main', menu)
+        menu.CreateMenu = main
         main:Dock(FILL)
 
         if menuMode == 1 then
@@ -74,81 +55,58 @@ local function CreateMenu()
     end
 
     if menuMode != 1 then
-        local tools = vgui.Create('NewSpawnMenu.Tools', NewSpawnMenu.menu)
+        local tools = vgui.Create('NewSpawnMenu.Tools', menu)
+        menu.ToolMenu = tools
         tools:Dock(menuMode == 2 and FILL or RIGHT)
         tools:DockMargin(6, 0, 0, 0)
         tools:SetWide(menuW * 0.35)
     end
+
+    if NewSpawnMenu.compatibility then
+        NewSpawnMenu.compatibility.bridge.bind()
+    end
 end
 
-local function OpenMenu()
-    if IsValid(NewSpawnMenu.menu) then
-        NewSpawnMenu.menu:SetVisible(true)
-    else
+function NewSpawnMenu.OpenMenu()
+    if !IsValid(NewSpawnMenu.menu) then
         if !hook.Run('SpawnMenuEnabled') then return end
-        CreateMenu()
+        NewSpawnMenu.CreateMenu()
     end
 
-    RestoreCursorPosition()
-
-    hook.Call('SpawnMenuOpened', NewSpawnMenu.menu)
-
-    achievements.SpawnMenuOpen()
+    if IsValid(NewSpawnMenu.menu) then NewSpawnMenu.menu:Open() end
 end
 
 hook.Add('OnSpawnMenuOpen', 'NewSpawnMenu', function()
-    if !convar_newspawnmenu_on:GetBool() then
-        return
-    end
-
-    OpenMenu()
-
-    return false
-end)
-
-hook.Add('OnSpawnMenuClose', 'NewSpawnMenu', function()
-    if !IsValid(NewSpawnMenu.menu) then
-        return
-    end
-
-    NewSpawnMenu.menu:Close()
-    hook.Call('SpawnMenuClosed')
-
-    return false
+    if !convar_newspawnmenu_on:GetBool() then return end
+    NewSpawnMenu.OpenMenu()
 end)
 
 cvars.AddChangeCallback('gmod_language', function()
     RunConsoleCommand('newspawnmenu_remove')
 end, 'newspawnmenu_reload')
 
-hook.Add('OnTextEntryGetFocus', 'NewSpawnMenu', function(pan)
-    if !convar_newspawnmenu_on:GetBool() then
-        return
-    end
+hook.Add('OnTextEntryGetFocus', 'NewSpawnMenu', function(panel)
+    if !convar_newspawnmenu_on:GetBool() then return end
 
-	if IsValid(NewSpawnMenu.menu) and IsValid(pan) and pan:HasParent(NewSpawnMenu.menu) then
-		NewSpawnMenu.menu:StartFocus(pan)
-	end
+    if IsValid(NewSpawnMenu.menu) and IsValid(panel) and panel:HasParent(NewSpawnMenu.menu) then
+        NewSpawnMenu.menu:StartFocus(panel)
+    end
 end)
 
-hook.Add('OnTextEntryLoseFocus', 'NewSpawnMenu', function(pan)
-    if !convar_newspawnmenu_on:GetBool() then
-        return
-    end
+hook.Add('OnTextEntryLoseFocus', 'NewSpawnMenu', function(panel)
+    if !convar_newspawnmenu_on:GetBool() then return end
 
-	if IsValid(NewSpawnMenu.menu) and IsValid(pan) and pan:HasParent(NewSpawnMenu.menu) then
-		NewSpawnMenu.menu:EndFocus(pan)
-	end
+    if IsValid(NewSpawnMenu.menu) and IsValid(panel) and panel:HasParent(NewSpawnMenu.menu) then
+        NewSpawnMenu.menu:EndFocus(panel)
+    end
 end)
 
 net.Receive('NewSpawnMenu-F1', function()
-    if !convar_newspawnmenu_on:GetBool() then
-        return
-    end
+    if !convar_newspawnmenu_on:GetBool() then return end
 
-    if IsValid(NewSpawnMenu.menu) then
-        NewSpawnMenu.menu:SetVisible(!NewSpawnMenu.menu:IsVisible())
+    if IsValid(NewSpawnMenu.menu) and NewSpawnMenu.menu:IsVisible() then
+        NewSpawnMenu.menu:Close()
     else
-        CreateMenu()
+        NewSpawnMenu.OpenMenu()
     end
 end)
