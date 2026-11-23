@@ -1,93 +1,190 @@
 local PANEL = {}
 
+local EFFECT_LIST = 'PostProcess'
+local DEFAULT_CATEGORY_ICON = 'icon16/picture.png'
+
+local function isEffectOn(effect)
+    if effect.convars then
+        for cvar, data in pairs(effect.convars) do
+            if GetConVarString(cvar) != data.on then
+                return false
+            end
+        end
+
+        return true
+    end
+
+    if effect.convar then
+        local cvar = GetConVar(effect.convar)
+        return cvar and cvar:GetInt() == 1 or false
+    end
+
+    return false
+end
+
+local function toggleEffect(effect)
+    if effect.convars then
+        local isOn = isEffectOn(effect)
+
+        for cvar, data in pairs(effect.convars) do
+            RunConsoleCommand(cvar, isOn and (data.off or '') or data.on)
+        end
+
+        return
+    end
+
+    if !effect.convar then return end
+
+    local cvar = GetConVar(effect.convar)
+    if !cvar then return end
+
+    LocalPlayer():ConCommand(effect.convar .. ' ' .. (cvar:GetInt() == 1 and 0 or 1))
+end
+
+local function openEffectSettings(name, effect)
+    if !effect.cpanel then return end
+
+    local title = language.GetPhrase(name)
+    local cp = vgui.Create('NewSpawnMenu.ControlPanel')
+    cp:SetName(title)
+    effect.cpanel(cp)
+
+    if IsValid(NewSpawnMenu.tools) and NewSpawnMenu.tools:ShowControlPanel(cp) then
+        return
+    end
+
+    local frame = vgui.Create('MantleFrame')
+    frame:SetSize(460, 360)
+    frame:SetTitle(title)
+    frame:Center()
+    frame:MakePopup()
+    frame:ShowAnimation()
+
+    cp:SetParent(frame)
+    cp:Dock(FILL)
+
+    return frame
+end
+
+local function clickedCheckbox(btn)
+    if !IsValid(btn) then return false end
+
+    local x, y = btn:ScreenToLocal(gui.MouseX(), gui.MouseY())
+    local right = btn:GetWide() - 8
+
+    return x >= right - 16 and x <= right and y >= 8 and y <= 24
+end
+
 function PANEL:Init()
-    self.on = true
+    self:AddFunc(function(data)
+        local effect = data.effect
+        if !effect then return end
 
-    self:AddFunc(function(tabl, itemIndex)
-        if tabl.onclick then
-            tabl.onclick()
+        if effect.onclick then
+            effect.onclick()
             return
         end
 
-        if tabl.convars then
-            local isOn = true
-            for k, v in pairs(tabl.convars) do
-                if GetConVarString(k) != v.on then
-                    isOn = false
-                end
-            end
-
-            for k, v in pairs(tabl.convars) do
-                if isOn then
-                    RunConsoleCommand(k, v.off or '')
-                else
-                    RunConsoleCommand(k, v.on)
-                end
-            end
-
+        if (effect.convar or effect.convars) and clickedCheckbox(data.btn) then
+            toggleEffect(effect)
             return
         end
 
-        if !tabl.convar then return end
+        if effect.cpanel then
+            openEffectSettings(data.name, effect)
+            return
+        end
 
-        local convarValue = GetConVar(tabl.convar):GetInt() == 1 and 0 or 1
-        LocalPlayer():ConCommand(tabl.convar .. ' ' .. convarValue)
+        toggleEffect(effect)
     end)
 
-    self:AddFuncPaint(function(name, itemIndex, tabl, w, h, btn)
-        self:PaintItem(name, itemIndex, tabl, w, h, btn)
+    self:AddFuncPaint(function(name, itemIndex, data, w, h, btn)
+        self:PaintItem(name, itemIndex, data, w, h, btn)
 
-        local isOn = true
-        if tabl.convars then
-            for k, v in pairs(tabl.convars) do
-                if GetConVarString(k) != v.on then
-                    isOn = false
-                end
+        local effect = data.effect
+        if !effect or effect.onclick then return end
+        if !effect.convar and !effect.convars then return end
+
+        RNDX.Rect(w - 24, 8, 16, 16)
+            :Rad(6)
+            :Color(isEffectOn(effect) and Mantle.color.theme or Mantle.color.text)
+        :Draw()
+    end)
+
+    local items = {}
+
+    local function addItem(spawnName, effect, label, icon)
+        local title = language.GetPhrase(label or spawnName)
+
+        table.insert(items, {
+            effect = effect,
+            name = title,
+            title = title,
+            category = language.GetPhrase(effect.category or '#spawnmenu.category.other'),
+            icon = icon or effect.icon
+        })
+    end
+
+    local function addFromFunc(spawnName, effect)
+        local container = vgui.Create('Panel')
+        container.Add = function(self, child)
+            if ispanel(child) then
+                child:SetParent(self)
+                return child
             end
-        elseif tabl.convar then
-            isOn = GetConVar(tabl.convar):GetInt() == 1
+
+            return vgui.Create(child, self)
+        end
+
+        effect.func(container)
+
+        for _, child in pairs(container:GetChildren()) do
+            if !IsValid(child) or !child.ToTable then continue end
+
+            local infoTable = {}
+            child:ToTable(infoTable)
+
+            local info = infoTable[1]
+            if !istable(info) or !isstring(info.name) then continue end
+
+            local parent = list.GetEntry(EFFECT_LIST, info.name) or effect
+            local source = table.Copy(parent)
+            source.convars = info.convars or source.convars
+
+            addItem(info.name, source, info.label or info.name, info.icon)
+        end
+
+        container:Remove()
+    end
+
+    for spawnName, effect in pairs(list.Get(EFFECT_LIST)) do
+        if effect.func then
+            addFromFunc(spawnName, effect)
         else
-            isOn = false
-        end
-
-        if !tabl.onclick then
-            RNDX.Rect(w - 24, 8, 16, 16)
-                :Rad(6)
-                :Color(isOn and Mantle.color.theme or Mantle.color.text)
-            :Draw()
-        end
-    end)
-
-    local effs = list.Get('PostProcess')
-
-    local function CreateEffect(name, effect)
-        local btn = self:AddItem(name, effect.category, effect, nil, 'icon16/picture.png')
-        if effect.icon then
-            if effect.icon:StartWith('models/') then return end
-            btn.icon = Material(effect.icon)
+            addItem(spawnName, effect)
         end
     end
 
-    local otherEffects = {}
-
-    for name, effect in pairs(effs) do
-        if effect.func then
-            local pan = vgui.Create('Panel')
-            effect.func(pan)
-
-            for k, v in pairs(pan:GetChildren()) do
-                local infoTable = {}
-                v:ToTable(infoTable)
-                infoTable = infoTable[1]
-                infoTable.category = name
-                CreateEffect(infoTable.name, infoTable)
-            end
-
-            pan:Remove()
-            continue
+    table.sort(items, function(a, b)
+        if a.category != b.category then
+            return a.category < b.category
         end
 
-        CreateEffect(name, effect)
+        return a.title < b.title
+    end)
+
+    for _, data in ipairs(items) do
+        local categoryIcon = list.GetEntry('ContentCategoryIcons', data.category) or DEFAULT_CATEGORY_ICON
+        local btn = self:AddItem(data.title, data.category, data, nil, categoryIcon)
+
+        if data.icon then
+            local mat = Material(data.icon)
+            if !mat:IsError() then
+                btn.mat = mat
+            end
+        end
+
+        data.btn = btn
     end
 end
 

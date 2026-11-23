@@ -6,6 +6,7 @@ local PANEL = {}
 
 function PANEL:Init()
     self.toolsByMode = {}
+    NewSpawnMenu.tools = self
 
     self.categoryTabs = vgui.Create('MantleTabs', self)
     self.categoryTabs:Dock(FILL)
@@ -41,6 +42,9 @@ function PANEL:Init()
 
             local cnt = vgui.Create('NewSpawnMenu.ControlPanel', toolContent)
             cnt:Dock(FILL)
+
+            self.activeContent = toolContent
+            self.activeControlPanel = cnt
 
             toolContent:InvalidateLayout(true)
 
@@ -165,6 +169,20 @@ function PANEL:Init()
 
         entry.build(false)
     end, 'newspawnmenu_toolmode_sync')
+end
+
+function PANEL:ShowControlPanel(cp)
+    if !IsValid(self.activeContent) or !IsValid(cp) then return false end
+
+    self.activeContent:Clear()
+
+    cp:SetParent(self.activeContent)
+    cp:Dock(FILL)
+
+    self.activeControlPanel = cp
+    self.activeContent:InvalidateLayout(true)
+
+    return true
 end
 
 function PANEL:Paint(w, h)
