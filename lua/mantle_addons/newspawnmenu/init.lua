@@ -8,6 +8,7 @@ Mantle.run_cl('utils.lua')
 Mantle.run_sv('utils.lua')
 Mantle.run_cl('menu.lua')
 Mantle.run_cl('main.lua')
+Mantle.run_cl('settings.lua')
 
 Mantle.run_cl('controls/shared.lua')
 Mantle.run_cl('controls/rope_material.lua')
