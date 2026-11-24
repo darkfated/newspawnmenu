@@ -8,6 +8,27 @@ local function cross(a, b)
     )
 end
 
+local function rotateInCameraSpace(angles, x, y)
+    local forward = Vector(-50, -50, -25)
+    forward:Normalize()
+
+    local screenRight = cross(forward, Vector(0, 0, 1))
+    screenRight:Normalize()
+
+    local screenUp = cross(screenRight, forward)
+    screenUp:Normalize()
+
+    local next = Angle(angles.p, angles.y, angles.r)
+    next:RotateAroundAxis(screenUp, x)
+    next:RotateAroundAxis(screenRight, y)
+
+    return Angle(
+        angles.p + math.AngleDifference(next.p, angles.p),
+        angles.y + math.AngleDifference(next.y, angles.y),
+        angles.r + math.AngleDifference(next.r, angles.r)
+    )
+end
+
 local function buttonWidth(text)
     surface.SetFont('Fated.16')
     local w = surface.GetTextSize(text)
@@ -67,7 +88,7 @@ function PANEL:Init()
         local deltaY = mouseY - panel.lastMouseY
 
         if panel.rotating then
-            panel.targetAngles = panel.targetAngles + Angle(deltaY * 0.5, -deltaX * 0.5, 0)
+            panel.targetAngles = rotateInCameraSpace(panel.targetAngles, deltaX * 0.5, deltaY * 0.5)
         else
             local forward = Vector(-50, -50, -25)
             forward:Normalize()
