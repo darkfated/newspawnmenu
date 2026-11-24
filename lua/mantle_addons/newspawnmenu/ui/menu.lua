@@ -82,7 +82,10 @@ function NewSpawnMenu.OpenMenu()
         NewSpawnMenu.CreateMenu()
     end
 
-    if IsValid(NewSpawnMenu.menu) then NewSpawnMenu.menu:Open() end
+    if IsValid(NewSpawnMenu.menu) then
+        NewSpawnMenu.menu:Open()
+        NewSpawnMenu.OpenThemeWizard()
+    end
 end
 
 hook.Add('OnSpawnMenuOpen', 'NewSpawnMenu', function()

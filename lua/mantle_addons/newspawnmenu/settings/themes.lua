@@ -27,7 +27,7 @@ local function getRowColor(entry)
     return Mantle.color[entry.key]
 end
 
-function NewSpawnMenu.settings.buildThemes(pan)
+function NewSpawnMenu.settings.themeCombo(onSelect)
     local comboboxTheme = vgui.Create('MantleComboBox')
     comboboxTheme:SetPlaceholder(L('select_interface_theme'))
 
@@ -44,8 +44,14 @@ function NewSpawnMenu.settings.buildThemes(pan)
 
     comboboxTheme.OnSelect = function(_, _, id)
         Mantle.ui.setTheme(id)
+        if onSelect then onSelect(id) end
     end
-    pan:AddPanel(comboboxTheme)
+
+    return comboboxTheme
+end
+
+function NewSpawnMenu.settings.buildThemes(pan)
+    pan:AddPanel(NewSpawnMenu.settings.themeCombo())
 
     local colorRows = getThemeColors()
 

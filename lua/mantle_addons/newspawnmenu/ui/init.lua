@@ -1,4 +1,5 @@
 Mantle.run_cl('mantle_addons/newspawnmenu/ui/controlpanel.lua')
+Mantle.run_cl('mantle_addons/newspawnmenu/ui/first_run.lua')
 Mantle.run_cl('mantle_addons/newspawnmenu/ui/menu.lua')
 Mantle.run_cl('mantle_addons/newspawnmenu/ui/creation.lua')
 Mantle.run_cl('mantle_addons/newspawnmenu/ui/tools.lua')

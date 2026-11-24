@@ -34,7 +34,10 @@ tabl['en'] = {
     checkbox_opt = 'Simplification of the visual (more FPS)',
     checkbox_contrast_tools = 'Contrast mode for tools',
     checkbox_itemname_left = 'Name of items on the left',
-    checkbox_default_spawnlist = 'Use default Spawnlist tab'
+    checkbox_default_spawnlist = 'Use default Spawnlist tab',
+    wizard_text_1 = 'This panel will not appear again. Choose a color theme for your new SpawnMenu!',
+    wizard_text_2 = 'You can find all other settings in the Custom tab.',
+    wizard_ready = 'Done'
 }
 
 tabl['ru'] = {
@@ -71,7 +74,10 @@ tabl['ru'] = {
     checkbox_opt = 'Упрощение визуала (больше FPS)',
     checkbox_contrast_tools = 'Контрастный режим для инструментов',
     checkbox_itemname_left = 'Название предметов слева',
-    checkbox_default_spawnlist = 'Использовать стандартную вкладку Spawnlist'
+    checkbox_default_spawnlist = 'Использовать стандартную вкладку Spawnlist',
+    wizard_text_1 = 'Эта панель больше не появится. Выберите цветовую тему Вашего нового SpawnMenu!',
+    wizard_text_2 = 'Остальное настройки ищите во вкладке Custom.',
+    wizard_ready = 'Готово'
 }
 
 tabl['fr'] = {
@@ -108,7 +114,10 @@ tabl['fr'] = {
     checkbox_opt = 'Simplification du visuel (plus de FPS)',
     checkbox_contrast_tools = 'Mode contraste pour les outils',
     checkbox_itemname_left = 'Nom des articles à gauche',
-    checkbox_default_spawnlist = 'Utiliser l\'onglet Spawnlist par défaut'
+    checkbox_default_spawnlist = 'Utiliser l\'onglet Spawnlist par défaut',
+    wizard_text_1 = 'Ce panneau ne réapparaîtra pas. Choisissez une palette de couleurs pour votre nouveau SpawnMenu !',
+    wizard_text_2 = 'Vous trouverez tous les autres paramètres dans l\'onglet Custom.',
+    wizard_ready = 'Terminé'
 }
 
 return tabl
