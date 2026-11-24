@@ -94,10 +94,6 @@ hook.Add('OnSpawnMenuOpen', 'NewSpawnMenu', function()
     NewSpawnMenu.OpenMenu()
 end)
 
-cvars.AddChangeCallback('gmod_language', function()
-    RunConsoleCommand('newspawnmenu_remove')
-end, 'newspawnmenu_reload')
-
 hook.Add('OnTextEntryGetFocus', 'NewSpawnMenu', function(panel)
     if !convar_newspawnmenu_on:GetBool() then return end
 
@@ -125,9 +121,9 @@ net.Receive('NewSpawnMenu-F1', function()
 end)
 
 concommand.Add('newspawnmenu_remove', function()
-    if NewSpawnMenu.compatibility.bridge then
-        NewSpawnMenu.compatibility.bridge.release()
-    end
-
     controlpanel.Clear()
+
+    if NewSpawnMenu.compatibility.bridge then
+        NewSpawnMenu.compatibility.bridge.rebuild()
+    end
 end)
