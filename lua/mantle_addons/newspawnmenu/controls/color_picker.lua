@@ -45,6 +45,14 @@ function controls.ColorPicker(panel, label, r, g, b, a)
             setConVar(b, col.b)
             if a then setConVar(a, col.a) end
         end, colorSet)
+
+        local frame = Mantle.ui.menu_color_picker
+        frame:SetParent(NewSpawnMenu.menu)
+        frame:DisableCloseBtn()
+        frame:SetDraggable(false)
+        frame.header:SetCursor('arrow')
+        frame:SetZPos(100)
+        frame:Center()
     end
 
     local _, wrapper = controls.addLabeledControl(panel, swatch, label, 34)
