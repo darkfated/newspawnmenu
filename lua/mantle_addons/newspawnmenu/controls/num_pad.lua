@@ -7,10 +7,25 @@ AccessorFunc(PANEL, 'm_ConVar2', 'ConVar2')
 
 local function paintBinder(binder)
     binder:SetFont(controls.controlFont(16))
+    binder:SetText('')
+
+    binder.UpdateText = function(self)
+        local key = input.GetKeyName(self:GetSelectedNumber()) or '#dbinder.none'
+        self._displayText = language.GetPhrase(key)
+    end
+
+    binder.DoClick = function(self)
+        self._displayText = language.GetPhrase('#dbinder.press_a_key')
+        input.StartKeyTrapping()
+        self.Trapping = true
+    end
+
+    binder:UpdateText()
+
     binder.Paint = function(self, w, h)
         controls.paintField(w, h)
         draw.SimpleText(
-            self:GetText() or '',
+            self._displayText or '',
             self:GetFont(),
             w * 0.5,
             h * 0.5,
