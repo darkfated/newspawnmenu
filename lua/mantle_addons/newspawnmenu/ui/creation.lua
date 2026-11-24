@@ -11,6 +11,7 @@ end
 
 local function iconMaterial(icon)
     if !isstring(icon) or icon == '' then return end
+    if icon:StartsWith('materials/') then icon = icon:sub(11) end
 
     local mat = Material(icon)
     if !mat or mat:IsError() then return end
@@ -32,8 +33,10 @@ function PANEL:Init()
 
     local cacheTabs = {}
     for id, tab in pairs(NewSpawnMenu.tabs) do
-        cacheTabs[id] = tab
-        cacheTabs[tab.name] = tab
+        if istable(tab) then
+            cacheTabs[id] = tab
+            if tab.name then cacheTabs[tab.name] = tab end
+        end
     end
 
     for name, tab in SortedPairsByMemberValue(spawnmenu.GetCreationTabs(), 'Order') do

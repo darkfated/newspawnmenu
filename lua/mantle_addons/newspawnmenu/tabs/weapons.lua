@@ -13,19 +13,19 @@ function PANEL:Init()
 
     self.ToolMode = 3
 
-    local weps = list.Get('Weapon')
-    local customIcons = list.Get('ContentCategoryIcons')
-
-    for k, wep in pairs(weps) do
-        if !wep.Spawnable then
-            continue
+    NewSpawnMenu.content.populate.build(self, {
+        hook = 'PopulateWeapons',
+        list = 'Weapon',
+        contentType = 'weapon',
+        icon = 'icon16/gun.png',
+        nameKeys = { 'PrintName', 'Name', 'ClassName' },
+        filter = function(_, data)
+            return data.Spawnable == true
+        end,
+        onClick = function(class)
+            RunConsoleCommand('gm_giveswep', class)
         end
-
-        local name = language.GetPhrase(wep.PrintName or wep.Name or wep.ClassName or k)
-        local btn = self:AddItem(name, wep.Category, wep, nil, customIcons[wep.Category] or 'icon16/gun.png')
-
-        NewSpawnMenu.content.applyItemVisual(btn, k, wep, 'weapon')
-    end
+    })
 end
 
 vgui.Register('NewSpawnMenu.Tabs.Weapons', PANEL, 'NewSpawnMenu.Content')

@@ -9,15 +9,16 @@ function PANEL:Init()
 
     self.ToolMode = 1
 
-    local vehicles = list.Get('Vehicles')
-    local customIcons = list.Get('ContentCategoryIcons')
-
-    for k, veh in pairs(vehicles) do
-        local name = language.GetPhrase(veh.PrintName or veh.Name or k)
-        local btn = self:AddItem(name, veh.Category, veh, k, customIcons[veh.Category] or 'icon16/bricks.png')
-
-        NewSpawnMenu.content.applyItemVisual(btn, k, veh, 'vehicle')
-    end
+    NewSpawnMenu.content.populate.build(self, {
+        hook = 'PopulateVehicles',
+        list = 'Vehicles',
+        contentType = 'vehicle',
+        icon = 'icon16/car.png',
+        nameKeys = { 'PrintName', 'Name' },
+        onClick = function(class)
+            RunConsoleCommand('gm_spawnvehicle', class)
+        end
+    })
 end
 
 vgui.Register('NewSpawnMenu.Tabs.Vehicles', PANEL, 'NewSpawnMenu.Content')

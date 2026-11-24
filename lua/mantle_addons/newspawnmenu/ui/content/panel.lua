@@ -17,6 +17,7 @@ local CARD_FONT_SIZE = 14
 
 local function tabMaterial(icon)
     if !isstring(icon) or icon == '' then return nil end
+    if icon:StartsWith('materials/') then icon = icon:sub(11) end
 
     local mat = Material(icon)
     if !mat or mat:IsError() then return nil end
@@ -335,7 +336,14 @@ function PANEL:ProcessCardQueue()
 end
 
 function PANEL:CreateCard(grid, name, tabl, itemIndex)
+    local data = istable(tabl) and tabl or {}
+    local class = NewSpawnMenu.content.itemClass(itemIndex, data)
+    local contentType = data._contentType or self.ContentType
+
     local panelItem = vgui.Create('Button')
+    panelItem.contentType = contentType
+    panelItem.GetSpawnName = function() return class end
+    panelItem.GetContentType = function() return contentType end
     panelItem:SetSize(grid._itemSize or 100, grid._itemSize or 100)
     panelItem:SetText('')
     panelItem.anim_scale = 1
@@ -417,10 +425,11 @@ function PANEL:CreateCard(grid, name, tabl, itemIndex)
     end
 
     panelItem.DoClick = function()
-        if !self.func then return end
+        local fn = data._onClick or self.func
+        if !fn then return end
 
         Mantle.func.sound('UI/buttonclick.wav')
-        self.func(tabl, itemIndex)
+        fn(tabl, itemIndex)
 
         if convar_close_on_spawn:GetBool() then
             NewSpawnMenu.menu:Close()
@@ -438,9 +447,9 @@ function PANEL:CreateCard(grid, name, tabl, itemIndex)
         end
     end
 
-    panelItem.DoRightClick = function(btn)
+    panelItem.DoRightClick = function()
         Mantle.func.sound()
-        NewSpawnMenu.content.openItemMenu(self, name, itemIndex, tabl, btn.contentType or self.ContentType)
+        NewSpawnMenu.content.openItemMenu(self, name, itemIndex, data, contentType)
     end
 
     grid:AddItem(panelItem)

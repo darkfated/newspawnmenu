@@ -104,6 +104,7 @@ end
 
 local function materialFromName(name)
     if !isstring(name) or name == '' then return nil end
+    if name:StartsWith('materials/') then name = name:sub(11) end
 
     local cached = MATERIAL_CACHE[name]
     if cached == false then return nil end

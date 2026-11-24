@@ -38,6 +38,7 @@ Mantle.run_cl('mantle_addons/newspawnmenu/controls/add_control.lua')
 Mantle.run_cl('mantle_addons/newspawnmenu/ui/init.lua')
 Mantle.run_cl('mantle_addons/newspawnmenu/settings/init.lua')
 
+Mantle.run_cl('mantle_addons/newspawnmenu/tabs/populate.lua')
 Mantle.run_cl('mantle_addons/newspawnmenu/tabs/props.lua')
 Mantle.run_cl('mantle_addons/newspawnmenu/tabs/weapons.lua')
 Mantle.run_cl('mantle_addons/newspawnmenu/tabs/entities.lua')

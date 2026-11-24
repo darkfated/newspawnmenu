@@ -1,30 +1,33 @@
 local PANEL = {}
 
+local function spawnNPC(class, data)
+    local weapon = table.Random((istable(data) and data.Weapons) or {}) or ''
+
+    local cvar = GetConVar('gmod_npcweapon')
+    if cvar and cvar:GetString() != '' then
+        weapon = cvar:GetString()
+    end
+
+    RunConsoleCommand('gmod_spawnnpc', class, weapon)
+end
+
 function PANEL:Init()
     self.ContentType = 'npc'
 
     self:AddFunc(function(tabl, itemIndex)
-        local weapon = table.Random(tabl.Weapons or {}) or ''
-
-        local cvar = GetConVar('gmod_npcweapon')
-        if cvar and cvar:GetString() != '' then
-            weapon = cvar:GetString()
-        end
-
-        RunConsoleCommand('gmod_spawnnpc', itemIndex, weapon)
+        spawnNPC(itemIndex, tabl)
     end)
 
     self.ToolMode = 2
 
-    local npcs = list.Get('NPC')
-    local customIcons = list.Get('ContentCategoryIcons')
-
-    for k, npc in pairs(npcs) do
-        local name = language.GetPhrase(npc.Name or k)
-        local btn = self:AddItem(name, npc.Category, npc, k, customIcons[npc.Category] or 'icon16/monkey.png')
-
-        NewSpawnMenu.content.applyItemVisual(btn, k, npc, 'npc')
-    end
+    NewSpawnMenu.content.populate.build(self, {
+        hook = 'PopulateNPCs',
+        list = 'NPC',
+        contentType = 'npc',
+        icon = 'icon16/monkey.png',
+        nameKeys = { 'Name' },
+        onClick = spawnNPC
+    })
 end
 
 vgui.Register('NewSpawnMenu.Tabs.NPCS', PANEL, 'NewSpawnMenu.Content')

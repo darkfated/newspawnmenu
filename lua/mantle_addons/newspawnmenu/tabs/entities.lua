@@ -9,15 +9,16 @@ function PANEL:Init()
 
     self.ToolMode = 0
 
-    local entities = list.Get('SpawnableEntities')
-    local customIcons = list.Get('ContentCategoryIcons')
-
-    for k, ent in pairs(entities) do
-        local name = language.GetPhrase(ent.PrintName or ent.Name or ent.ClassName or k)
-        local btn = self:AddItem(name, ent.Category, ent, nil, customIcons[ent.Category] or 'icon16/bricks.png')
-
-        NewSpawnMenu.content.applyItemVisual(btn, k, ent, 'entity')
-    end
+    NewSpawnMenu.content.populate.build(self, {
+        hook = 'PopulateEntities',
+        list = 'SpawnableEntities',
+        contentType = 'entity',
+        icon = 'icon16/bricks.png',
+        nameKeys = { 'PrintName', 'Name', 'ClassName' },
+        onClick = function(class)
+            RunConsoleCommand('gm_spawnsent', class)
+        end
+    })
 end
 
 vgui.Register('NewSpawnMenu.Tabs.Entities', PANEL, 'NewSpawnMenu.Content')

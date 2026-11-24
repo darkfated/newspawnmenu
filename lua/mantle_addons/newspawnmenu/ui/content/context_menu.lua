@@ -1,5 +1,8 @@
 local content = NewSpawnMenu.content
 
+local contentIcon = vgui.GetControlTable('ContentIcon')
+local genericMenu = contentIcon and contentIcon.OpenGenericSpawnmenuRightClickMenu
+
 local creatorModes = {
     entity = 0,
     vehicle = 1,
@@ -38,7 +41,7 @@ local function addUseAsNPCWeapon(menu, class)
 
     menu:AddOption(language.GetPhrase('#spawnmenu.menu.use_as_npc_gun'), function()
         RunConsoleCommand('gmod_npcweapon', class)
-    end, icon, { selected = active })
+    end, icon)
 end
 
 local function addNPCWeaponMenu(menu, class, tabl)
@@ -69,17 +72,25 @@ local function addInspect(menu, panel, model)
 end
 
 function content.openItemMenu(panel, name, itemIndex, tabl, contentType)
-    local class = content.itemClass(itemIndex, tabl)
+    local data = istable(tabl) and tabl or {}
+    local class = content.itemClass(itemIndex, data)
+    local customMenu = data._openMenu
+
+    if isfunction(customMenu) and customMenu != genericMenu then
+        customMenu(panel)
+        return
+    end
+
     local menu = Mantle.ui.derma_menu()
 
     addCopy(menu, class)
-    addCreator(menu, class, creatorModes[contentType], istable(tabl) and tabl._creatorOverride or nil)
+    addCreator(menu, class, creatorModes[contentType], data._creatorOverride)
 
     if contentType == 'weapon' then
         addUseAsNPCWeapon(menu, class)
     elseif contentType == 'npc' then
-        addNPCWeaponMenu(menu, class, tabl)
+        addNPCWeaponMenu(menu, class, data)
     end
 
-    addInspect(menu, panel, content.itemModel(itemIndex, tabl, contentType))
+    addInspect(menu, panel, content.itemModel(itemIndex, data, contentType))
 end
