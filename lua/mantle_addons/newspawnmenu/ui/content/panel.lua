@@ -7,6 +7,22 @@ local mat_npc_weapon = Material('icon16/monkey.png')
 local mat_npc_weapon_on = Material('icon16/monkey_tick.png')
 local text_shadow = Color(0, 0, 0, 200)
 
+local function makeSubPanel(parent)
+    local panel = vgui.Create('MantleScrollPanel', parent)
+
+    panel.grid = vgui.Create('NewSpawnMenu.ContentGrid', panel)
+    panel.grid:Dock(TOP)
+
+    return panel
+end
+
+local function moveGridItems(from, to)
+    for _, item in ipairs(table.Copy(from.Items or {})) do
+        from:RemoveItem(item, true)
+        to:AddItem(item)
+    end
+end
+
 local PANEL = {}
 
 function PANEL:Init()
@@ -31,17 +47,81 @@ function PANEL:AddItem(name, category, tabl, itemIndex, categoryIcon)
     local preferredCols = isWide and 8 or 6
     local fallbackCols = isWide and 6 or 4
 
-    if !self.items[category] then
-        local categorySp = vgui.Create('MantleScrollPanel')
+    local categoryData = self.items[category]
+    if !categoryData then
+        local holder = vgui.Create('Panel')
 
-        categorySp.grid = vgui.Create('NewSpawnMenu.ContentGrid', categorySp)
-        categorySp.grid:Dock(TOP)
+        categoryData = {
+            holder = holder,
+            panels = {},
+            grids = {},
+            subKeys = {},
+            subIcons = {}
+        }
 
-        self.items[category] = categorySp
-        self.left:AddTab(category, self.items[category], Material(categoryIcon))
+        self.items[category] = categoryData
+        self.left:AddTab(category, holder, Material(categoryIcon))
     end
 
-    local grid = self.items[category].grid
+    local subRaw = istable(tabl) and isstring(tabl.SubCategory) and tabl.SubCategory or ''
+    local subName = subRaw != '' and language.GetPhrase(subRaw) or ''
+    local subKey = subName != '' and subName or category
+    local subIcon = list.GetEntry('ContentCategoryIcons', subRaw) or categoryIcon
+
+    if !categoryData.grids[subKey] then
+        local count = #categoryData.subKeys
+
+        if count == 0 then
+            local panel = makeSubPanel(categoryData.holder)
+            panel:Dock(FILL)
+
+            categoryData.scrollPanel = panel
+            categoryData.panels[subKey] = panel
+            categoryData.grids[subKey] = panel.grid
+            categoryData.subKeys[1] = subKey
+            categoryData.subIcons[subKey] = subIcon
+        elseif count == 1 then
+            local tabs = vgui.Create('MantleTabs', categoryData.holder)
+            tabs:Dock(FILL)
+            tabs:DockMargin(0, 0, 0, 0)
+            tabs:SetTabStyle('modern')
+
+            categoryData.tabs = tabs
+
+            local firstKey = categoryData.subKeys[1]
+            local oldPanel = categoryData.scrollPanel
+            local firstPanel = makeSubPanel(tabs)
+
+            categoryData.panels[firstKey] = firstPanel
+            categoryData.grids[firstKey] = firstPanel.grid
+
+            moveGridItems(oldPanel.grid, firstPanel.grid)
+            oldPanel:Remove()
+            categoryData.scrollPanel = nil
+
+            tabs:AddTab({ title = firstKey }, firstPanel, Material(categoryData.subIcons[firstKey]))
+
+            local panel = makeSubPanel(tabs)
+
+            categoryData.panels[subKey] = panel
+            categoryData.grids[subKey] = panel.grid
+            categoryData.subKeys[2] = subKey
+            categoryData.subIcons[subKey] = subIcon
+
+            tabs:AddTab({ title = subKey }, panel, Material(subIcon))
+        else
+            local panel = makeSubPanel(categoryData.tabs)
+
+            categoryData.panels[subKey] = panel
+            categoryData.grids[subKey] = panel.grid
+            categoryData.subKeys[#categoryData.subKeys + 1] = subKey
+            categoryData.subIcons[subKey] = subIcon
+
+            categoryData.tabs:AddTab({ title = subKey }, panel, Material(subIcon))
+        end
+    end
+
+    local grid = categoryData.grids[subKey]
     grid:Configure(preferredCols, fallbackCols, gap, 100)
 
     local panelItem = vgui.Create('Button')
