@@ -98,9 +98,7 @@ function PANEL:Init()
         toggleEffect(effect)
     end)
 
-    self:AddFuncPaint(function(name, itemIndex, data, w, h, btn, offsetX, offsetY)
-        self:PaintItem(name, itemIndex, data, w, h, btn, offsetX, offsetY)
-
+    self:AddFuncPaintOver(function(name, itemIndex, data, w, h, btn, offsetX, offsetY)
         local effect = data.effect
         if !effect or effect.onclick then return end
         if !effect.convar and !effect.convars then return end

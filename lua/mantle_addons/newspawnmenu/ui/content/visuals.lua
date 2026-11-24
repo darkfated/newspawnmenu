@@ -1,5 +1,10 @@
 local content = NewSpawnMenu.content
 
+local MATERIAL_CACHE = {}
+local SPAWNICON_CACHE = {}
+local MODEL_EXISTS_CACHE = {}
+local REGISTRY_CACHE = {}
+
 local MODEL_KEYS = {
     'Model', 'WorldModel', 'ViewModel', 'ModelName', 'Mdl',
     'model', 'worldmodel', 'viewmodel', 'modelName'
@@ -33,6 +38,11 @@ local function classFromTable(t)
 end
 
 local function registryModel(class, contentType)
+    local key = tostring(contentType or '') .. '|' .. tostring(class or '')
+    local cached = REGISTRY_CACHE[key]
+    if cached == false then return nil end
+    if cached then return cached end
+
     local sources = {}
 
     if contentType == 'weapon' then
@@ -45,9 +55,14 @@ local function registryModel(class, contentType)
         sources = { scripted_ents.Get(class), list.GetEntry('SpawnableEntities', class) }
     end
 
+    local result
+
     for _, source in ipairs(sources) do
         local model = modelFromTable(source)
-        if model then return model end
+        if model then
+            result = model
+            break
+        end
 
         local altClass = classFromTable(source)
         if altClass and altClass != class then
@@ -62,32 +77,61 @@ local function registryModel(class, contentType)
 
             for _, alt in ipairs(altSources) do
                 model = modelFromTable(alt)
-                if model then return model end
+                if model then
+                    result = model
+                    break
+                end
             end
+
+            if result then break end
         end
     end
 
-    return nil
+    REGISTRY_CACHE[key] = result or false
+
+    return result
 end
 
 local function modelExists(model)
-    return util.IsValidModel(model) or file.Exists(model, 'GAME')
+    local cached = MODEL_EXISTS_CACHE[model]
+    if cached != nil then return cached end
+
+    local exists = util.IsValidModel(model) or file.Exists(model, 'GAME')
+    MODEL_EXISTS_CACHE[model] = exists
+
+    return exists
 end
 
 local function materialFromName(name)
     if !isstring(name) or name == '' then return nil end
 
+    local cached = MATERIAL_CACHE[name]
+    if cached == false then return nil end
+    if cached then return cached end
+
     local path = 'materials/' .. name
-    if !file.Exists(path, 'GAME') and !file.Exists(path .. '.vmt', 'GAME') then return nil end
+    if !file.Exists(path, 'GAME') and !file.Exists(path .. '.vmt', 'GAME') then
+        MATERIAL_CACHE[name] = false
+        return nil
+    end
 
     local mat = Material(name)
-    if !mat or mat:IsError() then return nil end
+    if !mat or mat:IsError() then
+        MATERIAL_CACHE[name] = false
+        return nil
+    end
+
+    MATERIAL_CACHE[name] = mat
 
     return mat
 end
 
 local function spawniconMaterial(model)
     if !isstring(model) or model == '' then return nil end
+
+    local cached = SPAWNICON_CACHE[model]
+    if cached == false then return nil end
+    if cached then return cached end
 
     local relative = model:gsub('\\', '/')
     local png = relative:gsub('%.[mM][dD][lL]$', '.png')
@@ -105,8 +149,13 @@ local function spawniconMaterial(model)
 
     for _, path in ipairs(paths) do
         local mat = materialFromName(path)
-        if mat then return mat, path end
+        if mat then
+            SPAWNICON_CACHE[model] = mat
+            return mat
+        end
     end
+
+    SPAWNICON_CACHE[model] = false
 
     return nil
 end
@@ -146,12 +195,13 @@ function content.applyItemVisual(btn, itemIndex, tabl, contentType)
 
     local source = istable(tabl) and tabl or {}
     local iconOverride = source.IconOverride or source.iconOverride or source.material or source.Material
-    local names = {
-        isstring(iconOverride) and iconOverride or false,
-        'entities/' .. class .. '.png',
-        'vgui/entities/' .. class,
-        'VGUI/entities/' .. class
-    }
+    local names = { isstring(iconOverride) and iconOverride or false }
+
+    if contentType != 'prop' then
+        names[#names + 1] = 'entities/' .. class .. '.png'
+        names[#names + 1] = 'vgui/entities/' .. class
+        names[#names + 1] = 'VGUI/entities/' .. class
+    end
 
     for _, name in ipairs(names) do
         local mat = materialFromName(name)
@@ -177,3 +227,14 @@ function content.applyItemVisual(btn, itemIndex, tabl, contentType)
         end
     end
 end
+
+function content.invalidateVisuals()
+    MATERIAL_CACHE = {}
+    SPAWNICON_CACHE = {}
+    MODEL_EXISTS_CACHE = {}
+    REGISTRY_CACHE = {}
+end
+
+hook.Add('GameContentChanged', 'NewSpawnMenu.VisualCache', function()
+    content.invalidateVisuals()
+end)

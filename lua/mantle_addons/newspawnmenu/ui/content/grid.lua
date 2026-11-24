@@ -9,6 +9,24 @@ function PANEL:Init()
     self.preferredCols = 8
     self.fallbackCols = 6
     self._itemSize = 100
+    self._batchDepth = 0
+end
+
+function PANEL:InvalidateLayout(layoutNow)
+    if self._batchDepth > 0 then return end
+
+    self.BaseClass.InvalidateLayout(self, layoutNow)
+end
+
+function PANEL:BeginBatch()
+    self._batchDepth = self._batchDepth + 1
+end
+
+function PANEL:EndBatch()
+    if self._batchDepth == 0 then return end
+
+    self._batchDepth = self._batchDepth - 1
+    if self._batchDepth == 0 then self.BaseClass.InvalidateLayout(self, true) end
 end
 
 function PANEL:Configure(preferredCols, fallbackCols, gap, minItemSize)

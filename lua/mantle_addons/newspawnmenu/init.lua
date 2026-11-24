@@ -44,5 +44,6 @@ Mantle.run_cl('mantle_addons/newspawnmenu/tabs/entities.lua')
 Mantle.run_cl('mantle_addons/newspawnmenu/tabs/vehicles.lua')
 Mantle.run_cl('mantle_addons/newspawnmenu/tabs/npcs.lua')
 Mantle.run_cl('mantle_addons/newspawnmenu/tabs/effects.lua')
+Mantle.run_cl('mantle_addons/newspawnmenu/tabs/spawnlist/init.lua')
 
 Mantle.run_cl('mantle_addons/newspawnmenu/compatibility/init.lua')

@@ -4,18 +4,19 @@ local creatorModes = {
     entity = 0,
     vehicle = 1,
     npc = 2,
-    weapon = 3
+    weapon = 3,
+    prop = 4
 }
 
 local function addCopy(menu, class)
     if class == '' then return end
 
     menu:AddOption(language.GetPhrase('#spawnmenu.menu.copy'), function()
-        SetClipboardText(class)
+        SetClipboardText(class:gsub('\\', '/'))
     end, 'icon16/page_copy.png')
 end
 
-local function addCreator(menu, class, toolMode)
+local function addCreator(menu, class, toolMode, override)
     if class == '' or toolMode == nil then return end
 
     menu:AddOption(language.GetPhrase('#spawnmenu.menu.spawn_with_toolgun'), function()
@@ -23,8 +24,8 @@ local function addCreator(menu, class, toolMode)
         RunConsoleCommand('creator_type', tostring(toolMode))
         RunConsoleCommand('creator_name', class)
 
-        if toolMode == 2 then
-            RunConsoleCommand('creator_override', '')
+        if toolMode == 2 or toolMode == 4 then
+            RunConsoleCommand('creator_override', override or '')
         end
     end, 'icon16/brick_add.png')
 end
@@ -72,7 +73,7 @@ function content.openItemMenu(panel, name, itemIndex, tabl, contentType)
     local menu = Mantle.ui.derma_menu()
 
     addCopy(menu, class)
-    addCreator(menu, class, creatorModes[contentType])
+    addCreator(menu, class, creatorModes[contentType], istable(tabl) and tabl._creatorOverride or nil)
 
     if contentType == 'weapon' then
         addUseAsNPCWeapon(menu, class)

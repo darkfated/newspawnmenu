@@ -33,7 +33,8 @@ tabl['en'] = {
     scale = 'Scale',
     checkbox_opt = 'Simplification of the visual (more FPS)',
     checkbox_contrast_tools = 'Contrast mode for tools',
-    checkbox_itemname_left = 'Name of items on the left'
+    checkbox_itemname_left = 'Name of items on the left',
+    checkbox_default_spawnlist = 'Use default Spawnlist tab'
 }
 
 tabl['ru'] = {
@@ -69,7 +70,8 @@ tabl['ru'] = {
     scale = 'Масштаб',
     checkbox_opt = 'Упрощение визуала (больше FPS)',
     checkbox_contrast_tools = 'Контрастный режим для инструментов',
-    checkbox_itemname_left = 'Название предметов слева'
+    checkbox_itemname_left = 'Название предметов слева',
+    checkbox_default_spawnlist = 'Использовать стандартную вкладку Spawnlist'
 }
 
 tabl['fr'] = {
@@ -105,7 +107,8 @@ tabl['fr'] = {
     scale = 'Échelle',
     checkbox_opt = 'Simplification du visuel (plus de FPS)',
     checkbox_contrast_tools = 'Mode contraste pour les outils',
-    checkbox_itemname_left = 'Nom des articles à gauche'
+    checkbox_itemname_left = 'Nom des articles à gauche',
+    checkbox_default_spawnlist = 'Utiliser l\'onglet Spawnlist par défaut'
 }
 
 return tabl
