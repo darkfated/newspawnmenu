@@ -1,5 +1,20 @@
 local PANEL = {}
 
+local BASE_CAM_OFFSET = Vector(50, 50, 25)
+
+local function fitZoom(panel, min, max)
+    local size = max - min
+    local radius = math.max(1, size:Length() * 0.5)
+
+    local fov = math.rad(panel:GetFOV() or 40)
+    local aspect = math.max(1, panel:GetWide()) / math.max(1, panel:GetTall())
+    local halfY = math.atan(math.tan(fov * 0.5) / aspect)
+    local half = math.min(fov * 0.5, halfY)
+    local distance = radius / math.sin(half) * 0.7
+
+    return math.Clamp(distance / BASE_CAM_OFFSET:Length(), 0.05, 20)
+end
+
 local function cross(a, b)
     return Vector(
         a.y * b.z - a.z * b.y,
@@ -138,13 +153,14 @@ function PANEL:Init()
         entity:SetAngles(panel.currentAngles)
         entity:SetPos(panel.m_vecModelOrigin + panel.panOffset)
 
-        local campos = panel.m_vecModelOrigin + Vector(panel.currentZoom * 50, panel.currentZoom * 50, panel.currentZoom * 25)
+        local campos = panel.m_vecModelOrigin + BASE_CAM_OFFSET * panel.currentZoom
         panel:SetCamPos(campos)
         panel:SetLookAt(panel.m_vecModelOrigin)
     end
 
     self.ModelPanel.OnMouseWheeled = function(panel, delta)
-        panel.targetZoom = math.Clamp(panel.targetZoom + delta * 0.1, 0.1, 5)
+        local base = self._defaultZoom or 1
+        panel.targetZoom = math.Clamp(panel.targetZoom * (1 + delta * 0.15), base * 0.05, base * 8)
         return true
     end
 
@@ -186,11 +202,14 @@ function PANEL:SetModel(mdl)
     local min, max = entity:GetRenderBounds()
     self.ModelPanel.m_vecModelOrigin = (min + max) * 0.5
 
+    local zoom = fitZoom(self.ModelPanel, min, max)
+    self._defaultZoom = zoom
+
     local defaultAngles = self._defaultAngles
     self.ModelPanel.targetAngles = Angle(defaultAngles.p, defaultAngles.y, defaultAngles.r)
     self.ModelPanel.currentAngles = Angle(10, 45, 0)
-    self.ModelPanel.targetZoom = self._defaultZoom
-    self.ModelPanel.currentZoom = 0.5
+    self.ModelPanel.targetZoom = zoom
+    self.ModelPanel.currentZoom = zoom * 0.75
 
     local current = self.ModelPanel.currentAngles
     self._openAnim = {
@@ -199,7 +218,7 @@ function PANEL:SetModel(mdl)
         startZoom = self.ModelPanel.currentZoom
     }
 
-    local campos = self.ModelPanel.m_vecModelOrigin + Vector(50, 50, 25)
+    local campos = self.ModelPanel.m_vecModelOrigin + BASE_CAM_OFFSET * self.ModelPanel.currentZoom
     self.ModelPanel:SetCamPos(campos)
     self.ModelPanel:SetLookAt(self.ModelPanel.m_vecModelOrigin)
 end
