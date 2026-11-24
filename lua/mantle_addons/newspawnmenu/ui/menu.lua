@@ -27,6 +27,9 @@ function NewSpawnMenu.CreateMenu()
 
     local menu = vgui.Create('EditablePanel')
     NewSpawnMenu.menu = menu
+
+    NewSpawnMenu.compatibility.bridge.bind()
+
     menu:SetSize(menuW, menuH)
     menu:Center()
     menu:MakePopup()
@@ -62,9 +65,6 @@ function NewSpawnMenu.CreateMenu()
         tools:SetWide(menuW * 0.35)
     end
 
-    if NewSpawnMenu.compatibility then
-        NewSpawnMenu.compatibility.bridge.bind()
-    end
 end
 
 function NewSpawnMenu.OpenMenu()

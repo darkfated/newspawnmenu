@@ -49,10 +49,7 @@ end
 vgui.Register('NewSpawnMenu.Main', PANEL, 'EditablePanel')
 
 concommand.Add('newspawnmenu_remove', function()
-    if IsValid(NewSpawnMenu.menu) then
-        NewSpawnMenu.menu:Remove()
-    end
+    NewSpawnMenu.compatibility.bridge.release()
 
-    NewSpawnMenu.main = nil
-    NewSpawnMenu.tools = nil
+    controlpanel.Clear()
 end)

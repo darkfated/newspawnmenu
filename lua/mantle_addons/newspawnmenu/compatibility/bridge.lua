@@ -21,11 +21,17 @@ function bridge.bind()
 end
 
 function bridge.release()
-    if IsValid(NewSpawnMenu.menu) then NewSpawnMenu.menu:Remove() end
+    local menu = NewSpawnMenu.menu
 
+    if IsValid(menu) then menu:Remove() end
+
+    if g_SpawnMenu == menu or !IsValid(g_SpawnMenu) then
+        g_SpawnMenu = nil
+    end
+
+    NewSpawnMenu.menu = nil
     NewSpawnMenu.main = nil
     NewSpawnMenu.tools = nil
-    g_SpawnMenu = nil
 end
 
 hook.Add('PostReloadToolsMenu', 'NewSpawnMenu.Bridge', function()
