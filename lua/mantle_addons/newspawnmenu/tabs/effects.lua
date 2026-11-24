@@ -98,14 +98,14 @@ function PANEL:Init()
         toggleEffect(effect)
     end)
 
-    self:AddFuncPaint(function(name, itemIndex, data, w, h, btn)
-        self:PaintItem(name, itemIndex, data, w, h, btn)
+    self:AddFuncPaint(function(name, itemIndex, data, w, h, btn, offsetX, offsetY)
+        self:PaintItem(name, itemIndex, data, w, h, btn, offsetX, offsetY)
 
         local effect = data.effect
         if !effect or effect.onclick then return end
         if !effect.convar and !effect.convars then return end
 
-        RNDX.Rect(w - 24, 8, 16, 16)
+        RNDX.Rect((offsetX or 0) + w - 24, (offsetY or 0) + 8, 16, 16)
             :Rad(6)
             :Color(isEffectOn(effect) and Mantle.color.theme or Mantle.color.text)
         :Draw()

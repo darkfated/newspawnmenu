@@ -134,15 +134,21 @@ function PANEL:AddItem(name, category, tabl, itemIndex, categoryIcon)
     panelItem._syncModelIcon = function(btn)
         if !IsValid(btn.modelIcon) then return end
 
+        local scale = btn.anim_scale or 1
         local w, h = btn:GetSize()
+        local scaledW, scaledH = w * scale, h * scale
+        local offsetX, offsetY = (w - scaledW) * 0.5, (h - scaledH) * 0.5
         local fontI = math_floor(14 * GetConVar('newspawnmenu_scale'):GetFloat())
         local labelH = fontI * 2
         local pad = 6
-        local availW = w - pad * 2
-        local availH = h - labelH - pad * 2
+        local availW = scaledW - pad * 2
+        local availH = scaledH - labelH - pad * 2
         local size = math_floor(math.max(1, math.min(availW, availH)))
 
-        btn.modelIcon:SetPos(math_floor((w - size) * 0.5), math_floor((h - labelH - size) * 0.5))
+        btn.modelIcon:SetPos(
+            math_floor(offsetX + (scaledW - size) * 0.5),
+            math_floor(offsetY + (scaledH - labelH - size) * 0.5)
+        )
         btn.modelIcon:SetSize(size, size)
     end
 
@@ -176,11 +182,7 @@ function PANEL:AddItem(name, category, tabl, itemIndex, categoryIcon)
     end
 
     panelItem.Paint = function(btn, w, h)
-        local dt = FrameTime()
-
-        btn.anim_scale = Mantle.func.approachExp(btn.anim_scale, btn.anim_target, btn.anim_speed, dt)
-        local eased = Mantle.func.easeOutCubic(btn.anim_scale)
-        local scale = eased
+        local scale = btn.anim_scale
         local scaledW, scaledH = w * scale, h * scale
         local offsetX, offsetY = (w - scaledW) * 0.5, (h - scaledH) * 0.5
 
@@ -191,9 +193,9 @@ function PANEL:AddItem(name, category, tabl, itemIndex, categoryIcon)
         :Draw()
 
         if self.funcPaint then
-            self.funcPaint(name, itemIndex, tabl, scaledW, scaledH, btn)
+            self.funcPaint(name, itemIndex, tabl, scaledW, scaledH, btn, offsetX, offsetY)
         else
-            self:PaintItem(name, itemIndex, tabl, scaledW, scaledH, btn)
+            self:PaintItem(name, itemIndex, tabl, scaledW, scaledH, btn, offsetX, offsetY)
         end
     end
 
@@ -207,6 +209,10 @@ function PANEL:AddItem(name, category, tabl, itemIndex, categoryIcon)
         else
             btn.anim_target = 1
         end
+
+        btn.anim_scale = Mantle.func.approachExp(btn.anim_scale, btn.anim_target, btn.anim_speed, dt)
+
+        if IsValid(btn.modelIcon) then btn:_syncModelIcon() end
     end
 
     panelItem.DoClick = function()
@@ -241,7 +247,9 @@ function PANEL:AddItem(name, category, tabl, itemIndex, categoryIcon)
     return panelItem
 end
 
-function PANEL:PaintItem(name, itemIndex, tabl, w, h, btn)
+function PANEL:PaintItem(name, itemIndex, tabl, w, h, btn, offsetX, offsetY)
+    local ox = offsetX or 0
+    local oy = offsetY or 0
     local mat = btn.mat or btn.icon
     local fontI = math_floor(14 * GetConVar('newspawnmenu_scale'):GetFloat())
     local textFont = 'Fated.' .. fontI
@@ -249,7 +257,7 @@ function PANEL:PaintItem(name, itemIndex, tabl, w, h, btn)
 
     if mat then
         if !NewSpawnMenu.convar.opt then
-            RNDX.Rect(0, 0, w, h)
+            RNDX.Rect(ox, oy, w, h)
                 :Rad(24)
                 :Shape(RNDX.SHAPE_IOS)
                 :KBlur(4, 2)
@@ -258,7 +266,7 @@ function PANEL:PaintItem(name, itemIndex, tabl, w, h, btn)
 
         render.PushFilterMag(TEXFILTER.ANISOTROPIC)
         render.PushFilterMin(TEXFILTER.ANISOTROPIC)
-            RNDX.Rect(0, 0, w, h)
+            RNDX.Rect(ox, oy, w, h)
                 :Rad(24)
                 :Material(mat)
                 :Shape(RNDX.SHAPE_IOS)
@@ -270,19 +278,19 @@ function PANEL:PaintItem(name, itemIndex, tabl, w, h, btn)
     if btn.adminOnly then
         surface.SetMaterial(mat_admin)
         surface.SetDrawColor(255, 255, 255, 255)
-        surface.DrawTexturedRect(6, 6, 14, 14)
+        surface.DrawTexturedRect(ox + 6, oy + 6, 14, 14)
     end
 
     if btn.npcWeapon then
         local active = GetConVarString('gmod_npcweapon') == btn.spawnName
         surface.SetMaterial(active and mat_npc_weapon_on or mat_npc_weapon)
         surface.SetDrawColor(255, 255, 255, 255)
-        surface.DrawTexturedRect(w - 20, 6, 14, 14)
+        surface.DrawTexturedRect(ox + w - 20, oy + 6, 14, 14)
     end
 
     local labelH = fontI * 2
 
-    RNDX.Rect(0, h - labelH, w, labelH)
+    RNDX.Rect(ox, oy + h - labelH, w, labelH)
         :Radii(0, 0, 24, 24)
         :Color(Mantle.color.panel_alpha[2])
         :Shape(RNDX.SHAPE_IOS)
@@ -301,7 +309,7 @@ function PANEL:PaintItem(name, itemIndex, tabl, w, h, btn)
         if btn:IsHovered() then
             local scrollPad = math.min(40, w * 0.45)
             local scrollW = math.max(1, w - scrollPad * 2)
-            local mx = btn:ScreenToLocal(gui.MouseX(), gui.MouseY())
+            local mx = btn:ScreenToLocal(gui.MouseX(), gui.MouseY()) - ox
             local progress = math.Clamp((mx - scrollPad) / scrollW, 0, 1)
 
             textX = textX - progress * (textW - maxW)
@@ -314,12 +322,12 @@ function PANEL:PaintItem(name, itemIndex, tabl, w, h, btn)
         textX = w * 0.5
     end
 
-    local sx, sy = btn:LocalToScreen(6, h - labelH)
-    local ex, ey = btn:LocalToScreen(w - 6, h)
+    local sx, sy = btn:LocalToScreen(ox + 6, oy + h - labelH)
+    local ex, ey = btn:LocalToScreen(ox + w - 6, oy + h)
 
     render.SetScissorRect(sx, sy, ex, ey, true)
-        draw.SimpleText(text, textFont, textX + 1, h - fontI * 0.5, text_shadow, textAlign, TEXT_ALIGN_BOTTOM)
-        draw.SimpleText(text, textFont, textX, h - fontI * 0.5 - 1, Mantle.color.text, textAlign, TEXT_ALIGN_BOTTOM)
+        draw.SimpleText(text, textFont, ox + textX + 1, oy + h - fontI * 0.5, text_shadow, textAlign, TEXT_ALIGN_BOTTOM)
+        draw.SimpleText(text, textFont, ox + textX, oy + h - fontI * 0.5 - 1, Mantle.color.text, textAlign, TEXT_ALIGN_BOTTOM)
     render.SetScissorRect(0, 0, 0, 0, false)
 end
 
