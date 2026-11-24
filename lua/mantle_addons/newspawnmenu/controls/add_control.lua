@@ -71,6 +71,12 @@ local function addColor(panel, data)
     return controls.ColorPicker(panel, data.label, data.red, data.green, data.blue, data.alpha)
 end
 
+local function addCombobox(panel, data)
+    if tostring(data.menubutton) == '1' then return end
+
+    return controls.ListBox(panel, data)
+end
+
 local handlers = {
     header = addHeader,
     textbox = addTextbox,
@@ -85,7 +91,7 @@ local handlers = {
     numpad = addNumpad,
     color = addColor,
     listbox = controls.ListBox,
-    combobox = controls.ListBox,
+    combobox = addCombobox,
     materialgallery = controls.MaterialGallery
 }
 

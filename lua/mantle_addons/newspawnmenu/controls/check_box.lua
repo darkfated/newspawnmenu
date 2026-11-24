@@ -5,8 +5,5 @@ function controls.CheckBox(panel, label, convar)
     checkbox:SetTxt(language.GetPhrase(label))
     checkbox:SetConvar(convar)
 
-    local ctrl = panel:AddPanel(checkbox)
-    ctrl:DockMargin(6, 0, 6, 8)
-
-    return ctrl
+    return controls.wrap(panel, checkbox)
 end

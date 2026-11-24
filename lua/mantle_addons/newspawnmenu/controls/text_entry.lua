@@ -13,13 +13,12 @@ function controls.TextEntry(panel, strLabel, strConVar)
             entry:SetValue(convar:GetString())
         end
 
-        entry.action = function(_, text)
-            LocalPlayer():ConCommand(strConVar .. ' ' .. text)
+        entry.action = function(text)
+            RunConsoleCommand(strConVar, tostring(text or ''))
         end
     end
 
-    local ctrl = panel:AddPanel(entry)
-    ctrl:DockMargin(6, 0, 6, 8)
+    panel:AddPanel(entry)
 
     return entry.textEntry, entry
 end

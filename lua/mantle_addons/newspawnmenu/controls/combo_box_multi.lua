@@ -1,25 +1,22 @@
 local controls = NewSpawnMenu.controls
 
 function controls.ComboBoxMulti(panel, label, tabl)
-    local combobox = vgui.Create('MantleComboBox')
-    combobox:SetPlaceholder(label and language.GetPhrase(label) or '')
-    combobox.AddOption = function(cb, text, data)
-        cb:AddChoice(text, data)
-    end
+    local combobox = vgui.Create('NewSpawnMenu.ComboBox')
+    combobox:SetPlaceholder('')
 
     for name, data in pairs(tabl or {}) do
         combobox:AddChoice(name, data)
     end
 
-    combobox.OnSelect = function(_, _, data)
+    combobox.OnSelect = function(index, value, data)
         if !istable(data) then return end
 
-        for convar, value in pairs(data) do
-            LocalPlayer():ConCommand(convar .. ' ' .. value)
+        for convar, convarValue in pairs(data) do
+            RunConsoleCommand(convar, tostring(convarValue))
         end
     end
 
-    for _, choice in ipairs(combobox.choices) do
+    for index, choice in ipairs(combobox.choices or {}) do
         if !istable(choice.data) then continue end
 
         local match = true
@@ -36,7 +33,7 @@ function controls.ComboBoxMulti(panel, label, tabl)
         end
     end
 
-    local wrapper = controls.labeledControl(label, combobox, 32)
+    local wrapper = controls.labeledControl(label, combobox, controls.metrics.rowHeight)
     panel:AddPanel(wrapper)
 
     return combobox, wrapper

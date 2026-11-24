@@ -32,7 +32,7 @@ function controlpanel.Get(name)
         if !cp then return defaultGet(name) end
 
         cp:SetVisible(false)
-        cp.Name = name
+        cp:SetName(name)
         panels[name] = cp
     end
 

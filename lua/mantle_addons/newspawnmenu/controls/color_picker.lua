@@ -1,20 +1,22 @@
 local controls = NewSpawnMenu.controls
 
+local function convarInt(name, fallback)
+    local convar = name and GetConVar(name)
+    return convar and convar:GetInt() or fallback
+end
+
+local function setConVar(name, value)
+    if name then RunConsoleCommand(name, tostring(value)) end
+end
+
 function controls.ColorPicker(panel, label, r, g, b, a)
     local function getColor()
-        local convar_r = GetConVar(r):GetInt()
-        local convar_g = GetConVar(g):GetInt()
-        local convar_b = GetConVar(b):GetInt()
-        local col
-
-        if a then
-            local convar_a = GetConVar(a):GetInt()
-            col = Color(convar_r, convar_g, convar_b, convar_a)
-        else
-            col = Color(convar_r, convar_g, convar_b)
-        end
-
-        return col
+        return Color(
+            convarInt(r, 0),
+            convarInt(g, 0),
+            convarInt(b, 0),
+            convarInt(a, 255)
+        )
     end
 
     local swatch = vgui.Create('DPanel')
@@ -23,13 +25,13 @@ function controls.ColorPicker(panel, label, r, g, b, a)
 
     swatch.Paint = function(_, w, h)
         RNDX.Rect(0, 0, w, h)
-            :Rad(12)
+            :Rad(controls.metrics.radius)
             :Color(Mantle.color.window_shadow)
             :Shadow(4, 2)
         :Draw()
 
         RNDX.Rect(0, 0, w, h)
-            :Rad(12)
+            :Rad(controls.metrics.radius)
             :Color(getColor())
         :Draw()
     end
@@ -38,13 +40,10 @@ function controls.ColorPicker(panel, label, r, g, b, a)
         local colorSet = getColor()
 
         Mantle.ui.color_picker(function(col)
-            local lp = LocalPlayer()
-            lp:ConCommand(r .. ' ' .. col.r)
-            lp:ConCommand(g .. ' ' .. col.g)
-            lp:ConCommand(b .. ' ' .. col.b)
-            if a then
-                lp:ConCommand(a .. ' ' .. col.a)
-            end
+            setConVar(r, col.r)
+            setConVar(g, col.g)
+            setConVar(b, col.b)
+            if a then setConVar(a, col.a) end
         end, colorSet)
     end
 

@@ -2,6 +2,9 @@ local controls = NewSpawnMenu.controls
 
 function controls.MaterialGallery(panel, data)
     local ctrl = vgui.Create('MatSelect')
+    ctrl.Paint = function(_, w, h)
+        controls.paintPanel(w, h)
+    end
     ctrl:SetItemWidth(data.width or 32)
     ctrl:SetItemHeight(data.height or 32)
     ctrl:SetNumRows(data.rows or 4)

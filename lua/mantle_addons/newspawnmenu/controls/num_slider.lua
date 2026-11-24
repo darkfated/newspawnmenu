@@ -6,5 +6,5 @@ function controls.NumSlider(panel, label, convar, min, max, decimals)
     slider:SetConvar(convar)
     slider:SetText(language.GetPhrase(label))
 
-    return panel:AddPanel(slider)
+    return controls.wrap(panel, slider)
 end

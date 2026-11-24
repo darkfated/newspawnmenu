@@ -13,14 +13,14 @@ function NewSpawnMenu.PanelPaint(w, h)
         RNDX.Rect(0, 0, w, h)
             :Rad(24)
             :KBlur(4, 2)
-            :Shape(SHAPE_IOS)
+            :Shape(RNDX.SHAPE_IOS)
         :Draw()
     end
 
     RNDX.Rect(0, 0, w, h)
         :Rad(24)
         :Color(Mantle.color.background_alpha)
-        :Shape(SHAPE_IOS)
+        :Shape(RNDX.SHAPE_IOS)
     :Draw()
 end
 

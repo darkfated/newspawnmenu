@@ -3,6 +3,9 @@ local controls = NewSpawnMenu.controls
 function controls.MatSelect(panel, convar, options, autoStretch, iWidth, iHeight)
     local MatSelect = vgui.Create('MatSelect')
     MatSelect:SetConVar(convar)
+    MatSelect.Paint = function(_, w, h)
+        controls.paintPanel(w, h)
+    end
 
     if autoStretch != nil then
         MatSelect:SetAutoHeight(autoStretch)

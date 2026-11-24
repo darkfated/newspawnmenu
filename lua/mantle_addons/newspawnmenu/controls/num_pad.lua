@@ -1,45 +1,72 @@
+local controls = NewSpawnMenu.controls
+
 local PANEL = {}
 
 AccessorFunc(PANEL, 'm_ConVar1', 'ConVar1')
 AccessorFunc(PANEL, 'm_ConVar2', 'ConVar2')
 
-local function paintBtn(btn)
-    btn:SetFont('Fated.16')
-    btn:SetTextColor(Mantle.color.gray)
-    btn.Paint = function(_, w, h)
-        RNDX.Rect(0, 0, w, h)
-            :Rad(12)
-            :Color(Mantle.color.panel_alpha[1])
-        :Draw()
+local function paintBinder(binder)
+    binder:SetFont(controls.controlFont(16))
+    binder.Paint = function(self, w, h)
+        controls.paintField(w, h)
+        draw.SimpleText(
+            self:GetText() or '',
+            self:GetFont(),
+            w * 0.5,
+            h * 0.5,
+            Mantle.color.text,
+            TEXT_ALIGN_CENTER,
+            TEXT_ALIGN_CENTER
+        )
     end
+
+    binder.DoRightClick = function()
+        local menu = Mantle.ui.derma_menu()
+
+        menu:AddOption(language.GetPhrase('#tool.reset_to_default'), function()
+            if IsValid(binder) and binder:GetDefaultNumber() != 0 then
+                binder:SetValue(binder:GetDefaultNumber())
+            end
+        end)
+
+        menu:AddOption(language.GetPhrase('#tool.clear'), function()
+            if IsValid(binder) then binder:SetValue(0) end
+        end)
+    end
+end
+
+local function makeLabel(parent)
+    local label = vgui.Create('MantleText', parent)
+    label:SetFont(controls.controlFont(16))
+    label:SetColor(Mantle.color.text)
+    label:SetAlign(TEXT_ALIGN_CENTER)
+    label:SetVAlign('center')
+    label.padding = 0
+    label:SetMouseInputEnabled(false)
+
+    return label
 end
 
 function PANEL:Init()
     self.NumPad1 = vgui.Create('DBinder', self)
-    paintBtn(self.NumPad1)
-    self.Label1 = vgui.Create('DLabel', self)
-    self.Label1:SetFont('Fated.16')
-    self.Label1:SetTextColor(Mantle.color.text)
-    self.Label1:SetDark(true)
+    paintBinder(self.NumPad1)
+
+    self.Label1 = makeLabel(self)
 
     self.NumPad2 = vgui.Create('DBinder', self)
-    paintBtn(self.NumPad2)
-    self.Label2 = vgui.Create('DLabel', self)
-    self.Label2:SetFont('Fated.16')
-    self.Label2:SetTextColor(Mantle.color.text)
-    self.Label2:SetDark(true)
+    paintBinder(self.NumPad2)
 
-    self:SetHeight(200)
+    self.Label2 = makeLabel(self)
 end
 
 function PANEL:SetLabel1(txt)
     if !txt then return end
-    self.Label1:SetText(txt)
+    self.Label1:SetText(language.GetPhrase(txt))
 end
 
 function PANEL:SetLabel2(txt)
     if !txt then return end
-    self.Label2:SetText(txt)
+    self.Label2:SetText(language.GetPhrase(txt))
 end
 
 function PANEL:SetConVar1(cvar)
@@ -62,43 +89,30 @@ function PANEL:GetValue2()
     return self.NumPad2:GetValue()
 end
 
-function PANEL:PerformLayout()
-    self:SetTall(80)
+function PANEL:PerformLayout(w, h)
+    self:SetTall(76)
 
-    self.NumPad1:InvalidateLayout(true)
-    self.NumPad1:SetSize(100, 50)
+    local binderW = math.min(160, math.max(100, w * 0.28))
+    local labelH = 24
+    local binderY = 38
 
-    if self.m_ConVar2 then
-        self.NumPad2:InvalidateLayout(true)
-        self.NumPad2:SetSize(100, 50)
+    local function place(binder, label, cx)
+        label:SetPos(cx - binderW * 0.5, 4)
+        label:SetSize(binderW, labelH)
+        binder:SetPos(cx - binderW * 0.5, binderY)
+        binder:SetSize(binderW, 34)
+        binder:InvalidateLayout(true)
     end
 
     if !self.m_ConVar2 then
-        self.Label1:SizeToContents()
-
+        place(self.NumPad1, self.Label1, w * 0.5)
         self.NumPad2:SetVisible(false)
         self.Label2:SetVisible(false)
-
-        self.NumPad1:CenterHorizontal(0.5)
-        self.NumPad1:AlignTop(30)
-
-        self.Label1:CenterHorizontal()
-        self.Label1:AlignTop(0)
     else
-        self.Label1:SizeToContents()
-        self.Label2:SizeToContents()
-
+        place(self.NumPad1, self.Label1, w * 0.25)
+        place(self.NumPad2, self.Label2, w * 0.75)
         self.NumPad2:SetVisible(true)
         self.Label2:SetVisible(true)
-
-        self.NumPad1:CenterHorizontal(0.25)
-        self.Label1:CenterHorizontal(0.25)
-        self.NumPad1:AlignTop(30)
-
-        self.NumPad2:CenterHorizontal(0.75)
-        self.Label2:CenterHorizontal(0.75)
-        self.NumPad2:AlignTop(30)
-        self.Label2:AlignTop(0)
     end
 end
 

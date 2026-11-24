@@ -2,45 +2,39 @@ local controls = NewSpawnMenu.controls
 
 local PANEL = {}
 
-AccessorFunc(PANEL, 'm_bInitialized', 'Initialized')
+AccessorFunc(PANEL, 'm_bInitialized', 'Initialized', FORCE_BOOL)
 AccessorFunc(PANEL, 'm_Name', 'Name')
 
 function PANEL:Init()
     self:SetInitialized(false)
-
-    self.sp = vgui.Create('MantleScrollPanel', self)
-    self.sp:Dock(FILL)
-    self.sp:DockPadding(0, 0, 0, 8)
+    self:SetName('')
+    self.sp = controls.createScrollContainer(self)
 end
 
-function PANEL:ClearControls()
-    self.sp:Clear()
+function PANEL:SetLabel(name)
+    self:SetName(name)
+end
+
+function PANEL:GetLabel()
+    return self:GetName()
 end
 
 function PANEL:Clear()
-    self.sp:Clear()
+    controls.clearContainer(self)
 end
+
+PANEL.ClearControls = PANEL.Clear
 
 function PANEL:GetEmbeddedPanel()
     return self
 end
 
 function PANEL:AddPanel(pnl)
-    if !IsValid(pnl) then return end
-
-    if pnl:GetParent() == self.sp:GetCanvas() then
-        return pnl
-    end
-
-    pnl:Dock(TOP)
-    pnl:DockMargin(0, 0, 0, 8)
-    self.sp:AddItem(pnl)
-
-    return pnl
+    return controls.addPanel(self, pnl)
 end
 
-function PANEL:AddItem(pnl)
-    return self:AddPanel(pnl)
+function PANEL:AddItem(left, right)
+    controls.addItem(self, left, right)
 end
 
 function PANEL:Help(text)
@@ -83,19 +77,49 @@ function PANEL:PropSelect(label, convar, mdlList, height)
     return controls.PropSelect(self, label, convar, mdlList, height)
 end
 
-function PANEL:ToolPresets(group, cvarlist)
-    return controls.ToolPresets(self, group, cvarlist)
+function PANEL:ToolPresets(group, cvarlist, options)
 end
 
 function PANEL:KeyBinder(label1, convar1, label2, convar2)
     return controls.KeyBinder(self, label1, convar1, label2, convar2)
 end
 
+function PANEL:ComboBox(label, convar)
+    return controls.ComboBox(self, label, convar)
+end
+
 function PANEL:ComboBoxMulti(label, tabl)
     return controls.ComboBoxMulti(self, label, tabl)
 end
 
+function PANEL:ListBox(label)
+    return controls.ListBox(self, istable(label) and label or { label = label })
+end
+
+function PANEL:NumberWang(label, convar, min, max, decimals)
+    return controls.NumberWang(self, label, convar, min, max, decimals)
+end
+
+function PANEL:PanelSelect()
+    return controls.PanelSelect(self)
+end
+
+function PANEL:MaterialGallery(data)
+    return controls.MaterialGallery(self, data)
+end
+
+function PANEL:AddControl(control, data)
+    return controls.AddControl(self, control, data)
+end
+
+function PANEL:Rebuild()
+end
+
+function PANEL:GenerateExample()
+end
+
 function PANEL:FillViaTable(Table)
+    Table = Table or {}
     self:SetInitialized(true)
     self:SetName(Table.Text)
 
@@ -105,17 +129,13 @@ function PANEL:FillViaTable(Table)
 end
 
 function PANEL:FillViaFunction(func)
-    func(self)
+    if func then func(self) end
 end
 
 function PANEL:ControlValues(data)
     if data.label then
         self:SetName(data.label)
     end
-end
-
-function PANEL:AddControl(control, data)
-    return controls.AddControl(self, control, data)
 end
 
 vgui.Register('NewSpawnMenu.ControlPanel', PANEL, 'EditablePanel')

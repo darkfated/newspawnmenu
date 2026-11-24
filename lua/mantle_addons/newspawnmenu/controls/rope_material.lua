@@ -1,3 +1,5 @@
+local controls = NewSpawnMenu.controls
+
 local PANEL = {}
 
 function PANEL:Init()
@@ -14,10 +16,7 @@ function PANEL:Init()
 end
 
 function PANEL:Paint(w, h)
-    RNDX.Rect(0, 0, w, h)
-        :Rad(12)
-        :Color(Mantle.color.panel_alpha[1])
-    :Draw()
+    controls.paintPanel(w, h)
 end
 
 vgui.Register('NSM.RopeMaterial', PANEL, 'MatSelect')
