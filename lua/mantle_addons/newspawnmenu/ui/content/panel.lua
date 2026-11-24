@@ -21,35 +21,26 @@ function PANEL:AddItem(name, category, tabl, itemIndex, categoryIcon)
         category = 'Other'
     end
 
-    local menuW = NewSpawnMenu.menu:GetWide()
     local isWide = convar_mode:GetInt() == 1
     local gap = 8
-    local gridW = menuW * (0.65 + (isWide and 0.34 or 0)) - 240 - 16
-
-    local cols = isWide and 8 or 6
-
-    if math_floor(gridW / cols) - gap < 100 then
-        cols = isWide and 6 or 4
-    end
-
-    local cellW = math_floor(gridW / cols)
-    local itemSize = cellW - gap
+    local preferredCols = isWide and 8 or 6
+    local fallbackCols = isWide and 6 or 4
 
     if !self.items[category] then
         local categorySp = vgui.Create('MantleScrollPanel')
 
-        categorySp.grid = vgui.Create('DGrid', categorySp)
+        categorySp.grid = vgui.Create('NewSpawnMenu.ContentGrid', categorySp)
         categorySp.grid:Dock(TOP)
-        categorySp.grid:SetCols(cols)
-        categorySp.grid:SetColWide(cellW)
-        categorySp.grid:SetRowHeight(cellW)
 
         self.items[category] = categorySp
         self.left:AddTab(category, self.items[category], Material(categoryIcon))
     end
 
+    local grid = self.items[category].grid
+    grid:Configure(preferredCols, fallbackCols, gap, 100)
+
     local panelItem = vgui.Create('Button')
-    panelItem:SetSize(itemSize, itemSize)
+    panelItem:SetSize(grid._itemSize or 100, grid._itemSize or 100)
     panelItem:SetText('')
     panelItem.anim_scale = 1
     panelItem.anim_target = 1
@@ -170,7 +161,7 @@ function PANEL:AddItem(name, category, tabl, itemIndex, categoryIcon)
         end
     end
 
-    self.items[category].grid:AddItem(panelItem)
+    grid:AddItem(panelItem)
 
     return panelItem
 end
