@@ -1,5 +1,4 @@
 local convar_close_on_spawn = CreateClientConVar('newspawnmenu_close_on_spawn', 0, true, false)
-local convar_mode = GetConVar('newspawnmenu_mode')
 local convar_scale = GetConVar('newspawnmenu_scale')
 local convar_name_left = GetConVar('newspawnmenu_itemname_left')
 local math_floor = math.floor
@@ -36,9 +35,7 @@ local function phrase(value, fallback)
 end
 
 local function configureGrid(grid)
-    local isWide = convar_mode:GetInt() == 1
-
-    grid:Configure(isWide and 8 or 6, 4, 8, 96)
+    grid:Configure(7, 6, 8, 96)
 end
 
 local function makeGrid(panel)

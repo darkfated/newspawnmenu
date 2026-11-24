@@ -3,14 +3,23 @@ local convar_newspawnmenu_mode = CreateClientConVar('newspawnmenu_mode', 0, true
 local convar_newspawnmenu_scale = CreateClientConVar('newspawnmenu_scale', 1, true, false)
 CreateClientConVar('newspawnmenu_itemname_left', 1, true, false)
 
+local function defaultMenuSize(w, h)
+    local border = GetConVar('spawnmenu_border')
+    local marginX, marginY = 0, 0
+
+    if w >= 1024 and h >= 768 then
+        local value = border and border:GetFloat() or 0.1
+
+        marginX = math.Clamp((w - 1024) * value, 25, 256)
+        marginY = math.Clamp((h - 768) * value, 25, 256)
+    end
+
+    return w - marginX * 2, h - marginY * 2
+end
+
 function NewSpawnMenu.CreateMenu()
     local w, h = Mantle.func.sw, Mantle.func.sh
-    local menuW, menuH
-    if w < 1600 then
-        menuW, menuH = w, h
-    else
-        menuW, menuH = w * 0.85, h * 0.85
-    end
+    local menuW, menuH = defaultMenuSize(w, h)
 
     local menuMode = convar_newspawnmenu_mode:GetInt()
     if menuMode == 2 then

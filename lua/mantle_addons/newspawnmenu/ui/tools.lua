@@ -35,7 +35,6 @@ function PANEL:BuildCategory(index, toolCategory)
 
     local leftPanel = vgui.Create('Panel', categoryContent)
     leftPanel:Dock(LEFT)
-    leftPanel:DockMargin(0, 0, 6, 0)
     leftPanel:SetWide(math.max(200, NewSpawnMenu.menu:GetWide() * 0.12))
 
     local spTools = vgui.Create('MantleScrollPanel', leftPanel)
