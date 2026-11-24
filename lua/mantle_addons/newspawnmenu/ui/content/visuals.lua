@@ -4,6 +4,7 @@ local MATERIAL_CACHE = {}
 local SPAWNICON_CACHE = {}
 local MODEL_EXISTS_CACHE = {}
 local REGISTRY_CACHE = {}
+local NPC_WEAPON_CACHE
 
 local MODEL_KEYS = {
     'Model', 'WorldModel', 'ViewModel', 'ModelName', 'Mdl',
@@ -161,17 +162,28 @@ local function spawniconMaterial(model)
     return nil
 end
 
+local function npcWeaponSet()
+    if NPC_WEAPON_CACHE then return NPC_WEAPON_CACHE end
+
+    local result = {}
+    for _, weapon in pairs(list.Get('NPCUsableWeapons') or {}) do
+        if isstring(weapon.class) then result[weapon.class] = true end
+    end
+
+    NPC_WEAPON_CACHE = result
+
+    return result
+end
+
 function content.isNPCWeapon(class)
     if class == '' then return false end
 
-    for _, weapon in pairs(list.Get('NPCUsableWeapons')) do
-        if weapon.class == class then return true end
-    end
-
-    return false
+    return npcWeaponSet()[class] == true
 end
 
 function content.itemClass(itemIndex, tabl)
+    if istable(tabl) and tabl._noClass then return '' end
+
     local class = classFromTable(tabl) or itemIndex
 
     return class and tostring(class) or ''
@@ -221,8 +233,6 @@ function content.applyItemVisual(btn, itemIndex, tabl, contentType)
     end
 
     if isstring(model) and model != '' and modelExists(model) then
-        btn.model = model
-
         if btn.SetModelFallback then
             btn:SetModelFallback(model, istable(tabl) and tabl.Skin or 0, istable(tabl) and tabl.BodyGroups or nil)
         end
@@ -234,6 +244,7 @@ function content.invalidateVisuals()
     SPAWNICON_CACHE = {}
     MODEL_EXISTS_CACHE = {}
     REGISTRY_CACHE = {}
+    NPC_WEAPON_CACHE = nil
 end
 
 hook.Add('GameContentChanged', 'NewSpawnMenu.VisualCache', function()

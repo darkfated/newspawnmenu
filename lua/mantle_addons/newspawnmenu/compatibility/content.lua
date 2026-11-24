@@ -3,15 +3,7 @@ local compatibility = NewSpawnMenu.compatibility
 local cache = {}
 local baseDoClick = vgui.GetControlTable('DTreeNode') and vgui.GetControlTable('DTreeNode').DoClick
 
-local function phrase(value, fallback)
-    if !isstring(value) or value == '' then return fallback end
-    if !value:StartsWith('#') then return value end
-
-    local translated = language.GetPhrase(value)
-    if !isstring(translated) or translated == '' or translated == value then return fallback or value end
-
-    return translated
-end
+local phrase = NewSpawnMenu.util.phrase
 
 local function iconEntry(icon, category, subCategory)
     if !IsValid(icon) or icon:GetName() != 'ContentIcon' then return end
@@ -28,7 +20,6 @@ local function iconEntry(icon, category, subCategory)
         admin = icon:GetAdminOnly() == true,
         contentType = icon:GetContentType(),
         onClick = icon.DoClick,
-        openMenuExtra = icon.OpenMenuExtra,
         openMenu = icon.OpenMenu
     }
 end
@@ -126,3 +117,4 @@ function compatibility.invalidateContent()
 end
 
 hook.Add('GameContentChanged', 'NewSpawnMenu.CompatibilityContent', compatibility.invalidateContent)
+cvars.AddChangeCallback('gmod_language', compatibility.invalidateContent, 'NewSpawnMenu.Content')

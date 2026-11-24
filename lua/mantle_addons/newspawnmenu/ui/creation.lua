@@ -9,16 +9,6 @@ local function titleText(value)
     return value
 end
 
-local function iconMaterial(icon)
-    if !isstring(icon) or icon == '' then return end
-    if icon:StartsWith('materials/') then icon = icon:sub(11) end
-
-    local mat = Material(icon)
-    if !mat or mat:IsError() then return end
-
-    return mat
-end
-
 function PANEL:Init()
     NewSpawnMenu.main = self
 
@@ -46,7 +36,7 @@ function PANEL:Init()
         local title = titleText(override and override.name or name)
         local icon = override and override.icon or tab.Icon
         local placeholder = vgui.Create('Panel')
-        local tabId = self.tabs:AddTab(title, placeholder, iconMaterial(icon))
+        local tabId = self.tabs:AddTab(title, placeholder, NewSpawnMenu.util.material(icon))
 
         self:RegisterCreationTab(name, title, tabId, placeholder)
 
@@ -89,9 +79,3 @@ function PANEL:Paint(w, h)
 end
 
 vgui.Register('NewSpawnMenu.Main', PANEL, 'EditablePanel')
-
-concommand.Add('newspawnmenu_remove', function()
-    NewSpawnMenu.compatibility.bridge.release()
-
-    controlpanel.Clear()
-end)

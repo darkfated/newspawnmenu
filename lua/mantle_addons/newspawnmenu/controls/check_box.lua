@@ -5,5 +5,5 @@ function controls.CheckBox(panel, label, convar)
     checkbox:SetTxt(language.GetPhrase(label))
     checkbox:SetConvar(convar)
 
-    return controls.wrap(panel, checkbox)
+    return controls.addPanel(panel, checkbox)
 end

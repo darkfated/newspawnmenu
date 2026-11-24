@@ -1,20 +1,20 @@
 local controls = NewSpawnMenu.controls
 
-function controls.TextEntry(panel, strLabel, strConVar)
+function controls.TextEntry(panel, label, convar)
     local entry = vgui.Create('MantleEntry')
 
-    if strLabel and strLabel != '' then
-        entry:SetTitle(language.GetPhrase(strLabel))
+    if label and label != '' then
+        entry:SetTitle(language.GetPhrase(label))
     end
 
-    if strConVar and strConVar != '' then
-        local convar = GetConVar(strConVar)
-        if convar then
-            entry:SetValue(convar:GetString())
+    if convar and convar != '' then
+        local cvar = GetConVar(convar)
+        if cvar then
+            entry:SetValue(cvar:GetString())
         end
 
         entry.action = function(text)
-            RunConsoleCommand(strConVar, tostring(text or ''))
+            RunConsoleCommand(convar, tostring(text or ''))
         end
     end
 

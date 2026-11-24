@@ -1,32 +1,28 @@
 local controls = NewSpawnMenu.controls
 
 function controls.MatSelect(panel, convar, options, autoStretch, iWidth, iHeight)
-    local MatSelect = vgui.Create('MatSelect')
-    MatSelect:SetConVar(convar)
-    MatSelect.Paint = function(_, w, h)
-        controls.paintPanel(w, h)
-    end
+    local ctrl = vgui.Create('MatSelect')
+    ctrl:SetConVar(convar)
+    controls.stylePicker(ctrl)
 
     if autoStretch != nil then
-        MatSelect:SetAutoHeight(autoStretch)
+        ctrl:SetAutoHeight(autoStretch)
     end
 
-    MatSelect.List.Paint = nil
-
     if iWidth != nil then
-        MatSelect:SetItemWidth(iWidth)
+        ctrl:SetItemWidth(iWidth)
     end
 
     if iHeight != nil then
-        MatSelect:SetItemHeight(iHeight)
+        ctrl:SetItemHeight(iHeight)
     end
 
     if options != nil then
         for k, v in pairs(options) do
             local nam = isnumber(k) and v or k
-            MatSelect:AddMaterial(nam, v)
+            ctrl:AddMaterial(nam, v)
         end
     end
 
-    return panel:AddPanel(MatSelect)
+    return panel:AddPanel(ctrl)
 end

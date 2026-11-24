@@ -13,5 +13,5 @@ function controls.Button(panel, label, command, ...)
         end
     end
 
-    return controls.wrap(panel, btn)
+    return controls.addPanel(panel, btn)
 end

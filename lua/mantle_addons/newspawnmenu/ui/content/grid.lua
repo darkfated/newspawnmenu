@@ -55,9 +55,6 @@ function PANEL:PerformLayout()
     local itemSize = math.max(1, cellW - gap)
 
     self._itemSize = itemSize
-    self:SetCols(cols)
-    self:SetColWide(cellW)
-    self:SetRowHeight(cellW)
 
     local i = 0
     for _, item in ipairs(self.Items or {}) do

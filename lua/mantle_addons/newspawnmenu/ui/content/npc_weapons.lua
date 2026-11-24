@@ -11,8 +11,10 @@ function content.addNPCWeaponOptions(menu, npcKey, npcData)
         end, icon)
     end
 
+    local selected = {}
     for _, class in ipairs(weapons) do
         if class and class != '' then
+            selected[class] = true
             addOption(language.GetPhrase(class), class, 'icon16/gun.png')
         end
     end
@@ -22,7 +24,7 @@ function content.addNPCWeaponOptions(menu, npcKey, npcData)
 
     local groupedWeapons = {}
     for _, weapon in pairs(list.Get('NPCUsableWeapons')) do
-        if weapon.class and !table.HasValue(weapons, weapon.class) then
+        if weapon.class and !selected[weapon.class] then
             local category = (weapon.category or ''):lower()
             groupedWeapons[category] = groupedWeapons[category] or {}
             groupedWeapons[category][language.GetPhrase(weapon.title or weapon.class)] = {

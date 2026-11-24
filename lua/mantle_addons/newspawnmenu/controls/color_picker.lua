@@ -9,16 +9,16 @@ local function setConVar(name, value)
     if name then RunConsoleCommand(name, tostring(value)) end
 end
 
-function controls.ColorPicker(panel, label, r, g, b, a)
-    local function getColor()
-        return Color(
-            convarInt(r, 0),
-            convarInt(g, 0),
-            convarInt(b, 0),
-            convarInt(a, 255)
-        )
-    end
+local function getColor(r, g, b, a)
+    return Color(
+        convarInt(r, 0),
+        convarInt(g, 0),
+        convarInt(b, 0),
+        convarInt(a, 255)
+    )
+end
 
+function controls.ColorPicker(panel, label, r, g, b, a)
     local swatch = vgui.Create('DPanel')
     swatch:SetCursor('hand')
     swatch:SetMouseInputEnabled(true)
@@ -32,12 +32,12 @@ function controls.ColorPicker(panel, label, r, g, b, a)
 
         RNDX.Rect(0, 0, w, h)
             :Rad(controls.metrics.radius)
-            :Color(getColor())
+            :Color(getColor(r, g, b, a))
         :Draw()
     end
 
     swatch.OnMousePressed = function()
-        local colorSet = getColor()
+        local colorSet = getColor(r, g, b, a)
 
         Mantle.ui.color_picker(function(col)
             setConVar(r, col.r)
@@ -47,5 +47,7 @@ function controls.ColorPicker(panel, label, r, g, b, a)
         end, colorSet)
     end
 
-    return panel:AddPanel(controls.labeledControl(label, swatch, 34))
+    local _, wrapper = controls.addLabeledControl(panel, swatch, label, 34)
+
+    return wrapper
 end

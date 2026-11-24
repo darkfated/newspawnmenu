@@ -9,32 +9,15 @@ function controls.ComboBoxMulti(panel, label, tabl)
     end
 
     combobox.OnSelect = function(index, value, data)
-        if !istable(data) then return end
-
-        for convar, convarValue in pairs(data) do
-            RunConsoleCommand(convar, tostring(convarValue))
-        end
+        controls.applyConvarTable(data)
     end
 
     for index, choice in ipairs(combobox.choices or {}) do
-        if !istable(choice.data) then continue end
-
-        local match = true
-        for convar, value in pairs(choice.data) do
-            if GetConVarString(convar) != tostring(value) then
-                match = false
-                break
-            end
-        end
-
-        if match then
+        if controls.allConvarsMatch(choice.data) then
             combobox:SetValue(choice.text)
             break
         end
     end
 
-    local wrapper = controls.labeledControl(label, combobox, controls.metrics.rowHeight)
-    panel:AddPanel(wrapper)
-
-    return combobox, wrapper
+    return controls.addLabeledControl(panel, combobox, label, controls.metrics.rowHeight)
 end

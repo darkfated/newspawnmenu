@@ -3,6 +3,19 @@ local PANEL = {}
 local EFFECT_LIST = 'PostProcess'
 local DEFAULT_CATEGORY_ICON = 'icon16/picture.png'
 
+local SCRATCH = {}
+
+function SCRATCH:Add(child)
+    if ispanel(child) then
+        child:SetParent(self)
+        return child
+    end
+
+    return vgui.Create(child, self)
+end
+
+vgui.Register('NewSpawnMenu.EffectScratch', SCRATCH, 'Panel')
+
 local function isEffectOn(effect)
     if effect.convars then
         for cvar, data in pairs(effect.convars) do
@@ -38,7 +51,7 @@ local function toggleEffect(effect)
     local cvar = GetConVar(effect.convar)
     if !cvar then return end
 
-    LocalPlayer():ConCommand(effect.convar .. ' ' .. (cvar:GetInt() == 1 and 0 or 1))
+    RunConsoleCommand(effect.convar, cvar:GetInt() == 1 and '0' or '1')
 end
 
 local function openEffectSettings(name, effect)
@@ -69,10 +82,12 @@ end
 local function clickedCheckbox(btn)
     if !IsValid(btn) then return false end
 
-    local x, y = btn:ScreenToLocal(gui.MouseX(), gui.MouseY())
-    local right = btn:GetWide() - 8
+    local rect = btn._checkboxRect
+    if !rect then return false end
 
-    return x >= right - 16 and x <= right and y >= 8 and y <= 24
+    local x, y = btn:ScreenToLocal(gui.MouseX(), gui.MouseY())
+
+    return x >= rect.x and x <= rect.x + rect.w and y >= rect.y and y <= rect.y + rect.h
 end
 
 function PANEL:Init()
@@ -103,16 +118,20 @@ function PANEL:Init()
         if !effect or effect.onclick then return end
         if !effect.convar and !effect.convars then return end
 
-        RNDX.Rect((offsetX or 0) + w - 24, (offsetY or 0) + 8, 16, 16)
+        local x, y = (offsetX or 0) + w - 24, (offsetY or 0) + 8
+
+        RNDX.Rect(x, y, 16, 16)
             :Rad(6)
             :Color(isEffectOn(effect) and Mantle.color.theme or Mantle.color.text)
         :Draw()
+
+        btn._checkboxRect = { x = x, y = y, w = 16, h = 16 }
     end)
 
     local items = {}
 
-    local function addItem(spawnName, effect, label, icon)
-        local title = language.GetPhrase(label or spawnName)
+    local function addItem(effect, label, icon)
+        local title = language.GetPhrase(label or effect.name or '')
 
         table.insert(items, {
             effect = effect,
@@ -124,15 +143,7 @@ function PANEL:Init()
     end
 
     local function addFromFunc(spawnName, effect)
-        local container = vgui.Create('Panel')
-        container.Add = function(self, child)
-            if ispanel(child) then
-                child:SetParent(self)
-                return child
-            end
-
-            return vgui.Create(child, self)
-        end
+        local container = vgui.Create('NewSpawnMenu.EffectScratch')
 
         effect.func(container)
 
@@ -149,7 +160,7 @@ function PANEL:Init()
             local source = table.Copy(parent)
             source.convars = info.convars or source.convars
 
-            addItem(info.name, source, info.label or info.name, info.icon)
+            addItem(source, info.label or info.name, info.icon)
         end
 
         container:Remove()
@@ -159,7 +170,7 @@ function PANEL:Init()
         if effect.func then
             addFromFunc(spawnName, effect)
         else
-            addItem(spawnName, effect)
+            addItem(effect, spawnName)
         end
     end
 

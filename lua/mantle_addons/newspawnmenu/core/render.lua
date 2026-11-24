@@ -68,4 +68,4 @@ NewSpawnMenu.convar.opt = convar_opt:GetBool()
 
 cvars.AddChangeCallback('newspawnmenu_opt', function(_, _, newValue)
     NewSpawnMenu.convar.opt = newValue == '1' and true or false
-end)
+end, 'NewSpawnMenu.Opt')

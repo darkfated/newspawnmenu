@@ -61,7 +61,7 @@ local function addEntry(panel, entry, options, seen)
     if entry.material then tabl.IconOverride = entry.material end
 
     tabl._onClick = entry.onClick
-    tabl._openMenuExtra = entry.openMenuExtra
+    tabl._noClass = entry.action == true
     tabl._openMenu = entry.openMenu
     tabl._contentType = contentType
 

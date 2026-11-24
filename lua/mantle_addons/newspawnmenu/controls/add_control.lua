@@ -1,108 +1,87 @@
 local controls = NewSpawnMenu.controls
 
-local function addHeader(panel, data)
-    if data.description then
-        return controls.Help(panel, data.description)
-    end
-end
+local function addCheckbox(panel, values)
+    local ctrl = controls.CheckBox(panel, values.label or 'Untitled', values.command)
 
-local function addTextbox(panel, data)
-    return controls.TextEntry(panel, data.label or 'Untitled', data.command)
-end
-
-local function addLabel(panel, data)
-    return controls.ControlHelp(panel, data.text)
-end
-
-local function addCheckbox(panel, data)
-    local ctrl = controls.CheckBox(panel, data.label or 'Untitled', data.command)
-
-    if data.help then
-        controls.ControlHelp(panel, data.label .. '.help')
+    if values.help then
+        controls.ControlHelp(panel, (values.label or 'Untitled') .. '.help')
     end
 
     return ctrl
 end
 
-local function addSlider(panel, data)
+local function addSlider(panel, values)
     local decimals = 0
-
-    if data.type and string.lower(data.type) == 'float' then
-        decimals = 2
-    end
+    if values.type and string.lower(values.type) == 'float' then decimals = 2 end
 
     local ctrl = controls.NumSlider(
         panel,
-        data.label or 'Untitled',
-        data.command,
-        data.min or 0,
-        data.max or 100,
+        values.label or 'Untitled',
+        values.command,
+        values.min or 0,
+        values.max or 100,
         decimals
     )
 
-    if data.help then
-        controls.ControlHelp(panel, data.label .. '.help')
+    if values.help then
+        controls.ControlHelp(panel, (values.label or 'Untitled') .. '.help')
     end
 
     return ctrl
 end
 
-local function addPropSelect(panel, data)
-    return controls.PropSelect(panel, data.label, data.convar, data.options or {}, data.height)
-end
+local function addListBox(panel, values)
+    if values.menubutton == 1 or values.menubutton == '1' then return end
 
-local function addMatSelect(panel, data)
-    return controls.MatSelect(panel, data.convar, data.options, data.autostretch, data.width, data.height)
-end
-
-local function addRopeMaterial(panel, data)
-    return controls.RopeSelect(panel, data.convar)
-end
-
-local function addButton(panel, data)
-    return controls.Button(panel, data.label or data.text or 'No Label', data.command)
-end
-
-local function addNumpad(panel, data)
-    return controls.KeyBinder(panel, data.label, data.command, data.label2, data.command2)
-end
-
-local function addColor(panel, data)
-    return controls.ColorPicker(panel, data.label, data.red, data.green, data.blue, data.alpha)
-end
-
-local function addCombobox(panel, data)
-    if tostring(data.menubutton) == '1' then return end
-
-    return controls.ListBox(panel, data)
+    return controls.ListBox(panel, values)
 end
 
 local handlers = {
-    header = addHeader,
-    textbox = addTextbox,
-    label = addLabel,
+    header = function(panel, values)
+        if values.description then
+            return controls.Help(panel, values.description)
+        end
+    end,
+    textbox = function(panel, values)
+        return controls.TextEntry(panel, values.label or 'Untitled', values.command)
+    end,
+    label = function(panel, values)
+        return controls.ControlHelp(panel, values.text)
+    end,
     checkbox = addCheckbox,
     toggle = addCheckbox,
     slider = addSlider,
-    propselect = addPropSelect,
-    matselect = addMatSelect,
-    ropematerial = addRopeMaterial,
-    button = addButton,
-    numpad = addNumpad,
-    color = addColor,
+    propselect = function(panel, values)
+        return controls.PropSelect(panel, values.label, values.convar, values.options or {}, values.height)
+    end,
+    matselect = function(panel, values)
+        return controls.MatSelect(panel, values.convar, values.options, values.autostretch, values.width, values.height)
+    end,
+    ropematerial = function(panel, values)
+        return controls.RopeSelect(panel, values.convar)
+    end,
+    button = function(panel, values)
+        return controls.Button(panel, values.label or values.text or 'No Label', values.command)
+    end,
+    numpad = function(panel, values)
+        return controls.KeyBinder(panel, values.label, values.command, values.label2, values.command2)
+    end,
+    color = function(panel, values)
+        return controls.ColorPicker(panel, values.label, values.red, values.green, values.blue, values.alpha)
+    end,
     listbox = controls.ListBox,
-    combobox = addCombobox,
+    combobox = addListBox,
     materialgallery = controls.MaterialGallery
 }
 
 function controls.AddControl(panel, control, data)
-    local data = table.LowerKeyNames(data or {})
+    local values = table.LowerKeyNames(data or {})
     local original = control
     local key = string.lower(control)
 
     local handler = handlers[key]
     if handler then
-        return handler(panel, data)
+        return handler(panel, values)
     end
 
     local ctrl = vgui.Create(original, panel)
@@ -112,13 +91,11 @@ function controls.AddControl(panel, control, data)
 
     if ctrl then
         if ctrl.ControlValues then
-            ctrl:ControlValues(data)
+            ctrl:ControlValues(values)
         end
 
         return panel:AddPanel(ctrl)
     end
-
-    MsgN('UNHANDLED CONTROL: ', key)
 
     return nil
 end

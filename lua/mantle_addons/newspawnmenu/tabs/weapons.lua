@@ -11,8 +11,6 @@ function PANEL:Init()
         RunConsoleCommand('gm_spawnswep', tabl.ClassName)
     end)
 
-    self.ToolMode = 3
-
     NewSpawnMenu.content.populate.build(self, {
         hook = 'PopulateWeapons',
         list = 'Weapon',

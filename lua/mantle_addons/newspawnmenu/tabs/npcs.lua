@@ -18,8 +18,6 @@ function PANEL:Init()
         spawnNPC(itemIndex, tabl)
     end)
 
-    self.ToolMode = 2
-
     NewSpawnMenu.content.populate.build(self, {
         hook = 'PopulateNPCs',
         list = 'NPC',

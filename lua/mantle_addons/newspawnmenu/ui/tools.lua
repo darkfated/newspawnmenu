@@ -2,6 +2,7 @@ local convar_newspawnmenu_search_panel = CreateClientConVar('newspawnmenu_search
 local convar_newspawnmenu_compact_tools = CreateClientConVar('newspawnmenu_compact_tools', 0, true, false)
 local convar_newspawnmenu_toolname_left = CreateClientConVar('newspawnmenu_toolname_left', 0, true, false)
 local convar_newspawnmenu_contrast_tools = CreateClientConVar('newspawnmenu_contrast_tools', 1, true, false)
+local convar_toolmode = GetConVar('gmod_toolmode')
 
 local PANEL = {}
 
@@ -14,7 +15,7 @@ function PANEL:Init()
     self.categoryTabs = vgui.Create('MantleTabs', self)
     self.categoryTabs:Dock(FILL)
 
-    local activeTool = GetConVar('gmod_toolmode'):GetString()
+    local activeTool = convar_toolmode and convar_toolmode:GetString() or ''
 
     for index, toolCategory in ipairs(spawnmenu.GetTools()) do
         self:BuildCategory(index, toolCategory)
@@ -75,7 +76,7 @@ function PANEL:BuildCategory(index, toolCategory)
                 btnTool:SetTall(isCompactTools and 26 or 34)
                 btnTool:SetTxt('')
                 btnTool.Paint = function(s, w, h)
-                    local toolMode = GetConVar('gmod_toolmode'):GetString()
+                    local toolMode = convar_toolmode and convar_toolmode:GetString() or ''
                     local isContrastTools = convar_newspawnmenu_contrast_tools:GetBool()
                     local col = Mantle.color.theme
                     if toolMode != toolGroup.ItemName then

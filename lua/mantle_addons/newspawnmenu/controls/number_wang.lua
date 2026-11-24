@@ -41,8 +41,5 @@ function controls.NumberWang(panel, label, convar, min, max, decimals)
 
     wang:SizeToContents()
 
-    local wrapper = controls.labeledControl(label, wang, controls.metrics.rowHeight)
-    panel:AddPanel(wrapper)
-
-    return wang, wrapper
+    return controls.addLabeledControl(panel, wang, label, controls.metrics.rowHeight)
 end

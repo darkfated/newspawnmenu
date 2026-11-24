@@ -2,14 +2,11 @@ local controls = NewSpawnMenu.controls
 
 function controls.MaterialGallery(panel, data)
     local ctrl = vgui.Create('MatSelect')
-    ctrl.Paint = function(_, w, h)
-        controls.paintPanel(w, h)
-    end
+    controls.stylePicker(ctrl)
     ctrl:SetItemWidth(data.width or 32)
     ctrl:SetItemHeight(data.height or 32)
     ctrl:SetNumRows(data.rows or 4)
-    ctrl:SetConVar(data.convar or nil)
-    ctrl.List.Paint = nil
+    ctrl:SetConVar(data.convar)
 
     if data.options then
         for name, tab in pairs(data.options) do

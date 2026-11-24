@@ -15,6 +15,7 @@ function PANEL:Init()
     self._roots = {}
     self._rootByTab = {}
     self._activeByRoot = {}
+    self._activeEntry = nil
 
     self:AddFunc(function(tabl)
         items.spawn(tabl)
@@ -55,6 +56,7 @@ function PANEL:Rebuild()
     self.items = {}
     self._roots = {}
     self._rootByTab = {}
+    self._activeEntry = nil
 
     self:ClearCardQueue()
 
@@ -92,9 +94,14 @@ function PANEL:LoadRoot(entry)
             bucket.key = tab.key
             bucket.desc = tab
             entry.buckets[#entry.buckets + 1] = bucket
+        end
+    end
 
-            if saved == tab.key and IsValid(categoryTabs) then
+    if saved and IsValid(categoryTabs) then
+        for _, bucket in ipairs(entry.buckets) do
+            if bucket.key == saved then
                 categoryTabs:SetActiveTab(bucket.id, true)
+                break
             end
         end
     end
@@ -134,28 +141,37 @@ function PANEL:LoadBucket(bucket)
     end
 end
 
+function PANEL:StoreActiveBucket(entry)
+    if !entry then return end
+
+    local tabs = entry.categoryData.tabs
+    if !IsValid(tabs) then return end
+
+    local active = tabs:GetActiveTab()
+    for _, bucket in ipairs(entry.buckets) do
+        if bucket.id == active then
+            self._activeByRoot[entry.root.key] = bucket.key
+
+            return bucket
+        end
+    end
+end
+
 function PANEL:SyncTabs()
     if !IsValid(self.left) then return end
 
     local entry = self._rootByTab[self.left:GetActiveTab()]
-    if entry and !entry.initialized then self:LoadRoot(entry) end
-
-    for key, current in pairs(self._roots) do
-        local tabs = current.categoryData.tabs
-        if current.initialized and IsValid(tabs) then
-            local active = tabs:GetActiveTab()
-
-            for _, bucket in ipairs(current.buckets) do
-                if bucket.id == active then
-                    self._activeByRoot[key] = bucket.key
-
-                    if !bucket.initialized then self:LoadBucket(bucket) end
-
-                    break
-                end
-            end
-        end
+    if self._activeEntry and self._activeEntry != entry then
+        self:StoreActiveBucket(self._activeEntry)
     end
+
+    self._activeEntry = entry
+    if !entry then return end
+
+    if !entry.initialized then self:LoadRoot(entry) end
+
+    local bucket = self:StoreActiveBucket(entry)
+    if bucket and !bucket.initialized then self:LoadBucket(bucket) end
 end
 
 function PANEL:Think()

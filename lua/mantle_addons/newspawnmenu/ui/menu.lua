@@ -37,8 +37,6 @@ function NewSpawnMenu.CreateMenu()
     local menu = vgui.Create('EditablePanel')
     NewSpawnMenu.menu = menu
 
-    NewSpawnMenu.compatibility.bridge.bind()
-
     menu:SetSize(menuW, menuH)
     menu:Center()
     menu:MakePopup()
@@ -74,6 +72,9 @@ function NewSpawnMenu.CreateMenu()
         tools:SetWide(menuW * 0.35)
     end
 
+    if NewSpawnMenu.compatibility.bridge then
+        NewSpawnMenu.compatibility.bridge.bind()
+    end
 end
 
 function NewSpawnMenu.OpenMenu()
@@ -121,4 +122,12 @@ net.Receive('NewSpawnMenu-F1', function()
     else
         NewSpawnMenu.OpenMenu()
     end
+end)
+
+concommand.Add('newspawnmenu_remove', function()
+    if NewSpawnMenu.compatibility.bridge then
+        NewSpawnMenu.compatibility.bridge.release()
+    end
+
+    controlpanel.Clear()
 end)

@@ -1,13 +1,17 @@
-NewSpawnMenu = {
-    tabs = {},
-    convar = {},
-    controls = {},
-    content = {},
-    settings = {},
-    ui = {}
-}
+NewSpawnMenu = NewSpawnMenu or {}
+NewSpawnMenu.api = NewSpawnMenu.api or {}
+NewSpawnMenu.compatibility = NewSpawnMenu.compatibility or {}
+NewSpawnMenu.controlPanels = NewSpawnMenu.controlPanels or {}
+NewSpawnMenu.content = NewSpawnMenu.content or {}
+NewSpawnMenu.convar = NewSpawnMenu.convar or {}
+NewSpawnMenu.controls = NewSpawnMenu.controls or {}
+NewSpawnMenu.settings = NewSpawnMenu.settings or {}
+NewSpawnMenu.tabs = NewSpawnMenu.tabs or {}
+NewSpawnMenu.ui = NewSpawnMenu.ui or {}
+NewSpawnMenu.util = NewSpawnMenu.util or {}
 
 Mantle.run_sv('mantle_addons/newspawnmenu/core/network.lua')
+Mantle.run_cl('mantle_addons/newspawnmenu/core/util.lua')
 Mantle.run_cl('mantle_addons/newspawnmenu/core/render.lua')
 
 Mantle.run_cl('mantle_addons/newspawnmenu/api/init.lua')
@@ -39,7 +43,6 @@ Mantle.run_cl('mantle_addons/newspawnmenu/ui/init.lua')
 Mantle.run_cl('mantle_addons/newspawnmenu/settings/init.lua')
 
 Mantle.run_cl('mantle_addons/newspawnmenu/tabs/populate.lua')
-Mantle.run_cl('mantle_addons/newspawnmenu/tabs/props.lua')
 Mantle.run_cl('mantle_addons/newspawnmenu/tabs/weapons.lua')
 Mantle.run_cl('mantle_addons/newspawnmenu/tabs/entities.lua')
 Mantle.run_cl('mantle_addons/newspawnmenu/tabs/vehicles.lua')

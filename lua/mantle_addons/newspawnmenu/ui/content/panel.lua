@@ -1,6 +1,7 @@
 local convar_close_on_spawn = CreateClientConVar('newspawnmenu_close_on_spawn', 0, true, false)
 local convar_scale = GetConVar('newspawnmenu_scale')
 local convar_name_left = GetConVar('newspawnmenu_itemname_left')
+local convar_npc_weapon = GetConVar('gmod_npcweapon')
 local math_floor = math.floor
 local math_abs = math.abs
 
@@ -15,39 +16,13 @@ local CARD_MAX_BATCH = 1024
 local ANIM_EPSILON = 0.001
 local CARD_FONT_SIZE = 14
 
-local function tabMaterial(icon)
-    if !isstring(icon) or icon == '' then return nil end
-    if icon:StartsWith('materials/') then icon = icon:sub(11) end
-
-    local mat = Material(icon)
-    if !mat or mat:IsError() then return nil end
-
-    return mat
-end
-
-local function phrase(value, fallback)
-    if !isstring(value) or value == '' then return fallback or 'Other' end
-    if !value:StartsWith('#') then return value end
-
-    local translated = language.GetPhrase(value)
-    if !isstring(translated) or translated == '' or translated == value then return fallback or value end
-
-    return translated
-end
-
-local function configureGrid(grid)
-    grid:Configure(7, 6, 8, 96)
-end
+local phrase = NewSpawnMenu.util.phrase
+local tabMaterial = NewSpawnMenu.util.material
 
 local function makeGrid(panel)
     local grid = vgui.Create('NewSpawnMenu.ContentGrid')
     grid:Dock(TOP)
-
-    if IsValid(panel) then
-        panel:ConfigureGrid(grid)
-    else
-        configureGrid(grid)
-    end
+    panel:ConfigureGrid(grid)
 
     return grid
 end
@@ -157,7 +132,7 @@ function PANEL:Init()
 end
 
 function PANEL:ConfigureGrid(grid)
-    configureGrid(grid)
+    grid:Configure(7, 6, 8, 96)
 end
 
 function PANEL:EnsureLeft(force)
@@ -232,17 +207,16 @@ function PANEL:AddLazySection(bucket, title, onExpand)
     local loaded = false
     local doClick = section.header.DoClick
 
-    section.header.DoClick = function()
+    section.header.DoClick = function(header)
         if !loaded then
-            loaded = true
-
             local grid = makeGrid(self)
             section:AddItem(grid)
 
             if onExpand then onExpand(section, grid) end
+            loaded = true
         end
 
-        doClick()
+        doClick(header)
     end
 
     return section
@@ -431,7 +405,7 @@ function PANEL:CreateCard(grid, name, tabl, itemIndex)
         Mantle.func.sound('UI/buttonclick.wav')
         fn(tabl, itemIndex)
 
-        if convar_close_on_spawn:GetBool() then
+        if convar_close_on_spawn:GetBool() and IsValid(NewSpawnMenu.menu) then
             NewSpawnMenu.menu:Close()
         end
     end
@@ -442,14 +416,14 @@ function PANEL:CreateCard(grid, name, tabl, itemIndex)
         Mantle.func.sound('UI/buttonclick.wav')
         self.funcMiddle(tabl)
 
-        if convar_close_on_spawn:GetBool() then
+        if convar_close_on_spawn:GetBool() and IsValid(NewSpawnMenu.menu) then
             NewSpawnMenu.menu:Close()
         end
     end
 
-    panelItem.DoRightClick = function()
+    panelItem.DoRightClick = function(btn)
         Mantle.func.sound()
-        NewSpawnMenu.content.openItemMenu(self, name, itemIndex, data, contentType)
+        NewSpawnMenu.content.openItemMenu(self, name, itemIndex, data, btn.contentType or contentType, btn)
     end
 
     grid:AddItem(panelItem)
@@ -512,7 +486,7 @@ function PANEL:PaintOverlay(name, itemIndex, tabl, w, h, btn, offsetX, offsetY)
     end
 
     if btn.npcWeapon then
-        local active = GetConVarString('gmod_npcweapon') == btn.spawnName
+        local active = convar_npc_weapon and convar_npc_weapon:GetString() == btn.spawnName
         surface.SetMaterial(active and mat_npc_weapon_on or mat_npc_weapon)
         surface.SetDrawColor(255, 255, 255, 255)
         surface.DrawTexturedRect(ox + w - 20, oy + 6, 14, 14)

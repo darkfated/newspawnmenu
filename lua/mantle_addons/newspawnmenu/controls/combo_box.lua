@@ -9,18 +9,14 @@ local LERP_SNAP = 0.005
 
 local PANEL = {}
 
-local function findChoice(self, text, data)
+local function findChoice(self, text, data, exact)
     for index, choice in ipairs(self.choices or {}) do
-        if choice.text == text and (data == nil or choice.data == data) then
-            return index
-        end
-    end
-end
-
-local function findExactChoice(self, text, data)
-    for index, choice in ipairs(self.choices or {}) do
-        if choice.text == text and choice.data == data then
-            return index
+        if choice.text == text then
+            if exact then
+                if choice.data == data then return index end
+            elseif data == nil or choice.data == data then
+                return index
+            end
         end
     end
 end
@@ -36,6 +32,20 @@ local function findValueChoice(self, value)
         if choice.text == value then
             return index, choice
         end
+    end
+end
+
+local function choiceAt(self, index)
+    return self.choices and self.choices[index] or nil
+end
+
+local function applySelected(self, index, choice)
+    if index then
+        self.selected = choice.text
+        self.selectedIndex = index
+    else
+        self.selected = nil
+        self.selectedIndex = nil
     end
 end
 
@@ -56,49 +66,42 @@ local function sortChoices(self)
     end
 end
 
+local function approach(current, target, speed, ft)
+    if current == target then return current end
+
+    local value = Mantle.func.approachExp(current or 0, target, speed, ft)
+    if math_abs(value - target) < LERP_SNAP then return target end
+
+    return value
+end
+
+local function roundedRect(w, h, color, outline)
+    local shape = RNDX.Rect(0, 0, w, h)
+        :Rad(RADIUS)
+        :Color(color)
+
+    if outline then shape:Outline(1) end
+
+    shape:Draw()
+end
+
 local function paintButton(combo, button, w, h)
     local ft = FrameTime()
 
-    local hoverTarget = button:IsHovered() and 1 or 0
-    if combo.hoverAnim != hoverTarget then
-        combo.hoverAnim = Mantle.func.approachExp(combo.hoverAnim or 0, hoverTarget, 12, ft)
-        if math_abs(combo.hoverAnim - hoverTarget) < LERP_SNAP then
-            combo.hoverAnim = hoverTarget
-        end
-    end
+    combo.hoverAnim = approach(combo.hoverAnim or 0, button:IsHovered() and 1 or 0, 12, ft)
+    combo._focusLerp = approach(combo._focusLerp or 0, combo.opened and 1 or 0, 10, ft)
 
-    local focusTarget = combo.opened and 1 or 0
-    if combo._focusLerp != focusTarget then
-        combo._focusLerp = Mantle.func.approachExp(combo._focusLerp or 0, focusTarget, 10, ft)
-        if math_abs(combo._focusLerp - focusTarget) < LERP_SNAP then
-            combo._focusLerp = focusTarget
-        end
-    end
-
-    RNDX.Rect(0, 0, w, h)
-        :Rad(RADIUS)
-        :Color(Mantle.color.focus_panel)
-    :Draw()
+    roundedRect(w, h, Mantle.color.focus_panel)
 
     if combo.hoverAnim > 0.01 then
         local hv = Mantle.color.hover_overlay
-        RNDX.Rect(0, 0, w, h)
-            :Rad(RADIUS)
-            :Color(Color(hv.r, hv.g, hv.b, math_floor(hv.a * combo.hoverAnim)))
-        :Draw()
+        roundedRect(w, h, Color(hv.r, hv.g, hv.b, math_floor(hv.a * combo.hoverAnim)))
     end
 
     if combo._focusLerp > 0.01 then
         local theme = Mantle.color.theme
-        RNDX.Rect(0, 0, w, h)
-            :Rad(RADIUS)
-            :Color(Color(theme.r, theme.g, theme.b, math_floor(60 * combo._focusLerp)))
-        :Draw()
-        RNDX.Rect(0, 0, w, h)
-            :Rad(RADIUS)
-            :Color(Color(theme.r, theme.g, theme.b, math_floor(160 * combo._focusLerp)))
-            :Outline(1)
-        :Draw()
+        roundedRect(w, h, Color(theme.r, theme.g, theme.b, math_floor(60 * combo._focusLerp)))
+        roundedRect(w, h, Color(theme.r, theme.g, theme.b, math_floor(160 * combo._focusLerp)), true)
     end
 
     local text, col
@@ -122,15 +125,7 @@ function PANEL:Init()
 end
 
 function PANEL:SetValue(value)
-    local index, choice = findValueChoice(self, value)
-
-    if index then
-        self.selected = choice.text
-        self.selectedIndex = index
-    else
-        self.selected = nil
-        self.selectedIndex = nil
-    end
+    applySelected(self, findValueChoice(self, value))
 end
 
 function PANEL:ConVarStringThink()
@@ -139,17 +134,13 @@ function PANEL:ConVarStringThink()
     local convar = GetConVar(self.m_strConVar)
     if !convar then return end
 
-    local value = convar:GetString()
-    local index, choice = findValueChoice(self, value)
-
+    local index, choice = findValueChoice(self, convar:GetString())
     if index then
         if self.selectedIndex != index or self.selected != choice.text then
-            self.selected = choice.text
-            self.selectedIndex = index
+            applySelected(self, index, choice)
         end
     elseif self.selected or self.selectedIndex then
-        self.selected = nil
-        self.selectedIndex = nil
+        applySelected(self)
     end
 end
 
@@ -159,7 +150,7 @@ function PANEL:Think()
 end
 
 function PANEL:SetSortItems(state)
-    self.m_bDoSort = state and true or false
+    self.m_bDoSort = not not state
 
     if self.m_bDoSort then
         sortChoices(self)
@@ -175,7 +166,7 @@ function PANEL:AddChoice(text, data, select)
 
     if self.m_bDoSort then
         sortChoices(self)
-        index = findExactChoice(self, text, data) or index
+        index = findChoice(self, text, data, true) or index
     end
 
     if select then
@@ -196,12 +187,12 @@ function PANEL:AddItem(text, data)
 end
 
 function PANEL:GetOptionText(index)
-    local choice = self.choices and self.choices[index]
+    local choice = choiceAt(self, index)
     return choice and choice.text or nil
 end
 
 function PANEL:GetOptionData(index)
-    local choice = self.choices and self.choices[index]
+    local choice = choiceAt(self, index)
     return choice and choice.data or nil
 end
 
@@ -227,11 +218,12 @@ end
 function PANEL:RemoveChoice(index)
     if !isnumber(index) or !self.choices or !self.choices[index] then return end
 
+    self:CloseMenu()
+
     local choice = table.remove(self.choices, index)
 
     if self.selectedIndex == index then
-        self.selected = nil
-        self.selectedIndex = nil
+        applySelected(self)
     elseif self.selectedIndex and self.selectedIndex > index then
         self.selectedIndex = self.selectedIndex - 1
     end
@@ -288,8 +280,5 @@ function controls.ComboBox(panel, label, convar)
         RunConsoleCommand(combobox.m_strConVar, tostring(data or value))
     end
 
-    local wrapper = controls.labeledControl(label, combobox, controls.metrics.rowHeight)
-    panel:AddPanel(wrapper)
-
-    return combobox, wrapper
+    return controls.addLabeledControl(panel, combobox, label, controls.metrics.rowHeight)
 end

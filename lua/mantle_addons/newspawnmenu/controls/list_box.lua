@@ -47,14 +47,11 @@ end
 function controls.ListBox(panel, data)
     if data.height then
         local ctrl = vgui.Create('DListView')
-        ctrl:Dock(TOP)
         ctrl:SetMultiSelect(false)
         ctrl:SetHeaderHeight(28)
         ctrl:SetTall(data.height)
         ctrl:SetDataHeight(30)
-        ctrl.Paint = function(_, w, h)
-            controls.paintPanel(w, h)
-        end
+        controls.paintContainer(ctrl)
         styleVBar(ctrl.VBar)
 
         local column = ctrl:AddColumn(data.label or 'unknown')
@@ -72,10 +69,8 @@ function controls.ListBox(panel, data)
                 line.data = v
                 styleLine(line)
 
-                for cvar, val in pairs(line.data) do
-                    if GetConVarString(cvar) == tostring(val) then
-                        line:SetSelected(true)
-                    end
+                if controls.anyConvarMatches(line.data) then
+                    line:SetSelected(true)
                 end
             end
         end
@@ -83,9 +78,7 @@ function controls.ListBox(panel, data)
         ctrl:SortByColumn(1, false)
 
         function ctrl:OnRowSelected(LineID, Line)
-            for cvar, val in pairs(Line.data) do
-                RunConsoleCommand(cvar, tostring(val))
-            end
+            controls.applyConvarTable(Line.data)
         end
 
         return panel:AddPanel(ctrl)

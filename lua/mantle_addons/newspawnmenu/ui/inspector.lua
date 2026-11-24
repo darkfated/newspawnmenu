@@ -2,6 +2,7 @@ local PANEL = {}
 
 function PANEL:Init()
     self.panel = nil
+    self._openAnim = nil
 
     self.ModelPanel = vgui.Create('DModelPanel', self)
     self.ModelPanel:Dock(FILL)
@@ -109,34 +110,42 @@ function PANEL:SetModel(mdl)
     self.ModelPanel.targetZoom = 1
     self.ModelPanel.currentZoom = 0.5
 
-    local startTime = SysTime()
-    local startAngles = self.ModelPanel.currentAngles
-    local startZoom = self.ModelPanel.currentZoom
-
-    local animateOpen = function()
-        local progress = (SysTime() - startTime) * 2
-        if progress < 1 then
-            local eased = Mantle.func.easeInOutCubic(progress)
-
-            self.ModelPanel.currentAngles = Angle(
-                startAngles.p + (self.ModelPanel.targetAngles.p - startAngles.p) * eased,
-                startAngles.y + (self.ModelPanel.targetAngles.y - startAngles.y) * eased,
-                startAngles.r + (self.ModelPanel.targetAngles.r - startAngles.r) * eased
-            )
-
-            self.ModelPanel.currentZoom = startZoom + (self.ModelPanel.targetZoom - startZoom) * eased
-        else
-            self.ModelPanel.currentAngles = self.ModelPanel.targetAngles
-            self.ModelPanel.currentZoom = self.ModelPanel.targetZoom
-            hook.Remove('Think', 'SpawnMenuInspectorOpen')
-        end
-    end
-
-    hook.Add('Think', 'SpawnMenuInspectorOpen', animateOpen)
+    self._openAnim = {
+        startTime = SysTime(),
+        startAngles = self.ModelPanel.currentAngles:Copy(),
+        startZoom = self.ModelPanel.currentZoom
+    }
 
     local campos = self.ModelPanel.m_vecModelOrigin + Vector(50, 50, 25)
     self.ModelPanel:SetCamPos(campos)
     self.ModelPanel:SetLookAt(self.ModelPanel.m_vecModelOrigin)
+end
+
+function PANEL:Think()
+    if !IsValid(self.ModelPanel) then return end
+
+    local anim = self._openAnim
+    if !anim then return end
+
+    local progress = (SysTime() - anim.startTime) * 2
+    if progress >= 1 then
+        self.ModelPanel.currentAngles = self.ModelPanel.targetAngles:Copy()
+        self.ModelPanel.currentZoom = self.ModelPanel.targetZoom
+        self._openAnim = nil
+
+        return
+    end
+
+    local eased = Mantle.func.easeInOutCubic(progress)
+    local startAngles = anim.startAngles
+    local targetAngles = self.ModelPanel.targetAngles
+
+    self.ModelPanel.currentAngles = Angle(
+        startAngles.p + (targetAngles.p - startAngles.p) * eased,
+        startAngles.y + (targetAngles.y - startAngles.y) * eased,
+        startAngles.r + (targetAngles.r - startAngles.r) * eased
+    )
+    self.ModelPanel.currentZoom = anim.startZoom + (self.ModelPanel.targetZoom - anim.startZoom) * eased
 end
 
 function PANEL:SetPan(pan)

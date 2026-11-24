@@ -7,8 +7,6 @@ function PANEL:Init()
         RunConsoleCommand('gm_spawnsent', tabl.ClassName)
     end)
 
-    self.ToolMode = 0
-
     NewSpawnMenu.content.populate.build(self, {
         hook = 'PopulateEntities',
         list = 'SpawnableEntities',

@@ -2,10 +2,7 @@ local controls = NewSpawnMenu.controls
 
 local PANEL = {}
 
-AccessorFunc(PANEL, 'm_ConVar1', 'ConVar1')
-AccessorFunc(PANEL, 'm_ConVar2', 'ConVar2')
-
-local function paintBinder(binder)
+local function configureBinder(binder)
     binder:SetFont(controls.controlFont(16))
     binder:SetText('')
 
@@ -62,36 +59,59 @@ local function makeLabel(parent)
     return label
 end
 
+local function setLabel(panel, index, txt)
+    if !txt then return end
+
+    panel['Label' .. index]:SetText(language.GetPhrase(txt))
+end
+
+local function setConVar(panel, index, cvar)
+    panel['NumPad' .. index]:SetConVar(cvar)
+    panel['m_ConVar' .. index] = cvar
+end
+
+local function place(binder, label, cx, binderW)
+    label:SetPos(cx - binderW * 0.5, 4)
+    label:SetSize(binderW, 24)
+    binder:SetPos(cx - binderW * 0.5, 38)
+    binder:SetSize(binderW, 34)
+    binder:InvalidateLayout(true)
+end
+
 function PANEL:Init()
     self.NumPad1 = vgui.Create('DBinder', self)
-    paintBinder(self.NumPad1)
+    configureBinder(self.NumPad1)
 
     self.Label1 = makeLabel(self)
 
     self.NumPad2 = vgui.Create('DBinder', self)
-    paintBinder(self.NumPad2)
+    configureBinder(self.NumPad2)
 
     self.Label2 = makeLabel(self)
 end
 
 function PANEL:SetLabel1(txt)
-    if !txt then return end
-    self.Label1:SetText(language.GetPhrase(txt))
+    setLabel(self, 1, txt)
 end
 
 function PANEL:SetLabel2(txt)
-    if !txt then return end
-    self.Label2:SetText(language.GetPhrase(txt))
+    setLabel(self, 2, txt)
 end
 
 function PANEL:SetConVar1(cvar)
-    self.NumPad1:SetConVar(cvar)
-    self.m_ConVar1 = cvar
+    setConVar(self, 1, cvar)
 end
 
 function PANEL:SetConVar2(cvar)
-    self.NumPad2:SetConVar(cvar)
-    self.m_ConVar2 = cvar
+    setConVar(self, 2, cvar)
+end
+
+function PANEL:GetConVar1()
+    return self.m_ConVar1
+end
+
+function PANEL:GetConVar2()
+    return self.m_ConVar2
 end
 
 function PANEL:GetValue1()
@@ -108,24 +128,14 @@ function PANEL:PerformLayout(w, h)
     self:SetTall(76)
 
     local binderW = math.min(160, math.max(100, w * 0.28))
-    local labelH = 24
-    local binderY = 38
-
-    local function place(binder, label, cx)
-        label:SetPos(cx - binderW * 0.5, 4)
-        label:SetSize(binderW, labelH)
-        binder:SetPos(cx - binderW * 0.5, binderY)
-        binder:SetSize(binderW, 34)
-        binder:InvalidateLayout(true)
-    end
 
     if !self.m_ConVar2 then
-        place(self.NumPad1, self.Label1, w * 0.5)
+        place(self.NumPad1, self.Label1, w * 0.5, binderW)
         self.NumPad2:SetVisible(false)
         self.Label2:SetVisible(false)
     else
-        place(self.NumPad1, self.Label1, w * 0.25)
-        place(self.NumPad2, self.Label2, w * 0.75)
+        place(self.NumPad1, self.Label1, w * 0.25, binderW)
+        place(self.NumPad2, self.Label2, w * 0.75, binderW)
         self.NumPad2:SetVisible(true)
         self.Label2:SetVisible(true)
     end

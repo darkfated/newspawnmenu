@@ -40,16 +40,9 @@ function catalog.availableRoots()
 end
 
 local TAB_CACHE = {}
+local FOLDER_CACHE = {}
 
-local function phrase(value, fallback)
-    if !isstring(value) or value == '' then return fallback or 'Other' end
-    if !value:StartsWith('#') then return value end
-
-    local translated = language.GetPhrase(value)
-    if !isstring(translated) or translated == '' or translated == value then return fallback or value end
-
-    return translated
-end
+local phrase = NewSpawnMenu.util.phrase
 
 local function normalizePath(path)
     path = tostring(path or 'models'):gsub('\\', '/'):gsub('/+', '/')
@@ -262,10 +255,12 @@ local function folderHasModels(folder)
 end
 
 function catalog.folders(tab)
-    if istable(tab._folders) then return tab._folders end
-
     local pathId = tab.pathId
     local root = normalizePath(tab.root)
+    local cacheKey = tostring(pathId or '') .. '|' .. root
+    local cached = FOLDER_CACHE[cacheKey]
+
+    if cached then return cached end
     local candidates = {
         { title = 'models', path = root, pathId = pathId }
     }
@@ -293,7 +288,7 @@ function catalog.folders(tab)
         if folderHasModels(folder) then result[#result + 1] = folder end
     end
 
-    tab._folders = result
+    FOLDER_CACHE[cacheKey] = result
 
     return result
 end
@@ -337,4 +332,5 @@ end
 
 function catalog.invalidate()
     TAB_CACHE = {}
+    FOLDER_CACHE = {}
 end

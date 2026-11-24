@@ -7,8 +7,6 @@ function PANEL:Init()
         RunConsoleCommand('gm_spawnvehicle', itemIndex)
     end)
 
-    self.ToolMode = 1
-
     NewSpawnMenu.content.populate.build(self, {
         hook = 'PopulateVehicles',
         list = 'Vehicles',

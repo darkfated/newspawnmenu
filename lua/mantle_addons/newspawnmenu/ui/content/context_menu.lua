@@ -1,7 +1,10 @@
 local content = NewSpawnMenu.content
 
-local contentIcon = vgui.GetControlTable('ContentIcon')
-local genericMenu = contentIcon and contentIcon.OpenGenericSpawnmenuRightClickMenu
+local function genericMenu()
+    local contentIcon = vgui.GetControlTable('ContentIcon')
+
+    return contentIcon and contentIcon.OpenGenericSpawnmenuRightClickMenu
+end
 
 local creatorModes = {
     entity = 0,
@@ -71,13 +74,14 @@ local function addInspect(menu, panel, model)
     end, 'icon16/camera.png')
 end
 
-function content.openItemMenu(panel, name, itemIndex, tabl, contentType)
+function content.openItemMenu(panel, name, itemIndex, tabl, contentType, icon)
     local data = istable(tabl) and tabl or {}
     local class = content.itemClass(itemIndex, data)
     local customMenu = data._openMenu
+    local menuIcon = IsValid(icon) and icon or panel
 
-    if isfunction(customMenu) and customMenu != genericMenu then
-        customMenu(panel)
+    if isfunction(customMenu) and customMenu != genericMenu() then
+        customMenu(menuIcon)
         return
     end
 
