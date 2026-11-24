@@ -1,6 +1,8 @@
 local PANEL = {}
 
 function PANEL:Init()
+    self.ContentType = 'entity'
+
     self:AddFunc(function(tabl, itemIndex)
         RunConsoleCommand('gm_spawnsent', tabl.ClassName)
     end)

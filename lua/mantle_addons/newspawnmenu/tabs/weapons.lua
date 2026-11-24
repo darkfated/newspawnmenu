@@ -1,6 +1,8 @@
 local PANEL = {}
 
 function PANEL:Init()
+    self.ContentType = 'weapon'
+
     self:AddFunc(function(tabl)
         RunConsoleCommand('gm_giveswep', tabl.ClassName)
     end)

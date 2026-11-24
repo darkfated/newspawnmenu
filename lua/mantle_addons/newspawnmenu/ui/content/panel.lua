@@ -104,61 +104,7 @@ function PANEL:AddItem(name, category, tabl, itemIndex, categoryIcon)
 
     panelItem.DoRightClick = function()
         Mantle.func.sound()
-        local dm = Mantle.ui.derma_menu()
-
-        local className = tabl.ClassName
-        local targetCopy = className and className or tabl.Class
-        if targetCopy then
-            dm:AddOption(language.GetPhrase('#spawnmenu.menu.copy'), function()
-                SetClipboardText(targetCopy)
-            end, 'icon16/page_copy.png')
-        end
-
-        local itemMdl = tabl.Model
-        if !itemMdl then
-            local wepTabl = weapons.Get(className)
-            if wepTabl then
-                itemMdl = wepTabl.WorldModel or wepTabl.ViewModel
-            end
-        end
-
-        if !itemMdl then
-            local entTabl = scripted_ents.Get(className)
-            if entTabl then
-                itemMdl = entTabl.Model
-            end
-        end
-
-        if self.ToolMode then
-            local creatorName = (self.ToolMode == 1 or self.ToolMode == 2) and itemIndex or tabl.ClassName
-
-            dm:AddOption(language.GetPhrase('#spawnmenu.menu.spawn_with_toolgun'), function()
-                RunConsoleCommand('gmod_tool', 'creator')
-                RunConsoleCommand('creator_type', self.ToolMode)
-                RunConsoleCommand('creator_name', creatorName)
-
-                if self.ToolMode == 2 then
-                    RunConsoleCommand('creator_override', '')
-                end
-            end, 'icon16/brick_add.png')
-
-            if self.ToolMode == 2 and tabl.Weapons and #tabl.Weapons > 0 then
-                dm:AddOption(language.GetPhrase('#spawnmenu.menu.spawn_with_weapon'), function()
-                    NewSpawnMenu.content.openNPCWeaponMenu(itemIndex, tabl)
-                end, 'icon16/gun.png')
-            end
-        end
-
-        if itemMdl then
-            dm:AddOption(Mantle.lang.get('newspawnmenu', 'inspect'), function()
-                self.left:SetVisible(false)
-
-                local inspector = vgui.Create('NewSpawnMenu.Inspector', self)
-                inspector:Dock(FILL)
-                inspector:SetModel(itemMdl)
-                inspector:SetPan(self)
-            end, 'icon16/camera.png')
-        end
+        NewSpawnMenu.content.openItemMenu(self, name, itemIndex, tabl, self.ContentType)
     end
 
     grid:AddItem(panelItem)

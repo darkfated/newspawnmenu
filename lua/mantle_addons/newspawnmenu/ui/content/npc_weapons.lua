@@ -1,15 +1,18 @@
-function NewSpawnMenu.content.openNPCWeaponMenu(npcKey, npcData)
-    local menu = Mantle.ui.derma_menu()
+local content = NewSpawnMenu.content
+
+function content.addNPCWeaponOptions(menu, npcKey, npcData)
+    local key = tostring(npcKey or '')
+    local weapons = (istable(npcData) and istable(npcData.Weapons) and npcData.Weapons) or {}
     local customIcons = list.Get('ContentCategoryIcons')
 
-    local function addOption(text, weaponClass, icon)
+    local function addOption(text, class, icon)
         menu:AddOption(text, function()
-            RunConsoleCommand('gmod_spawnnpc', npcKey, weaponClass)
+            RunConsoleCommand('gmod_spawnnpc', key, class)
         end, icon)
     end
 
-    for _, class in ipairs(npcData.Weapons) do
-        if class != '' then
+    for _, class in ipairs(weapons) do
+        if class and class != '' then
             addOption(language.GetPhrase(class), class, 'icon16/gun.png')
         end
     end
@@ -17,21 +20,23 @@ function NewSpawnMenu.content.openNPCWeaponMenu(npcKey, npcData)
     menu:AddSpacer()
     addOption(language.GetPhrase('#menubar.npcs.noweapon'), 'none', 'icon16/cross.png')
 
-    local groupedWeps = {}
-    for _, v in pairs(list.Get('NPCUsableWeapons')) do
-        if table.HasValue(npcData.Weapons, v.class) then continue end
-
-        local cat = (v.category or ''):lower()
-        groupedWeps[cat] = groupedWeps[cat] or {}
-        groupedWeps[cat][language.GetPhrase(v.title)] = { class = v.class, icon = customIcons[v.category or ''] or 'icon16/gun.png' }
+    local groupedWeapons = {}
+    for _, weapon in pairs(list.Get('NPCUsableWeapons')) do
+        if weapon.class and !table.HasValue(weapons, weapon.class) then
+            local category = (weapon.category or ''):lower()
+            groupedWeapons[category] = groupedWeapons[category] or {}
+            groupedWeapons[category][language.GetPhrase(weapon.title or weapon.class)] = {
+                class = weapon.class,
+                icon = customIcons[weapon.category or ''] or 'icon16/gun.png'
+            }
+        end
     end
 
-    for group, items in SortedPairs(groupedWeps) do
+    for _, items in SortedPairs(groupedWeapons) do
         menu:AddSpacer()
         for title, info in SortedPairs(items) do
-            menu:AddOption(title, function()
-                RunConsoleCommand('gmod_spawnnpc', npcKey, info.class)
-            end, info.icon)
+            addOption(title, info.class, info.icon)
         end
     end
 end
+

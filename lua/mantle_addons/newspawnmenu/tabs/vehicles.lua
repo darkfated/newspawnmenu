@@ -1,6 +1,8 @@
 local PANEL = {}
 
 function PANEL:Init()
+    self.ContentType = 'vehicle'
+
     self:AddFunc(function(tabl, itemIndex)
         RunConsoleCommand('gm_spawnvehicle', itemIndex)
     end)

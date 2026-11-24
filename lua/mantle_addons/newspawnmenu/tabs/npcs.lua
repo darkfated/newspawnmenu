@@ -1,6 +1,8 @@
 local PANEL = {}
 
 function PANEL:Init()
+    self.ContentType = 'npc'
+
     self:AddFunc(function(tabl, itemIndex)
         local weapon = table.Random(tabl.Weapons or {}) or ''
 
