@@ -7,56 +7,6 @@ local creatorModes = {
     weapon = 3
 }
 
-local function itemClass(itemIndex, tabl)
-    local class
-
-    if istable(tabl) then
-        class = tabl.ClassName or tabl.Class
-    end
-
-    class = class or itemIndex
-
-    return class and tostring(class) or ''
-end
-
-local function isNPCWeapon(class)
-    if class == '' then return false end
-
-    for _, weapon in pairs(list.Get('NPCUsableWeapons')) do
-        if weapon.class == class then return true end
-    end
-
-    return false
-end
-
-local function findModel(itemIndex, tabl, contentType)
-    if istable(tabl) then
-        local model = tabl.Model or tabl.WorldModel or tabl.ViewModel
-        if model then return model end
-    end
-
-    local class = itemClass(itemIndex, tabl)
-    if class == '' then return nil end
-
-    if contentType == 'weapon' then
-        local weapon = weapons.Get(class) or list.GetEntry('Weapon', class)
-        return weapon and (weapon.WorldModel or weapon.ViewModel or weapon.Model) or nil
-    end
-
-    if contentType == 'npc' or contentType == 'entity' then
-        local entity = scripted_ents.Get(class)
-        entity = entity or list.GetEntry(contentType == 'npc' and 'NPC' or 'SpawnableEntities', class)
-        return entity and (entity.Model or entity.WorldModel) or nil
-    end
-
-    if contentType == 'vehicle' then
-        local vehicle = list.GetEntry('Vehicles', class)
-        return vehicle and (vehicle.Model or vehicle.WorldModel) or nil
-    end
-
-    return nil
-end
-
 local function addCopy(menu, class)
     if class == '' then return end
 
@@ -80,7 +30,7 @@ local function addCreator(menu, class, toolMode)
 end
 
 local function addUseAsNPCWeapon(menu, class)
-    if class == '' or !isNPCWeapon(class) then return end
+    if class == '' or !content.isNPCWeapon(class) then return end
 
     local active = GetConVarString('gmod_npcweapon') == class
     local icon = active and 'icon16/monkey_tick.png' or 'icon16/monkey.png'
@@ -118,7 +68,7 @@ local function addInspect(menu, panel, model)
 end
 
 function content.openItemMenu(panel, name, itemIndex, tabl, contentType)
-    local class = itemClass(itemIndex, tabl)
+    local class = content.itemClass(itemIndex, tabl)
     local menu = Mantle.ui.derma_menu()
 
     addCopy(menu, class)
@@ -130,5 +80,5 @@ function content.openItemMenu(panel, name, itemIndex, tabl, contentType)
         addNPCWeaponMenu(menu, class, tabl)
     end
 
-    addInspect(menu, panel, findModel(itemIndex, tabl, contentType))
+    addInspect(menu, panel, content.itemModel(itemIndex, tabl, contentType))
 end

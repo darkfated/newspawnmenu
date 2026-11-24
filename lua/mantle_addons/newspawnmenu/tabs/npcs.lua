@@ -20,19 +20,10 @@ function PANEL:Init()
     local customIcons = list.Get('ContentCategoryIcons')
 
     for k, npc in pairs(npcs) do
-        local btn = self:AddItem(npc.Name, npc.Category, npc, k, customIcons[npc.Category] or 'icon16/monkey.png')
+        local name = language.GetPhrase(npc.Name or k)
+        local btn = self:AddItem(name, npc.Category, npc, k, customIcons[npc.Category] or 'icon16/monkey.png')
 
-        local matName = npc.IconOverride or 'entities/' .. k .. '.png'
-        local mat = Material(matName)
-
-        if mat:IsError() then
-            matName = matName:Replace('entities/', 'vgui/entities/'):Replace('.png', '')
-            mat = Material(matName)
-        end
-
-        if !mat:IsError() then
-            btn.mat = mat
-        end
+        NewSpawnMenu.content.applyItemVisual(btn, k, npc, 'npc')
     end
 end
 

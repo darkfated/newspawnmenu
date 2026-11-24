@@ -2,6 +2,11 @@ local convar_close_on_spawn = CreateClientConVar('newspawnmenu_close_on_spawn', 
 local convar_mode = GetConVar('newspawnmenu_mode')
 local math_floor = math.floor
 
+local mat_admin = Material('icon16/shield.png')
+local mat_npc_weapon = Material('icon16/monkey.png')
+local mat_npc_weapon_on = Material('icon16/monkey_tick.png')
+local text_shadow = Color(0, 0, 0, 200)
+
 local PANEL = {}
 
 function PANEL:Init()
@@ -45,6 +50,50 @@ function PANEL:AddItem(name, category, tabl, itemIndex, categoryIcon)
     panelItem.anim_scale = 1
     panelItem.anim_target = 1
     panelItem.anim_speed = 10
+
+    panelItem._syncModelIcon = function(btn)
+        if !IsValid(btn.modelIcon) then return end
+
+        local w, h = btn:GetSize()
+        local fontI = math_floor(14 * GetConVar('newspawnmenu_scale'):GetFloat())
+        local labelH = fontI * 2
+        local pad = 6
+        local availW = w - pad * 2
+        local availH = h - labelH - pad * 2
+        local size = math_floor(math.max(1, math.min(availW, availH)))
+
+        btn.modelIcon:SetPos(math_floor((w - size) * 0.5), math_floor((h - labelH - size) * 0.5))
+        btn.modelIcon:SetSize(size, size)
+    end
+
+    panelItem.SetModelFallback = function(btn, model, skin, bodyGroups)
+        if !isstring(model) or model == '' then return end
+
+        if IsValid(btn.modelIcon) then
+            btn.modelIcon:Remove()
+        end
+
+        local icon = vgui.Create('ModelImage', btn)
+        icon:SetMouseInputEnabled(false)
+        icon:SetKeyboardInputEnabled(false)
+
+        local groups = tostring(bodyGroups or '000000000')
+        if groups:len() != 9 then
+            groups = '000000000'
+        end
+
+        icon:SetModel(model, skin or 0, groups)
+        if icon.RebuildSpawnIcon then
+            icon:RebuildSpawnIcon()
+        end
+
+        btn.modelIcon = icon
+        btn:_syncModelIcon()
+    end
+
+    panelItem.OnSizeChanged = function(btn)
+        btn:_syncModelIcon()
+    end
 
     panelItem.Paint = function(btn, w, h)
         local dt = FrameTime()
@@ -113,12 +162,6 @@ function PANEL:AddItem(name, category, tabl, itemIndex, categoryIcon)
 end
 
 function PANEL:PaintItem(name, itemIndex, tabl, w, h, btn)
-    local scale = btn.anim_scale
-    local offset = (1 - scale) * 0.5
-    local scaledW = w * scale
-    local scaledH = h * scale
-    local x = offset * w
-    local y = offset * h
     local mat = btn.mat or btn.icon
     local fontI = math_floor(14 * GetConVar('newspawnmenu_scale'):GetFloat())
     local textFont = 'Fated.' .. fontI
@@ -126,12 +169,6 @@ function PANEL:PaintItem(name, itemIndex, tabl, w, h, btn)
 
     if mat then
         if !NewSpawnMenu.convar.opt then
-            RNDX.Rect(0, 0, w, h)
-                :Rad(32)
-                :Material(mat)
-                :Shape(RNDX.SHAPE_IOS)
-            :Draw()
-
             RNDX.Rect(0, 0, w, h)
                 :Rad(24)
                 :Shape(RNDX.SHAPE_IOS)
@@ -141,7 +178,7 @@ function PANEL:PaintItem(name, itemIndex, tabl, w, h, btn)
 
         render.PushFilterMag(TEXFILTER.ANISOTROPIC)
         render.PushFilterMin(TEXFILTER.ANISOTROPIC)
-            RNDX.Rect(x, y, scaledW, scaledH)
+            RNDX.Rect(0, 0, w, h)
                 :Rad(24)
                 :Material(mat)
                 :Shape(RNDX.SHAPE_IOS)
@@ -150,16 +187,60 @@ function PANEL:PaintItem(name, itemIndex, tabl, w, h, btn)
         render.PopFilterMag()
     end
 
-    RNDX.Rect(0, h - fontI * 2, w, fontI * 2)
+    if btn.adminOnly then
+        surface.SetMaterial(mat_admin)
+        surface.SetDrawColor(255, 255, 255, 255)
+        surface.DrawTexturedRect(6, 6, 14, 14)
+    end
+
+    if btn.npcWeapon then
+        local active = GetConVarString('gmod_npcweapon') == btn.spawnName
+        surface.SetMaterial(active and mat_npc_weapon_on or mat_npc_weapon)
+        surface.SetDrawColor(255, 255, 255, 255)
+        surface.DrawTexturedRect(w - 20, 6, 14, 14)
+    end
+
+    local labelH = fontI * 2
+
+    RNDX.Rect(0, h - labelH, w, labelH)
         :Radii(0, 0, 24, 24)
         :Color(Mantle.color.panel_alpha[2])
         :Shape(RNDX.SHAPE_IOS)
     :Draw()
-    if isNameLeft then
-        draw.SimpleText(name, textFont, 8, h - fontI * 0.5 - 1, Mantle.color.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_BOTTOM)
+
+    local text = tostring(name or '')
+    surface.SetFont(textFont)
+    local textW = select(1, surface.GetTextSize(text))
+    local maxW = w - 16
+    local textX, textAlign
+
+    if textW > maxW then
+        textAlign = TEXT_ALIGN_LEFT
+        textX = 8
+
+        if btn:IsHovered() then
+            local scrollPad = math.min(40, w * 0.45)
+            local scrollW = math.max(1, w - scrollPad * 2)
+            local mx = btn:ScreenToLocal(gui.MouseX(), gui.MouseY())
+            local progress = math.Clamp((mx - scrollPad) / scrollW, 0, 1)
+
+            textX = textX - progress * (textW - maxW)
+        end
+    elseif isNameLeft then
+        textAlign = TEXT_ALIGN_LEFT
+        textX = 8
     else
-        draw.SimpleText(name, textFont, w * 0.5, h - fontI * 0.5 - 1, Mantle.color.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM)
+        textAlign = TEXT_ALIGN_CENTER
+        textX = w * 0.5
     end
+
+    local sx, sy = btn:LocalToScreen(6, h - labelH)
+    local ex, ey = btn:LocalToScreen(w - 6, h)
+
+    render.SetScissorRect(sx, sy, ex, ey, true)
+        draw.SimpleText(text, textFont, textX + 1, h - fontI * 0.5, text_shadow, textAlign, TEXT_ALIGN_BOTTOM)
+        draw.SimpleText(text, textFont, textX, h - fontI * 0.5 - 1, Mantle.color.text, textAlign, TEXT_ALIGN_BOTTOM)
+    render.SetScissorRect(0, 0, 0, 0, false)
 end
 
 function PANEL:AddFunc(func)

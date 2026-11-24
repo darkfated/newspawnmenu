@@ -21,19 +21,10 @@ function PANEL:Init()
             continue
         end
 
-        local btn = self:AddItem(language.GetPhrase(wep.PrintName or wep.Name or wep.ClassName or k), wep.Category, wep, nil, customIcons[wep.Category] or 'icon16/gun.png')
+        local name = language.GetPhrase(wep.PrintName or wep.Name or wep.ClassName or k)
+        local btn = self:AddItem(name, wep.Category, wep, nil, customIcons[wep.Category] or 'icon16/gun.png')
 
-        local matName = wep.IconOverride or 'entities/' .. wep.ClassName .. '.png'
-        local mat = Material(matName)
-
-        if mat:IsError() then
-            matName = matName:Replace('entities/', 'vgui/entities/'):Replace('.png', '')
-            mat = Material(matName)
-        end
-
-        if !mat:IsError() then
-            btn.mat = mat
-        end
+        NewSpawnMenu.content.applyItemVisual(btn, k, wep, 'weapon')
     end
 end
 
