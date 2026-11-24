@@ -37,12 +37,19 @@ function api.install(menu)
 
         achievements.SpawnMenuOpen()
 
-        if self.StartupTool and self.StartupTool.Name then
-            if ispanel(self.StartupTool) and self.StartupTool.SetSelected then
-                self.StartupTool:SetSelected(true)
+        local startupTool = self.StartupTool
+        if !startupTool and IsValid(NewSpawnMenu.tools) then
+            local activeTool = GetConVar('gmod_toolmode')
+            activeTool = activeTool and activeTool:GetString() or ''
+            if activeTool != '' then startupTool = { Name = activeTool } end
+        end
+
+        if startupTool and startupTool.Name then
+            if ispanel(startupTool) and startupTool.SetSelected then
+                startupTool:SetSelected(true)
             end
 
-            spawnmenu.ActivateTool(self.StartupTool.Name, true)
+            spawnmenu.ActivateTool(startupTool.Name, true)
             self.StartupTool = nil
         end
     end

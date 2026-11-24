@@ -20,11 +20,9 @@ function PANEL:Init()
         self:BuildCategory(index, toolCategory)
     end
 
-    timer.Simple(0, function()
-        if IsValid(NewSpawnMenu.menu) then
-            NewSpawnMenu.menu.StartupTool = { Name = activeTool }
-        end
-    end)
+    if activeTool != '' and IsValid(NewSpawnMenu.menu) then
+        NewSpawnMenu.menu.StartupTool = { Name = activeTool }
+    end
 end
 
 function PANEL:BuildCategory(index, toolCategory)
